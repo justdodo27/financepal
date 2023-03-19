@@ -1,16 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class Data {
+class PieData {
   final String name;
   final double percent;
   final Color color;
 
-  Data({required this.name, required this.percent, required this.color});
+  PieData({required this.name, required this.percent, required this.color});
 }
 
 class ChartLegend extends StatelessWidget {
-  final List<Data> data;
+  final List<PieData> data;
 
   const ChartLegend({super.key, required this.data});
 
@@ -54,7 +54,7 @@ class ChartLegend extends StatelessWidget {
 }
 
 class PieChartSection extends StatelessWidget {
-  final List<Data> data;
+  final List<PieData> data;
 
   const PieChartSection({
     super.key, required this.data,

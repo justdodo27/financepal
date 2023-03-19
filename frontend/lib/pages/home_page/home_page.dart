@@ -3,6 +3,7 @@ import 'package:frontend/pages/settings_page/settings_page.dart';
 
 import 'components/appbar_bottom.dart';
 import '../../utils/custom_router.dart';
+import 'components/bar_chart_section.dart';
 import 'components/pie_chart_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,40 +16,75 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final appBarBottomHeight = 160.0;
 
-  final todayData = [
-    Data(name: 'Grocery shopping', percent: 56.3, color: Colors.redAccent),
-    Data(name: 'Chemical articles', percent: 13.1, color: Colors.purpleAccent),
-    Data(name: 'Electronics', percent: 30.6, color: Colors.blue),
+  final todayPieData = [
+    PieData(name: 'Grocery shopping', percent: 56.3, color: Colors.redAccent),
+    PieData(
+        name: 'Chemical articles', percent: 13.1, color: Colors.purpleAccent),
+    PieData(name: 'Electronics', percent: 30.6, color: Colors.blue),
   ];
 
-  final monthData = [
-    Data(name: 'Grocery shopping', percent: 47.3, color: Colors.redAccent),
-    Data(name: 'Chemical articles', percent: 26.1, color: Colors.purpleAccent),
-    Data(name: 'Electronics', percent: 26.6, color: Colors.blue),
+  final monthPieData = [
+    PieData(name: 'Grocery shopping', percent: 47.3, color: Colors.redAccent),
+    PieData(
+        name: 'Chemical articles', percent: 26.1, color: Colors.purpleAccent),
+    PieData(name: 'Electronics', percent: 26.6, color: Colors.blue),
   ];
 
-  final yearData = [
-    Data(name: 'Grocery shopping', percent: 48.0, color: Colors.redAccent),
-    Data(name: 'Chemical articles', percent: 30.0, color: Colors.purpleAccent),
-    Data(name: 'Electronics', percent: 12.0, color: Colors.blue),
+  final yearPieData = [
+    PieData(name: 'Grocery shopping', percent: 48.0, color: Colors.redAccent),
+    PieData(
+        name: 'Chemical articles', percent: 30.0, color: Colors.purpleAccent),
+    PieData(name: 'Electronics', percent: 12.0, color: Colors.blue),
+  ];
+
+  final todayBarData = [
+    BarData(id: 0, name: '1:00 PM', value: 16.33, color: Colors.redAccent),
+    BarData(id: 1, name: '2:34 PM', value: 12.23, color: Colors.redAccent),
+    BarData(id: 2, name: '8:30 PM', value: 25.22, color: Colors.redAccent),
+  ];
+
+  final monthBarData = [
+    BarData(id: 0, name: '01/03', value: 56.33, color: Colors.greenAccent),
+    BarData(id: 1, name: '02/03', value: 22.23, color: Colors.greenAccent),
+    BarData(id: 2, name: '03/03', value: 15.22, color: Colors.greenAccent),
+    BarData(id: 3, name: '04/03', value: 25.62, color: Colors.greenAccent),
+    BarData(id: 4, name: '05/03', value: 35.27, color: Colors.greenAccent),
+    BarData(id: 5, name: '06/03', value: 55.52, color: Colors.greenAccent),
+    BarData(id: 6, name: '07/03', value: 45.29, color: Colors.greenAccent),
+  ];
+
+  final yearBarData = [
+    BarData(id: 0, name: 'January', value: 560.33, color: Colors.purpleAccent),
+    BarData(id: 1, name: 'February', value: 120.23, color: Colors.purpleAccent),
+    BarData(id: 2, name: 'March', value: 450.22, color: Colors.purpleAccent),
   ];
 
   String optionSelected = 'TODAY';
 
-  List<Data> get data {
+  List<PieData> get pieData {
     switch (optionSelected) {
       case 'MONTH':
-        return monthData;
+        return monthPieData;
       case 'YEAR':
-        return yearData;
+        return yearPieData;
       default:
-        return todayData;
+        return todayPieData;
+    }
+  }
+
+  List<BarData> get barData {
+    switch (optionSelected) {
+      case 'MONTH':
+        return monthBarData;
+      case 'YEAR':
+        return yearBarData;
+      default:
+        return todayBarData;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -76,28 +112,8 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 SizedBox(height: appBarBottomHeight + 5), // AppBarBottom height
-                PieChartSection(data: data),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CardTile(size: size),
-                    CardTile(size: size),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CardTile(size: size),
-                    CardTile(size: size),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CardTile(size: size),
-                    CardTile(size: size),
-                  ],
-                ),
+                PieChartSection(data: pieData),
+                BarChartSection(data: barData),
               ],
             ),
           ),
@@ -110,93 +126,6 @@ class _HomePageState extends State<HomePage> {
                 setState(() => optionSelected = selected),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CardTile extends StatelessWidget {
-  const CardTile({
-    super.key,
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      elevation: 4,
-      color: Theme.of(context).colorScheme.onPrimary,
-      child: ConstrainedBox(
-        constraints:
-            BoxConstraints(maxWidth: (size.width / 2) - 10, maxHeight: 200),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                'Hello world!',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    height: 20,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 40,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 50,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 80,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 40,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 60,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 20,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 70,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  Container(
-                    height: 20,
-                    width: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
       ),
     );
   }
