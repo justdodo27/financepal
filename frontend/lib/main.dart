@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'pages/home_page.dart';
+import 'pages/home_page/home_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,17 +37,19 @@ class MyApp extends StatelessWidget {
 
   final lightColorScheme = const ColorScheme.light(
     primary: Colors.white,
-    secondary: Colors.blue,
     onPrimary: Colors.white,
+    secondary: Color.fromARGB(255, 106, 0, 255),
     background: Color(0xff6200ee),
-    tertiary: Color(0xff6200ee),
+    onBackground: Color.fromARGB(255, 0, 94, 255),
+    tertiary: Color.fromARGB(255, 134, 178, 255),
   );
 
   final darkColorScheme = const ColorScheme.dark(
     primary: Color(0xff121212),
-    secondary: Color.fromARGB(255, 35, 35, 35),
     onPrimary: Color(0xff1e1e1e),
+    secondary: Color.fromARGB(255, 35, 35, 35),
     background: Color(0xff1e1e1e),
+    onBackground: Color.fromARGB(255, 55, 55, 55),
     tertiary: Color(0xffbb86fc),
   );
 
@@ -56,8 +58,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FinancePal',
       theme: ThemeData(
+        splashColor: Colors.blue,
         brightness: Brightness.light,
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
         textTheme: textTheme.apply(
             bodyColor: Colors.black, displayColor: Colors.black),
