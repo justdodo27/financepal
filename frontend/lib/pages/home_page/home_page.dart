@@ -3,11 +3,48 @@ import 'package:frontend/pages/settings_page/settings_page.dart';
 
 import 'components/appbar_bottom.dart';
 import '../../utils/custom_router.dart';
+import 'components/pie_chart_section.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final appBarBottomHeight = 160.0;
+
+  final todayData = [
+    Data(name: 'Grocery shopping', percent: 56.3, color: Colors.redAccent),
+    Data(name: 'Chemical articles', percent: 13.1, color: Colors.purpleAccent),
+    Data(name: 'Electronics', percent: 30.6, color: Colors.blue),
+  ];
+
+  final monthData = [
+    Data(name: 'Grocery shopping', percent: 47.3, color: Colors.redAccent),
+    Data(name: 'Chemical articles', percent: 26.1, color: Colors.purpleAccent),
+    Data(name: 'Electronics', percent: 26.6, color: Colors.blue),
+  ];
+
+  final yearData = [
+    Data(name: 'Grocery shopping', percent: 48.0, color: Colors.redAccent),
+    Data(name: 'Chemical articles', percent: 30.0, color: Colors.purpleAccent),
+    Data(name: 'Electronics', percent: 12.0, color: Colors.blue),
+  ];
+
+  String optionSelected = 'TODAY';
+
+  List<Data> get data {
+    switch (optionSelected) {
+      case 'MONTH':
+        return monthData;
+      case 'YEAR':
+        return yearData;
+      default:
+        return todayData;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +76,7 @@ class HomePage extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: appBarBottomHeight + 5), // AppBarBottom height
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CardTile(size: size),
-                    CardTile(size: size),
-                  ],
-                ),
+                PieChartSection(data: data),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -75,6 +106,8 @@ class HomePage extends StatelessWidget {
             todaySpendings: 34.99,
             thisMonthSpendings: 534.81,
             thisYearSpendings: 2548.08,
+            onSelectionChanged: (selected) =>
+                setState(() => optionSelected = selected),
           ),
         ],
       ),
