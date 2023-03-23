@@ -28,7 +28,7 @@ class SmallRoundedOutlinedButton extends StatelessWidget {
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             backgroundColor:
-                backgroundColor ?? Theme.of(context).colorScheme.secondary,
+                backgroundColor ?? Theme.of(context).colorScheme.onBackground,
             shape: const StadiumBorder(),
             side: BorderSide(
               color: borderColor ?? Theme.of(context).colorScheme.onBackground,
