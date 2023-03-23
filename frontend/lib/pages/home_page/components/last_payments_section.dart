@@ -23,66 +23,10 @@ class LastPaymentsSection extends StatefulWidget {
 class _LastPaymentsSectionState extends State<LastPaymentsSection> {
   List<Widget> _getRows() {
     if (widget.data.isEmpty) {
-      return [
-        Card(
-          elevation: 1,
-          color: Theme.of(context).colorScheme.secondary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Icon(
-                  Icons.monetization_on,
-                  color: Colors.redAccent,
-                ),
-                Text('No payments to display'),
-                Icon(
-                  Icons.close,
-                  color: Colors.redAccent,
-                ),
-              ],
-            ),
-          ),
-        )
-      ];
+      return [const NoPaymentDataWidget()];
     }
 
-    return widget.data
-        .map((payment) => Card(
-              elevation: 1,
-              color: Theme.of(context).colorScheme.secondary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.monetization_on,
-                      color: payment.color,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          payment.name,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    Text('${payment.value}'),
-                  ],
-                ),
-              ),
-            ))
-        .toList();
+    return widget.data.map((payment) => PaymentTile(payment: payment)).toList();
   }
 
   @override
@@ -98,6 +42,82 @@ class _LastPaymentsSectionState extends State<LastPaymentsSection> {
         width: double.infinity,
         child: Column(
           children: _getRows(),
+        ),
+      ),
+    );
+  }
+}
+
+class NoPaymentDataWidget extends StatelessWidget {
+  const NoPaymentDataWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      color: Theme.of(context).colorScheme.secondary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const [
+            Icon(
+              Icons.monetization_on,
+              color: Colors.redAccent,
+            ),
+            Text('No payments to display'),
+            Icon(
+              Icons.close,
+              color: Colors.redAccent,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PaymentTile extends StatelessWidget {
+  final PaymentData payment;
+
+  const PaymentTile({
+    super.key,
+    required this.payment,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      color: Theme.of(context).colorScheme.secondary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              Icons.monetization_on,
+              color: payment.color,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  payment.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Text('${payment.value}'),
+          ],
         ),
       ),
     );
