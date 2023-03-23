@@ -3,9 +3,21 @@ version: '3.8'
 services:
   web:
     build: .
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8080 --reload
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn backend.main:app --host 0.0.0.0 --port 8080 --reload'
     volumes:
       - .:/app
     ports:
       - 8080:8080
-  
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=financepal
+      - POSTGRES_PASSWORD=financepal
+      - POSTGRES_DB=financepal
+
+volumes:
+  postgres_data:
