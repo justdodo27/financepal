@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/categories_page/categories_page.dart';
+import 'package:frontend/pages/groups_page/groups_page.dart';
 import 'package:frontend/pages/home_page/home_page.dart';
+import 'package:frontend/pages/notifications_page/notifications_page.dart';
+import 'package:frontend/pages/payment_history_page/payment_history_page.dart';
+import 'package:frontend/pages/proofs_of_payments_page/proofs_of_payments_page.dart';
+import 'package:frontend/pages/recurring_payments_page/recurring_payments_page.dart';
+import 'package:frontend/pages/reports_page/reports_page.dart';
 import 'package:frontend/pages/settings_page/settings_page.dart';
 
 import '../../utils/custom_router.dart';
@@ -43,31 +50,37 @@ class _HomePageState extends State<MainPage> {
         ),
         drawer: MainDrawer(
           activePage: pageSelected,
+          onTabSelected: (value) => _pageController.jumpToPage(value),
         ),
         body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
           onPageChanged: (value) {
             setState(() => pageSelected = value);
           },
           children: const [
             HomePage(),
-            Center(child: Text('Payments history')),
-            Center(child: Text('Recurring payments')),
-            Center(child: Text('Add proof of payment')),
-            Center(child: Text('Groups')),
-            Center(child: Text('Generate a report')),
-            Center(child: Text('Set notifications')),
+            PaymentHistoryPage(),
+            RecurringPaymentsPage(),
+            CategoriesPage(),
+            ProofsOfPaymentsPage(),
+            GroupsPage(),
+            ReportsPage(),
+            NotificationsPage(),
           ],
         ),
-        floatingActionButton: Opacity(
-          opacity: 0.9,
-          child: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(
-              Icons.add_card,
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
-          ),
-        ),
+        floatingActionButton: [0, 1, 2].contains(pageSelected)
+            ? Opacity(
+                opacity: 0.85,
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  child: Icon(
+                    Icons.add_card,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }
