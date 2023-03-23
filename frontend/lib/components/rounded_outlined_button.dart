@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-class SmallRoundedOutlinedButton extends StatelessWidget {
+class SmallRoundedOutlinedTextButton extends StatelessWidget {
   final String label;
   final Function() onPressed;
   final EdgeInsets padding;
   final double width;
   final Color? backgroundColor;
   final Color? borderColor;
+  final OutlinedBorder shape;
 
-  const SmallRoundedOutlinedButton({
+  const SmallRoundedOutlinedTextButton({
     super.key,
     required this.label,
     required this.onPressed,
@@ -16,6 +17,7 @@ class SmallRoundedOutlinedButton extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.width = 100.0,
+    this.shape = const StadiumBorder(),
   });
 
   @override
@@ -29,7 +31,7 @@ class SmallRoundedOutlinedButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor:
                 backgroundColor ?? Theme.of(context).colorScheme.onBackground,
-            shape: const StadiumBorder(),
+            shape: shape,
             side: BorderSide(
               color: borderColor ?? Theme.of(context).colorScheme.onBackground,
             ),
@@ -41,6 +43,49 @@ class SmallRoundedOutlinedButton extends StatelessWidget {
                 .apply(displayColor: Colors.white)
                 .bodySmall,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SmallRoundedOutlinedButton extends StatelessWidget {
+  final Widget child;
+  final Function() onPressed;
+  final EdgeInsets padding;
+  final double width;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final OutlinedBorder shape;
+
+  const SmallRoundedOutlinedButton({
+    super.key,
+    required this.child,
+    required this.onPressed,
+    this.padding = const EdgeInsets.all(8.0),
+    this.backgroundColor,
+    this.borderColor,
+    this.width = 100.0,
+    this.shape = const StadiumBorder(),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minWidth: width),
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            backgroundColor:
+                backgroundColor ?? Theme.of(context).colorScheme.onBackground,
+            shape: shape,
+            side: BorderSide(
+              color: borderColor ?? Theme.of(context).colorScheme.onBackground,
+            ),
+          ),
+          child: child,
         ),
       ),
     );

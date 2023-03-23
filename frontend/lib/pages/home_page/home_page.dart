@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'components/appbar_bottom.dart';
+import 'components/home_appbar_bottom.dart';
 import 'components/pie_chart_section.dart';
 import 'components/bar_chart_section.dart';
 import 'components/last_payments_section.dart';
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        AppBarBottom(
+        HomeAppBarBottom(
           height: appBarBottomHeight,
           todaySpendings: 34.99,
           thisMonthSpendings: 534.81,
