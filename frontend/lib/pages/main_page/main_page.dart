@@ -30,11 +30,27 @@ class _HomePageState extends State<MainPage> {
     super.dispose();
   }
 
+  String get title {
+    switch (pageSelected) {
+      case 1:
+        return 'Payments';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          title: Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .displayMedium!
+                .apply(color: Colors.white),
+          ),
           elevation: 0,
           actions: [
             IconButton(
