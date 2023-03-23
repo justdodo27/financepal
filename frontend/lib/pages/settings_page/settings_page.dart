@@ -7,20 +7,22 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: Theme.of(context)
-              .textTheme
-              .displayMedium!
-              .apply(color: Colors.white),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Settings',
+            style: Theme.of(context)
+                .textTheme
+                .displayMedium!
+                .apply(color: Colors.white),
+          ),
         ),
-      ),
-      body: Column(
-        children: const [
-          DarkModeSetting(),
-        ],
+        body: Column(
+          children: const [
+            DarkModeSetting(),
+          ],
+        ),
       ),
     );
   }
