@@ -44,7 +44,7 @@ class BarChartSection extends StatelessWidget {
       elevation: 4,
       color: Theme.of(context).colorScheme.onPrimary,
       child: Container(
-        padding: const EdgeInsets.only(top: 20, right: 10, left: 10),
+        padding: const EdgeInsets.only(top: 20, right: 20, left: 10),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 180),
           child: BarChart(
@@ -60,20 +60,28 @@ class BarChartSection extends StatelessWidget {
                 ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 30,
-                    getTitlesWidget: (value, meta) => Padding(
-                      padding: const EdgeInsets.only(top: 3.0),
-                      child: Text(
-                        data.firstWhere((element) => element.id == value).name,
-                      ),
-                    ),
-                  ),
+                      showTitles: true,
+                      reservedSize: 30,
+                      getTitlesWidget: (value, meta) {
+                        if (value != 0 &&
+                            value != data.length - 1 &&
+                            value != data.length ~/ 2) return Container();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 3.0, right: 3),
+                          child: Text(
+                            data
+                                .firstWhere((element) => element.id == value)
+                                .name,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        );
+                      }),
                 ),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: _getReservedSize(),
+                    interval: maxY / 2,
                     getTitlesWidget: (value, meta) => Padding(
                       padding: const EdgeInsets.only(right: 3.0),
                       child: Text(
