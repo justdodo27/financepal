@@ -102,7 +102,21 @@ class _HomePageState extends State<MainPage> {
             ? Opacity(
                 opacity: 0.85,
                 child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(30),
+                          topLeft: Radius.circular(30),
+                        ),
+                      ),
+                      useSafeArea: true,
+                      isScrollControlled: true,
+                      builder: (context) => const AddPaymentSheet(),
+                    );
+                  },
                   child: Icon(
                     Icons.add_card,
                     color: Theme.of(context).colorScheme.tertiary,
