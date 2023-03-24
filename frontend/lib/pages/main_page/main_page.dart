@@ -10,6 +10,7 @@ import 'package:frontend/pages/reports_page/reports_page.dart';
 import 'package:frontend/pages/settings_page/settings_page.dart';
 
 import '../../utils/custom_router.dart';
+import 'components/add_payment_sheet.dart';
 import 'components/main_drawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -34,6 +35,18 @@ class _HomePageState extends State<MainPage> {
     switch (pageSelected) {
       case 1:
         return 'Payments';
+      case 2:
+        return 'Recurring payments';
+      case 3:
+        return 'Categories';
+      case 4:
+        return 'Proofs of payments';
+      case 5:
+        return 'Groups';
+      case 6:
+        return 'Reports';
+      case 7:
+        return 'Notifications';
       default:
         return '';
     }
