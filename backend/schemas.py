@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class UserBase(BaseModel): # base model
     email: str
     username: str
 
-
 class UserCreate(UserBase): # used only to create the data
     password: str
-
 
 class User(UserBase): # user only for reading the data
     id: int

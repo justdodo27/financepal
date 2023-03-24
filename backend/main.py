@@ -1,11 +1,15 @@
-from fastapi import Depends, FastAPI
+from typing import Annotated
 
-from backend import models
-from backend.dependencies import get_query_token, get_token_header
+from fastapi import Depends, FastAPI, status, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from backend import schemas
+from backend.dependencies import authenticate_user, create_access_token
 from backend.routers import users
-from backend.database import SessionLocal, engine, Base
+from backend.database import engine, Base, get_db
 
-app = FastAPI(dependencies=[Depends(get_query_token)])
+app = FastAPI()
 
 
 app.include_router(users.router)
@@ -19,4 +23,22 @@ async def init_tables():
 
 @app.get("/")
 async def root():
-    return {"message": "Hello xd!"}
+    return {"message": "Hello!"}
+
+
+@app.post("/token", response_model=schemas.Token)
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: AsyncSession = Depends(get_db)
+):
+    user = await authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect login or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(
+        data={"sub": str(user.id)}
+    )
+    return {"access_token": access_token, "token_type": "bearer"}

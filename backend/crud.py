@@ -8,19 +8,25 @@ from backend import models, schemas
 async def get_user(db: AsyncSession, user_id: int):
     q = select(models.User).filter(models.User.id == user_id)
     result = await db.execute(q)
-    return result.first()
+    return result.scalars().first()
 
 
 async def get_user_by_email(db: AsyncSession, email: str):
     q = select(models.User).filter(models.User.email == email)
     result = await db.execute(q)
-    return result.first()
+    return result.scalars().first()
+
+
+async def get_user_by_username(db: AsyncSession, username: str):
+    q = select(models.User).filter(models.User.username == username)
+    result = await db.execute(q)
+    return result.scalars().first()
 
 
 async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100):
     q = select(models.User).offset(skip).limit(limit)
     results = await db.execute(q)
-    return results.all()
+    return results.scalars().all()
 
 
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
