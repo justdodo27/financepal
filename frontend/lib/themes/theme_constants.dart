@@ -29,16 +29,17 @@ const lightColorScheme = ColorScheme.light(
   primary: Colors.white,
   onPrimary: Colors.white,
   secondary: Color.fromARGB(255, 250, 250, 250),
+  onSecondary: Color.fromARGB(255, 230, 230, 230),
   background: Color(0xff6200ee),
   onBackground: Color.fromARGB(255, 109, 25, 254),
   tertiary: Color.fromARGB(255, 134, 178, 255),
-  
 );
 
 const darkColorScheme = ColorScheme.dark(
   primary: Color(0xff121212),
   onPrimary: Color(0xff1e1e1e),
   secondary: Color.fromARGB(255, 35, 35, 35),
+  onSecondary: Color.fromARGB(255, 60, 60, 60),
   background: Color(0xff1e1e1e),
   onBackground: Color.fromARGB(255, 55, 55, 55),
   tertiary: Color(0xffbb86fc),
