@@ -26,7 +26,7 @@ async def root():
     return {"message": "Hello!"}
 
 
-@app.post("/token", response_model=schemas.Token)
+@app.post("/login", response_model=schemas.Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db)
