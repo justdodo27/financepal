@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PaymentData {
   final String name;
   final double value;
   final Color color;
+  final DateTime? date;
 
-  PaymentData({required this.name, required this.value, required this.color});
+  PaymentData({
+    required this.name,
+    required this.value,
+    required this.color,
+    this.date,
+  });
 }
 
 class LastPaymentsSection extends StatefulWidget {
@@ -84,10 +91,14 @@ class NoPaymentDataWidget extends StatelessWidget {
 
 class PaymentTile extends StatelessWidget {
   final PaymentData payment;
+  final IconData icon;
+  final bool? showDate;
 
   const PaymentTile({
     super.key,
     required this.payment,
+    this.icon = Icons.monetization_on,
+    this.showDate,
   });
 
   @override
@@ -103,10 +114,7 @@ class PaymentTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
-              Icons.monetization_on,
-              color: payment.color,
-            ),
+            Icon(icon, color: payment.color),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -116,6 +124,10 @@ class PaymentTile extends StatelessWidget {
                 ),
               ),
             ),
+            if (showDate ?? false) ...{
+              Text(DateFormat('dd/MM').format(payment.date ?? DateTime.now())),
+              const SizedBox(width: 16),
+            },
             Text('${payment.value}'),
           ],
         ),
