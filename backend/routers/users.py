@@ -7,7 +7,7 @@ from backend.database import get_db
 router = APIRouter(dependencies=[])
 
 
-@router.post("/users/", tags=["users"], response_model=schemas.User, dependencies=[])
+@router.post("/users/", tags=["users"], response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
