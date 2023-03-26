@@ -49,7 +49,7 @@ class SmallRoundedOutlinedTextButton extends StatelessWidget {
   }
 }
 
-class SmallRoundedOutlinedButton extends StatelessWidget {
+class RoundedOutlinedButton extends StatelessWidget {
   final Widget child;
   final Function() onPressed;
   final EdgeInsets padding;
@@ -58,7 +58,7 @@ class SmallRoundedOutlinedButton extends StatelessWidget {
   final Color? borderColor;
   final OutlinedBorder shape;
 
-  const SmallRoundedOutlinedButton({
+  const RoundedOutlinedButton({
     super.key,
     required this.child,
     required this.onPressed,
