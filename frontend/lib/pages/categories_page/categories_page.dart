@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'components/add_category_sheet.dart';
 import 'components/group_categories_page.dart';
 import 'components/user_categories_page.dart';
 
@@ -67,9 +68,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
             const SizedBox(height: 12),
             FloatingActionButton(
               heroTag: null,
-              onPressed: () => _controller.animateToPage(1,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut),
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(30),
+                  ),
+                ),
+                useSafeArea: true,
+                isScrollControlled: true,
+                builder: (context) => const AddCategorySheet(),
+              ),
               child: Icon(
                 Icons.add,
                 color: Theme.of(context).colorScheme.tertiary,
@@ -81,8 +92,4 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 }
-
-
-
-
 
