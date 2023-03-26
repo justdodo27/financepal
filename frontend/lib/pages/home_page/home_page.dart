@@ -115,40 +115,47 @@ class _HomePageState extends State<HomePage> {
 
   final todayPayments = [
     PaymentData(
-        name: 'Biedronka groceries', value: 25.62, color: Colors.greenAccent),
+        name: 'Biedronka groceries', value: 25.62, category: 'Groceries'),
     PaymentData(
         name: 'Media Expert electronics',
         value: 15.22,
-        color: Colors.greenAccent),
+        category: 'Electronics'),
     PaymentData(
-        name: 'Biedronka chemicals', value: 12.23, color: Colors.greenAccent),
-    PaymentData(name: 'Lidl shopping', value: 25.62, color: Colors.greenAccent),
-    PaymentData(name: 'Gym payment', value: 15.22, color: Colors.greenAccent),
-    PaymentData(name: 'Spotify', value: 12.23, color: Colors.greenAccent),
+        name: 'Biedronka chemicals', value: 12.23, category: 'Chemicals'),
+    PaymentData(name: 'Lidl shopping', value: 25.62, category: 'Groceries'),
+    PaymentData(name: 'Gym payment', value: 15.22, category: 'Gym'),
+    PaymentData(
+        name: 'Spotify', value: 12.23, isRecurring: true, category: 'Music'),
   ];
 
   final monthPayments = [
     PaymentData(
-        name: 'Purchases on 23/03/2023',
-        value: 225.62,
-        color: Colors.greenAccent),
+      name: 'Purchases on 23/03/2023',
+      value: 225.62,
+    ),
     PaymentData(
-        name: 'Purchases on 22/03/2023',
-        value: 115.22,
-        color: Colors.greenAccent),
+      name: 'Purchases on 22/03/2023',
+      value: 115.22,
+    ),
     PaymentData(
-        name: 'Purchases on 21/03/2023',
-        value: 112.23,
-        color: Colors.greenAccent),
+      name: 'Purchases on 21/03/2023',
+      value: 112.23,
+    ),
   ];
 
   final yearPayments = [
     PaymentData(
-        name: 'January purchases', value: 1250.62, color: Colors.greenAccent),
+      name: 'January purchases',
+      value: 1250.62,
+    ),
     PaymentData(
-        name: 'February purchases', value: 600.22, color: Colors.greenAccent),
+      name: 'February purchases',
+      value: 600.22,
+    ),
     PaymentData(
-        name: 'March purchases', value: 697.24, color: Colors.greenAccent),
+      name: 'March purchases',
+      value: 697.24,
+    ),
   ];
 
   List<PieData> get pieData {
@@ -196,6 +203,7 @@ class _HomePageState extends State<HomePage> {
               PieChartSection(data: pieData),
               BarChartSection(data: barData),
               LastPaymentsSection(data: paymentData),
+              const SizedBox(height: 80),
             ],
           ),
         ),
