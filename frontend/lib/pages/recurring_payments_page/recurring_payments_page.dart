@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../home_page/components/last_payments_section.dart';
+import '../home_page/components/no_payment_data_widget.dart';
+import '../home_page/components/payment_tile.dart';
 
-class RecurringPaymentsPage extends StatefulWidget {
+class RecurringPaymentsPage extends StatelessWidget {
   const RecurringPaymentsPage({super.key});
 
   static List<PaymentData> payments = [
@@ -31,16 +33,11 @@ class RecurringPaymentsPage extends StatefulWidget {
         category: 'Films and Videos'),
   ];
 
-  @override
-  State<RecurringPaymentsPage> createState() => _RecurringPaymentsPageState();
-}
-
-class _RecurringPaymentsPageState extends State<RecurringPaymentsPage> {
   List<Widget> _getRows() {
-    if (RecurringPaymentsPage.payments.isEmpty) {
+    if (payments.isEmpty) {
       return const [NoPaymentDataWidget()];
     }
-    return RecurringPaymentsPage.payments
+    return payments
         .map((payment) => PaymentTile(
               payment: payment,
               icon: Icons.replay_circle_filled_rounded,

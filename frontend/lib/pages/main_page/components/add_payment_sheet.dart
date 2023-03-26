@@ -79,7 +79,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                           setState(() => _isRecurring = value!),
                     ),
                     const SizedBox(height: 16),
-                    SmallRoundedOutlinedButton(
+                    RoundedOutlinedButton(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),

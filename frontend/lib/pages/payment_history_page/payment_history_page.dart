@@ -3,6 +3,8 @@ import 'package:frontend/components/rounded_outlined_button.dart';
 import 'package:intl/intl.dart';
 
 import '../home_page/components/last_payments_section.dart';
+import '../home_page/components/no_payment_data_widget.dart';
+import '../home_page/components/payment_tile.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
   const PaymentHistoryPage({super.key});
@@ -52,7 +54,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
             color: Theme.of(context).colorScheme.onPrimary,
             child: Column(
               children: [
-                SmallRoundedOutlinedButton(
+                RoundedOutlinedButton(
                   backgroundColor: Theme.of(context).colorScheme.onPrimary,
                   borderColor: Colors.grey,
                   onPressed: () async {
