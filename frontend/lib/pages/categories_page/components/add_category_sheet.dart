@@ -3,27 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 
-class AddPaymentSheet extends StatefulWidget {
-  const AddPaymentSheet({
+class AddCategorySheet extends StatefulWidget {
+  const AddCategorySheet({
     super.key,
   });
 
   @override
-  State<AddPaymentSheet> createState() => _AddPaymentSheetState();
+  State<AddCategorySheet> createState() => _AddCategorySheetState();
 }
 
-class _AddPaymentSheetState extends State<AddPaymentSheet> {
-  final _amount = TextEditingController();
-  final _category = TextEditingController();
-
-  bool _isRecurring = false;
-
-  @override
-  void dispose() {
-    _amount.dispose();
-    _category.dispose();
-    super.dispose();
-  }
+class _AddCategorySheetState extends State<AddCategorySheet> {
+  final _name = TextEditingController();
+  final _group = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +25,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
         child: Column(
           children: [
             Text(
-              'Add a payment',
+              'Add a category',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
@@ -52,31 +43,14 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                 child: Column(
                   children: [
                     CustomTextField(
-                      controller: _amount,
-                      hintText: 'e.g. 21.37',
-                      labelText: 'Amount',
+                      controller: _name,
+                      hintText: 'e.g. Groceries',
+                      labelText: 'Name',
                     ),
                     CustomTextField(
-                      controller: _category,
-                      hintText: 'e.g. Groceries',
-                      labelText: 'Category',
-                    ),
-                    const SizedBox(height: 8),
-                    CheckboxListTile(
-                      tileColor: Theme.of(context).colorScheme.onSecondary,
-                      activeColor: Colors.green,
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 2, horizontal: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      title: Text(
-                        'Recurring payment',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      value: _isRecurring,
-                      onChanged: (value) =>
-                          setState(() => _isRecurring = value!),
+                      controller: _group,
+                      hintText: 'e.g. Fireds',
+                      labelText: 'Group',
                     ),
                     const SizedBox(height: 16),
                     RoundedOutlinedButton(
