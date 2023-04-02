@@ -17,6 +17,13 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
   final _group = TextEditingController();
 
   @override
+  void dispose() {
+    _name.dispose();
+    _group.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
