@@ -16,6 +16,12 @@ class _AddGroupSheetState extends State<AddGroupSheet> {
   final _code = TextEditingController();
 
   @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),

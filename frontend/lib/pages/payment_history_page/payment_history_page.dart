@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/rounded_outlined_button.dart';
-import 'package:intl/intl.dart';
 
+import '../../components/date_range_picker.dart';
 import '../home_page/components/last_payments_section.dart';
 import '../home_page/components/no_payment_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
@@ -54,57 +53,10 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
             color: Theme.of(context).colorScheme.onPrimary,
             child: Column(
               children: [
-                RoundedOutlinedButton(
-                  backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                  borderColor: Colors.grey,
-                  onPressed: () async {
-                    DateTimeRange? selected = await showDateRangePicker(
-                      context: context,
-                      initialDateRange: _dateTimeRange,
-                      firstDate: DateTime(2023, 1),
-                      lastDate: DateTime(2223, 1),
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: Theme.of(context).colorScheme.copyWith(
-                                  primary:
-                                      Theme.of(context).colorScheme.tertiary,
-                                ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-
-                    if (selected == null) return;
-                    setState(() => _dateTimeRange = selected);
-                  },
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                        Text(
-                          '${DateFormat('dd.MM.yyyy').format(_dateTimeRange.start)} - ${DateFormat('dd.MM.yyyy').format(_dateTimeRange.end)}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Icon(
-                          Icons.edit,
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                      ],
-                    ),
-                  ),
+                DateRangePicker(
+                  dateTimeRange: _dateTimeRange,
+                  onDateTimePicked: (selected) =>
+                      setState(() => _dateTimeRange = selected),
                 ),
                 ..._getRows(),
               ],

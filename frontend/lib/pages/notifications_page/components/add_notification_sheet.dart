@@ -3,22 +3,40 @@ import 'package:flutter/material.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 
-class AddCategorySheet extends StatefulWidget {
-  const AddCategorySheet({
+class Limit {
+  final double value;
+  final String option;
+  final String? groupName;
+  bool isActive;
+
+  Limit({
+    required this.value,
+    required this.option,
+    required this.isActive,
+    this.groupName,
+  });
+
+  bool get isGroupLimit => groupName != null;
+}
+
+class AddNotificationSheet extends StatefulWidget {
+  const AddNotificationSheet({
     super.key,
   });
 
   @override
-  State<AddCategorySheet> createState() => _AddCategorySheetState();
+  State<AddNotificationSheet> createState() => _AddNotificationSheetState();
 }
 
-class _AddCategorySheetState extends State<AddCategorySheet> {
-  final _name = TextEditingController();
+class _AddNotificationSheetState extends State<AddNotificationSheet> {
+  final _value = TextEditingController();
+  final _option = TextEditingController();
   final _group = TextEditingController();
 
   @override
   void dispose() {
-    _name.dispose();
+    _value.dispose();
+    _option.dispose();
     _group.dispose();
     super.dispose();
   }
@@ -32,7 +50,7 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
         child: Column(
           children: [
             Text(
-              'Add a category',
+              'Add a notification',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
@@ -50,9 +68,14 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
                 child: Column(
                   children: [
                     CustomTextField(
-                      controller: _name,
-                      hintText: 'e.g. Groceries',
-                      labelText: 'Name',
+                      controller: _value,
+                      hintText: 'e.g. 1000',
+                      labelText: 'Value',
+                    ),
+                    CustomTextField(
+                      controller: _option,
+                      hintText: 'e.g. Yearly',
+                      labelText: 'Option',
                     ),
                     CustomTextField(
                       controller: _group,
