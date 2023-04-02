@@ -49,8 +49,8 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
                     ),
                     CustomTextField(
                       controller: _group,
-                      hintText: 'e.g. Fireds',
-                      labelText: 'Group',
+                      hintText: 'e.g. Friends',
+                      labelText: 'Group (optional)',
                     ),
                     const SizedBox(height: 16),
                     RoundedOutlinedButton(
