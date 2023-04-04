@@ -6,16 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import schemas
 from backend.dependencies import authenticate_user, create_access_token
-from backend.routers import users
+from backend.routers import users, categories
 from backend.database import engine, Base, get_db
 
 app = FastAPI()
 
 
 app.include_router(users.router)
+app.include_router(categories.router)
 
 
-@app.on_event("startup")
+@app.get("/reload")
 async def init_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -24,6 +25,14 @@ async def init_tables():
 @app.get("/")
 async def root():
     return {"message": "Hello!"}
+
+
+@app.get("/reset_db")
+async def reset():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+        return True
 
 
 @app.post("/token", response_model=schemas.Token)

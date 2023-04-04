@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Union
 
 
 class Token(BaseModel):
@@ -17,3 +18,20 @@ class User(UserBase): # user only for reading the data
 
     class Config:
         orm_mode = True # this allow the option to read the attribute by user.id instead of user["id"]
+
+class CategoryBase(BaseModel):
+    category: str
+
+class CategoryCreate(CategoryBase):
+    user_id: Union[int, None]
+
+class Category(CategoryBase):
+    id: int
+    user_id: Union[int, None]
+
+    class Config:
+        orm_mode = True
+
+class CategoryQuery(BaseModel):
+    user_id: Union[int, None]
+    # group_id: Union[int, None]
