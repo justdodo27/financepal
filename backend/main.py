@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import schemas
 from backend.dependencies import authenticate_user, create_access_token
-from backend.routers import users, categories
+from backend.routers import users, categories, payments
 from backend.database import engine, Base, get_db
 
 app = FastAPI()
@@ -14,6 +14,7 @@ app = FastAPI()
 
 app.include_router(users.router)
 app.include_router(categories.router)
+app.include_router(payments.router)
 
 
 @app.get("/reload")

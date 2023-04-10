@@ -2,9 +2,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 import bcrypt
 
+from datetime import datetime
+from typing import Optional
+
 from backend import models, schemas
 
-
+# USERS
 async def get_user(db: AsyncSession, user_id: int):
     q = select(models.User).filter(models.User.id == user_id)
     result = await db.execute(q)
@@ -41,7 +44,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.refresh(db_user)
     return db_user
 
-
+# CATEGORIES
 async def get_category(db: AsyncSession, category_id: int):
     q = select(models.Category).filter(models.Category.id == category_id)
     result = await db.execute(q)
@@ -98,5 +101,76 @@ async def delete_category(db: AsyncSession, category: models.Category):
         await db.delete(category)
         await db.commit()
     except Exception as e:
+        return False
+    return True
+
+# PAYMENTS
+async def get_payment(db: AsyncSession, payment_id: int):
+    q = select(models.Payment).filter(models.Payment.id == payment_id)
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
+async def get_user_payments(db: AsyncSession, user_id: int, start_date: Optional[datetime], end_date: Optional[datetime]):
+    q = select(models.Payment).filter(
+        models.Payment.user_id == user_id,
+        (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+        (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
+
+
+# async def get_group_payments(db: AsyncSession, group_id: int):
+#     q = select(models.Payment).filter(
+#         models.Payment.group_id == group_id
+#     )
+#     result = await db.execute(q)
+#     return result.scalars().all()
+
+
+async def create_payment(db: AsyncSession, payment: schemas.PaymentBase):
+    payment_date = payment.payment_date.replace(tzinfo=None)
+
+    db_payment = models.Payment(
+        name=payment.name,
+        type=payment.type,
+        category_id=payment.category_id,
+        user_id=payment.user_id,
+        cost=payment.cost,
+        payment_date=payment_date
+        # payment_proof_id
+        # group_id
+    )
+    
+    db.add(db_payment)
+    await db.commit()
+    await db.refresh(db_payment)
+    return db_payment
+
+
+async def update_payment(db: AsyncSession, payment: models.Payment, update_data: schemas.PaymentBase):
+    try:
+        payment.name = update_data.name
+        payment.type = update_data.type
+        payment.category_id = update_data.category_id
+        payment.cost = update_data.cost
+        payment.payment_date = update_data.payment_date.replace(tzinfo=None)
+        # payment.payment_proof_id = 
+
+        await db.commit()
+        await db.refresh(payment)
+    except Exception as e:
+        print(e)
+        return False
+    return payment
+
+
+async def delete_payment(db: AsyncSession, payment: models.Payment):
+    try:
+        await db.delete(payment)
+        await db.commit()
+    except Exception as e:
+        print(e)
         return False
     return True

@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated, Union, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,16 +10,18 @@ router = APIRouter(dependencies=[])
 
 
 @router.post("/categories/", tags=["categories"], response_model=schemas.Category)
-async def create_category(category: schemas.CategoryCreate, db: AsyncSession = Depends(get_db)):
+async def create_category(category: schemas.CategoryCreate, 
+                          current_user: schemas.User = Depends(dependencies.get_current_user),
+                          db: AsyncSession = Depends(get_db)):
     if category.user_id and not (user := await crud.get_user(db, user_id=category.user_id)):
-        return HTTPException(status_code=400, detail="User with given ID don't exist")
+        raise HTTPException(status_code=400, detail="User with given ID don't exist")
     # same stuff with group ^^^
     return await crud.create_category(db=db, category=category)
 
 
 @router.get("/categories/", tags=["categories"], response_model=list[schemas.Category])
-async def get_categories(user_id: Union[int, None] = None,
-                         group_id: Union[int, None] = None, 
+async def get_categories(user_id: Optional[int] = None,
+                         group_id: Optional[int] = None, 
                          current_user: schemas.User = Depends(dependencies.get_current_user), 
                          db: AsyncSession = Depends(get_db)):
     results = await crud.get_categories(db)

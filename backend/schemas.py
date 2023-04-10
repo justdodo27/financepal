@@ -1,5 +1,9 @@
 from pydantic import BaseModel
+
 from typing import Union
+from datetime import datetime
+
+from backend.models import PaymentType
 
 
 class Token(BaseModel):
@@ -32,6 +36,18 @@ class Category(CategoryBase):
     class Config:
         orm_mode = True
 
-class CategoryQuery(BaseModel):
+class PaymentBase(BaseModel):
+    name: str
+    type: PaymentType
+    category_id: Union[int, None]
     user_id: Union[int, None]
-    # group_id: Union[int, None]
+    cost: float
+    payment_date: datetime
+    # payment_proof_id: int
+
+class Payment(PaymentBase):
+    id: int
+    category: Union[Category, None]
+
+    class Config:
+        orm_mode = True
