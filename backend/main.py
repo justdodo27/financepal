@@ -8,6 +8,7 @@ from backend import schemas
 from backend.dependencies import authenticate_user, create_access_token
 from backend.routers import users, categories, payments
 from backend.database import engine, Base, get_db
+from backend.dataset import generate_dataset
 
 app = FastAPI()
 
@@ -17,23 +18,30 @@ app.include_router(categories.router)
 app.include_router(payments.router)
 
 
-@app.get("/reload")
-async def init_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-
 @app.get("/")
 async def root():
     return {"message": "Hello!"}
 
 
-@app.get("/reset_db")
-async def reset():
+@app.get("/clean_db")
+async def clean():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-        return True
+    return True
+
+
+@app.get("/reset_db")
+async def reset(db: AsyncSession = Depends(get_db)):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+    try:
+        await generate_dataset(db)
+    except Exception as e:
+        print(e)
+        return False
+    return True
 
 
 @app.post("/token", response_model=schemas.Token)

@@ -15,7 +15,7 @@ class User(Base):
     password_hash = sa.Column(sa.String, nullable=False)
     username = sa.Column(sa.String, unique=True, nullable=False, index=True)
 
-    categories = relationship("Category", back_populates="user")
+    categories = relationship("Category", back_populates="user", lazy='selectin')
 
 
 class Category(Base):
@@ -26,8 +26,8 @@ class Category(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
     # group_id = TODO syra dodaj tu relacje do groups XD
 
-    user = relationship("User", back_populates="categories")
-    payments = relationship("Payment", back_populates="category")
+    user = relationship("User", back_populates="categories", lazy='selectin')
+    payments = relationship("Payment", back_populates="category", lazy='selectin')
 
 
 class PaymentType(enum.Enum):
