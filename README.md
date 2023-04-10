@@ -2,7 +2,9 @@
 App for managing finances
 
 ## Debug token
-`XD`
+* endrju - `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.eSArqeSJ4EtfNxr1IPpIyk2YFs9IFz-cWynIKyWyL7k`
+* dodo - `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIn0.BHuk4FoBbQkceI_rbnUrv2c45FOtNYxY4vjMShzM9bM`
+* syra - `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIn0.l5NfayRHN-8D7DYkBorr-dYZF9QrjkPS53xk0kRCSRY`
 
 ## How to start the app
 1. Install Docker
