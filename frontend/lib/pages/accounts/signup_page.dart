@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/custom_text_field.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
-import 'package:frontend/components/utils.dart';
+import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/api_provider.dart';
