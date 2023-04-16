@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/accounts/login_page.dart';
-import 'package:frontend/pages/main_page/main_page.dart';
 import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';

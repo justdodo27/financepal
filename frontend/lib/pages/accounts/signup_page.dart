@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/custom_text_field.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
 import 'package:frontend/components/utils.dart';
-import 'package:frontend/pages/accounts/login_page.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/api_provider.dart';
 import '../../utils/custom_router.dart';
-import '../main_page/main_page.dart';
 import 'login_consumer.dart';
 
 class SignUpPage extends StatefulWidget {
