@@ -8,7 +8,7 @@ class ThemeManager with ChangeNotifier {
 
   _getThemeAtInit() async {
     final prefs = await SharedPreferences.getInstance();
-    final isDarkSaved = prefs.getBool("darkMode") ?? false;
+    final isDarkSaved = prefs.getBool("darkMode") ?? true;
     if (isDarkSaved) {
       themeMode = ThemeMode.dark;
     } else {

@@ -17,10 +17,10 @@ class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> {
   final _pageController = PageController();
 
   int pageSelected = 0;
