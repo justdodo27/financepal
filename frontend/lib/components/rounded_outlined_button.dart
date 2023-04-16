@@ -51,7 +51,7 @@ class SmallRoundedOutlinedTextButton extends StatelessWidget {
 
 class RoundedOutlinedButton extends StatelessWidget {
   final Widget child;
-  final Function() onPressed;
+  final Function()? onPressed;
   final EdgeInsets padding;
   final double width;
   final Color? backgroundColor;
