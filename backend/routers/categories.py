@@ -13,8 +13,11 @@ router = APIRouter(dependencies=[])
 async def create_category(category: schemas.CategoryCreate, 
                           current_user: schemas.User = Depends(dependencies.get_current_user),
                           db: AsyncSession = Depends(get_db)):
-    if category.user_id and not (user := await crud.get_user(db, user_id=category.user_id)):
-        raise HTTPException(status_code=400, detail="User with given ID don't exist")
+    if category.user_id:
+        category.user_id = current_user.id
+    else:
+        category.user_id = None
+    
     # same stuff with group ^^^
     return await crud.create_category(db=db, category=category)
 
@@ -24,9 +27,8 @@ async def get_categories(user_id: Optional[int] = None,
                          group_id: Optional[int] = None, 
                          current_user: schemas.User = Depends(dependencies.get_current_user), 
                          db: AsyncSession = Depends(get_db)):
-    results = await crud.get_categories(db)
-    if user_id:
-        results += await crud.get_categories_by_user_id(db, user_id)
+    results = await crud.get_categories(db)    
+    results += await crud.get_categories_by_user_id(db, current_user.id)
     # add same stuff for groups ^^^^^
     return results
 
