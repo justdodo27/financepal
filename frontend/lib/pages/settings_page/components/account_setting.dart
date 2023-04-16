@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
 import 'package:frontend/pages/accounts/login_consumer.dart';
-import 'package:frontend/pages/accounts/login_page.dart';
 import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/utils/custom_router.dart';
 import 'package:provider/provider.dart';
-
-import '../../main_page/main_page.dart';
 
 class AccountSetting extends StatefulWidget {
   const AccountSetting({
