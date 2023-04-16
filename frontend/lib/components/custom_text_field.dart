@@ -5,6 +5,8 @@ class CustomTextField extends StatelessWidget {
   final String? hintText;
   final String? labelText;
   final EdgeInsets padding;
+  final bool obsecureText;
+  final String? Function(String? value)? validator;
 
   const CustomTextField({
     super.key,
@@ -12,6 +14,8 @@ class CustomTextField extends StatelessWidget {
     this.hintText,
     this.labelText,
     this.padding = const EdgeInsets.symmetric(vertical: 8),
+    this.obsecureText = false,
+    this.validator,
   });
 
   @override
@@ -20,6 +24,8 @@ class CustomTextField extends StatelessWidget {
       padding: padding,
       child: TextFormField(
         controller: controller,
+        obscureText: obsecureText,
+        validator: validator,
         cursorColor: Theme.of(context).textTheme.bodyMedium!.color,
         decoration: InputDecoration(
           hintText: hintText,
@@ -37,6 +43,18 @@ class CustomTextField extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: Theme.of(context).colorScheme.onSecondary,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.red.withOpacity(0.5),
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.red,
             ),
             borderRadius: BorderRadius.circular(15),
           ),

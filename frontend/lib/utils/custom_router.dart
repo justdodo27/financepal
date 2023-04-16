@@ -74,6 +74,12 @@ class CustomRouter {
     );
   }
 
+  static Route createPageRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+    );
+  }
+
   static void push({
     required BuildContext context,
     required Widget page,
@@ -85,5 +91,18 @@ class CustomRouter {
         animation,
   }) {
     Navigator.of(context).push(_createPageRoute(page, animation));
+  }
+
+  static void pushReplacement({
+    required BuildContext context,
+    required Widget page,
+    required SlideTransition Function(
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child)
+        animation,
+  }) {
+    Navigator.of(context).pushReplacement(_createPageRoute(page, animation));
   }
 }

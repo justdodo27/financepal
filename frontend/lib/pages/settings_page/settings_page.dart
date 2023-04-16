@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/settings_page/components/account_setting.dart';
 
 import 'components/dark_mode_setting.dart';
 
@@ -21,6 +22,7 @@ class SettingsPage extends StatelessWidget {
         body: Column(
           children: const [
             DarkModeSetting(),
+            AccountSetting(),
           ],
         ),
       ),

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/accounts/login_page.dart';
+import 'package:frontend/pages/main_page/main_page.dart';
+import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
 
-import 'pages/main_page/main_page.dart';
+import 'pages/accounts/login_consumer.dart';
 import 'themes/theme_constants.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => BackendApi(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +54,7 @@ class MyApp extends StatelessWidget {
           ),
           themeMode: themeManager.themeMode,
           debugShowCheckedModeBanner: false,
-          home: const MainPage(),
+          home: const LoginConsumer(),
         );
       },
     );
