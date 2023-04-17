@@ -12,7 +12,7 @@ class LoginConsumer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<BackendApi>(
       builder: (context, backendApi, child) {
-        if (backendApi.token != null) return const MainPage();
+        if (backendApi.isUserLoggedIn) return const MainPage();
         return const LoginPage();
       },
     );

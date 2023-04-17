@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/category.dart';
 
-import '../categories_page.dart';
 import 'category_tile.dart';
 
 class GroupCategoriesPage extends StatelessWidget {
   const GroupCategoriesPage({super.key});
 
-  static List<Category> categories = [
-    Category(name: 'Groceries', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Chemicals', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Electronics', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Music', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Films and Videos', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Alcohol', isGroupCategory: true, group: 'Friends'),
-    Category(name: 'Groceries', isGroupCategory: true, group: 'Family'),
-    Category(name: 'Chemicals', isGroupCategory: true, group: 'Family'),
-    Category(
-        name: 'Electronics',
-        isGroupCategory: true,
-        group: 'Family asdasasdassada  asdas das'),
-    Category(name: 'Music', isGroupCategory: true, group: 'Family'),
-    Category(name: 'Films and Videos', isGroupCategory: true, group: 'Family'),
-    Category(name: 'Alcohol', isGroupCategory: true, group: 'Family'),
-  ];
+  static List<Category> categories = [];
 
   List<Widget> _getRows() {
     return categories
