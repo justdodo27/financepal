@@ -4,14 +4,6 @@ import 'components/add_category_sheet.dart';
 import 'components/group_categories_page.dart';
 import 'components/user_categories_page.dart';
 
-class Category {
-  final String name;
-  final String? group;
-  final bool isGroupCategory;
-
-  Category({required this.name, this.isGroupCategory = false, this.group});
-}
-
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
 

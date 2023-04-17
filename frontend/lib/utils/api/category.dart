@@ -1,14 +1,18 @@
 class Category {
-  final int id;
-  final String name;
+  final int? id;
+  String name;
   final int? userId;
   final int? groupId;
 
+  bool get isUserCategory => userId != null;
+  bool get isGroupCategory => groupId != null;
+  bool get isGeneralCategory => groupId == null && userId == null;
+
   Category({
-    required this.id,
+    this.id,
     required this.name,
-    required this.userId,
-    required this.groupId,
+    this.userId,
+    this.groupId,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
