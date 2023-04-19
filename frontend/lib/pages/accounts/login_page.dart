@@ -3,10 +3,11 @@ import 'package:frontend/components/custom_text_field.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:frontend/pages/accounts/signup_page.dart';
-import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:frontend/utils/custom_router.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
     final isFormValid = _formKey.currentState!.validate();
     if (isFormValid) {
       try {
-        await Provider.of<BackendApi>(context, listen: false)
+        await Provider.of<Auth>(context, listen: false)
             .logIn(_username.text, _password.text);
       } on Exception catch (e) {
         setState(() => _loginDisabled = false);

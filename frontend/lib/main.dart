@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/accounts/login_consumer.dart';
+import 'providers/auth_provider.dart';
+import 'providers/category_provider.dart';
 import 'themes/theme_constants.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => BackendApi(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProxyProvider<Auth, CategoryProvider>(
+          update: (context, account, previousCategories) => CategoryProvider(account),
+          create: (context) => CategoryProvider(null),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

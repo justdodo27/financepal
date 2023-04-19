@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/api_provider.dart';
+import 'package:frontend/providers/category_provider.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +16,7 @@ class CategoryTile extends StatelessWidget {
 
   void deleteCategory(BuildContext context) async {
     try {
-      await Provider.of<BackendApi>(context, listen: false)
+      await Provider.of<CategoryProvider>(context, listen: false)
           .deleteCategory(category);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
