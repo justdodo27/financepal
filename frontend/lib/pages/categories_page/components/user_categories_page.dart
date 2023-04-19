@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
+import '../../../providers/category_provider.dart';
 import '../../../utils/api/category.dart';
 import 'category_tile.dart';
 
@@ -15,9 +15,12 @@ class UserCategoriesPage extends StatefulWidget {
 
 class _UserCategoriesPageState extends State<UserCategoriesPage> {
   void fetchCategories() async {
-    if (Provider.of<BackendApi>(context, listen: false).categories == null) {
+    final categories =
+        Provider.of<CategoryProvider>(context, listen: false).categories;
+    if (categories == null) {
       try {
-        await Provider.of<BackendApi>(context, listen: false).getCategories();
+        await Provider.of<CategoryProvider>(context, listen: false)
+            .getCategories();
       } on Exception catch (e) {
         showExceptionSnackBar(context, e);
       }
@@ -41,7 +44,7 @@ class _UserCategoriesPageState extends State<UserCategoriesPage> {
           ),
           elevation: 4,
           color: Theme.of(context).colorScheme.onPrimary,
-          child: Consumer<BackendApi>(
+          child: Consumer<CategoryProvider>(
             builder: (context, backendApi, child) {
               final categories = backendApi.categories ?? <Category>[];
               return ListView.builder(

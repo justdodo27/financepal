@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/utils/api/category.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
+import '../../../providers/category_provider.dart';
 
 class AddCategorySheet extends StatefulWidget {
   final Category? category;
@@ -26,7 +26,7 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
 
   void createCategory() async {
     try {
-      await Provider.of<BackendApi>(context, listen: false)
+      await Provider.of<CategoryProvider>(context, listen: false)
           .addCategory(Category(name: _name.text));
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
@@ -38,7 +38,7 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
   void editCategory() async {
     try {
       widget.category!.name = _name.text;
-      await Provider.of<BackendApi>(context, listen: false)
+      await Provider.of<CategoryProvider>(context, listen: false)
           .editCategory(widget.category!);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);

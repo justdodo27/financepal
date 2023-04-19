@@ -4,7 +4,7 @@ import 'package:frontend/components/rounded_outlined_button.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/api_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../utils/custom_router.dart';
 import 'login_consumer.dart';
 
@@ -28,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final isFormValid = _formKey.currentState!.validate();
     if (isFormValid) {
       try {
-        await Provider.of<BackendApi>(context, listen: false)
+        await Provider.of<Auth>(context, listen: false)
             .signUp(_email.text, _username.text, _password.text);
         if (!mounted) return;
         Navigator.of(context).pushReplacement(

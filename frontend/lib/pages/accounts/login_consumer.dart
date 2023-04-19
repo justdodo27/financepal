@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/api_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../main_page/main_page.dart';
 import 'login_page.dart';
 
@@ -10,9 +10,9 @@ class LoginConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BackendApi>(
-      builder: (context, backendApi, child) {
-        if (backendApi.isUserLoggedIn) return const MainPage();
+    return Consumer<Auth>(
+      builder: (context, account, child) {
+        if (account.isUserLoggedIn) return const MainPage();
         return const LoginPage();
       },
     );
