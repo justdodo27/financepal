@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'pages/accounts/login_consumer.dart';
 import 'providers/auth_provider.dart';
 import 'providers/category_provider.dart';
+import 'providers/payment_provider.dart';
 import 'themes/theme_constants.dart';
 
 void main() {
@@ -14,8 +15,12 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProxyProvider<Auth, CategoryProvider>(
-          update: (context, account, previousCategories) => CategoryProvider(account),
+          update: (context, auth, previousCategories) => CategoryProvider(auth),
           create: (context) => CategoryProvider(null),
+        ),
+        ChangeNotifierProxyProvider<Auth, PaymentProvider>(
+          update: (context, auth, previousCategories) => PaymentProvider(auth),
+          create: (context) => PaymentProvider(null),
         ),
       ],
       child: const MyApp(),
