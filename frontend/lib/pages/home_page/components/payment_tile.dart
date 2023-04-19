@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'last_payments_section.dart';
+import '../../../utils/api/payment.dart';
 
 class PaymentTile extends StatelessWidget {
-  final PaymentData payment;
+  final Payment payment;
   final IconData icon;
   final bool? showDate;
 
@@ -59,8 +59,7 @@ class PaymentTile extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
-                          DateFormat('dd/MM')
-                              .format(payment.date ?? DateTime.now()),
+                          DateFormat('dd/MM/yyyy').format(payment.date),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -74,27 +73,25 @@ class PaymentTile extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
-                          '${payment.value}',
+                          '${payment.cost}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
-                    if (payment.category != null) ...{
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Category:',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          Text(
-                            '${payment.category}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    },
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Category:',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        Text(
+                          payment.category.name,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

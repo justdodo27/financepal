@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/category.dart';
+import 'package:frontend/utils/api/payment.dart';
 
 import 'components/home_appbar_bottom.dart';
 import 'components/pie_chart_section.dart';
@@ -114,47 +116,35 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final todayPayments = [
-    PaymentData(
-        name: 'Biedronka groceries', value: 25.62, category: 'Groceries'),
-    PaymentData(
-        name: 'Media Expert electronics',
-        value: 15.22,
-        category: 'Electronics'),
-    PaymentData(
-        name: 'Biedronka chemicals', value: 12.23, category: 'Chemicals'),
-    PaymentData(name: 'Lidl shopping', value: 25.62, category: 'Groceries'),
-    PaymentData(name: 'Gym payment', value: 15.22, category: 'Gym'),
-    PaymentData(
-        name: 'Spotify', value: 12.23, isRecurring: true, category: 'Music'),
+    Payment(
+      id: 0,
+      name: 'Test',
+      type: 'BILL',
+      date: DateTime.now(),
+      cost: 89.99,
+      category: Category(name: 'Groceries'),
+    ),
   ];
 
   final monthPayments = [
-    PaymentData(
-      name: 'Purchases on 23/03/2023',
-      value: 225.62,
-    ),
-    PaymentData(
-      name: 'Purchases on 22/03/2023',
-      value: 115.22,
-    ),
-    PaymentData(
-      name: 'Purchases on 21/03/2023',
-      value: 112.23,
+    Payment(
+      id: 0,
+      name: 'Test',
+      type: 'BILL',
+      date: DateTime.now(),
+      cost: 89.99,
+      category: Category(name: 'Groceries'),
     ),
   ];
 
   final yearPayments = [
-    PaymentData(
-      name: 'January purchases',
-      value: 1250.62,
-    ),
-    PaymentData(
-      name: 'February purchases',
-      value: 600.22,
-    ),
-    PaymentData(
-      name: 'March purchases',
-      value: 697.24,
+    Payment(
+      id: 0,
+      name: 'Test',
+      type: 'BILL',
+      date: DateTime.now(),
+      cost: 89.99,
+      category: Category(name: 'Groceries'),
     ),
   ];
 
@@ -180,7 +170,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  List<PaymentData> get paymentData {
+  List<Payment> get paymentData {
     switch (optionSelected) {
       case 'MONTH':
         return monthPayments;

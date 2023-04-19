@@ -1,25 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../utils/api/payment.dart';
 import 'no_payment_data_widget.dart';
 import 'payment_tile.dart';
 
-class PaymentData {
-  final String name;
-  final double value;
-  final DateTime? date;
-  final bool isRecurring;
-  final String? category;
-
-  PaymentData({
-    required this.name,
-    this.category,
-    required this.value,
-    this.date,
-    this.isRecurring = false,
-  });
-}
-
 class LastPaymentsSection extends StatelessWidget {
-  final List<PaymentData> data;
+  final List<Payment> data;
 
   const LastPaymentsSection({
     super.key,
