@@ -1,36 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/payment.dart';
 
-import '../home_page/components/last_payments_section.dart';
+import '../../utils/api/category.dart';
 import '../home_page/components/no_payment_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
 
 class RecurringPaymentsPage extends StatelessWidget {
   const RecurringPaymentsPage({super.key});
 
-  static List<PaymentData> payments = [
-    PaymentData(
-        name: 'Shopify', value: 25.62, isRecurring: true, category: 'Music'),
-    PaymentData(
-        name: 'Netflix',
-        value: 15.22,
-        isRecurring: true,
-        category: 'Films and Videos'),
-    PaymentData(
-        name: 'HBO',
-        value: 12.23,
-        isRecurring: true,
-        category: 'Films and Videos'),
-    PaymentData(
-        name: 'Disney+',
-        value: 25.62,
-        isRecurring: true,
-        category: 'Films and Videos'),
-    PaymentData(name: 'Gym', value: 15.22, isRecurring: true, category: 'Gym'),
-    PaymentData(
-        name: 'PrimeVideo',
-        value: 12.23,
-        isRecurring: true,
-        category: 'Films and Videos'),
+  static List<Payment> payments = [
+    Payment(
+      id: 0,
+      name: 'Test',
+      type: 'RECURRING',
+      date: DateTime.now(),
+      cost: 89.99,
+      category: Category(name: 'Groceries'),
+    ),
   ];
 
   List<Widget> _getRows() {

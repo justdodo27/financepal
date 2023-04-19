@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/date_range_picker.dart';
 
 import '../../components/appbar_bottom.dart';
+import '../../utils/api/category.dart';
+import '../../utils/api/payment.dart';
 import '../groups_page/groups_page.dart';
 import '../home_page/components/bar_chart_section.dart';
 import '../home_page/components/last_payments_section.dart';
@@ -49,18 +51,14 @@ class _ReportsPageState extends State<ReportsPage> {
   ];
 
   final todayPayments = [
-    PaymentData(
-        name: 'Biedronka groceries', value: 25.62, category: 'Groceries'),
-    PaymentData(
-        name: 'Media Expert electronics',
-        value: 15.22,
-        category: 'Electronics'),
-    PaymentData(
-        name: 'Biedronka chemicals', value: 12.23, category: 'Chemicals'),
-    PaymentData(name: 'Lidl shopping', value: 25.62, category: 'Groceries'),
-    PaymentData(name: 'Gym payment', value: 15.22, category: 'Gym'),
-    PaymentData(
-        name: 'Spotify', value: 12.23, isRecurring: true, category: 'Music'),
+    Payment(
+      id: 0,
+      name: 'Test',
+      type: 'RECURRING',
+      date: DateTime.now(),
+      cost: 89.99,
+      category: Category(name: 'Groceries'),
+    ),
   ];
 
   @override

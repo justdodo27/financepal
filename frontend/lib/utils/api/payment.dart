@@ -8,6 +8,8 @@ class Payment {
   final double cost;
   final Category category;
 
+  bool get isRecurring => type != 'BILL';
+
   Payment({
     required this.id,
     required this.name,
@@ -21,8 +23,10 @@ class Payment {
         id: json['id'],
         name: json['name'],
         type: json['type'],
-        date: json['payment_date'],
+        date: DateTime.parse(json['payment_date']),
         cost: json['cost'],
-        category: Category.fromJson(json['category']),
+        category: json['category'] != null
+            ? Category.fromJson(json['category'])
+            : Category(name: 'Other'),
       );
 }

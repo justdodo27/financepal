@@ -1,70 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/date_range_picker.dart';
-import '../home_page/components/last_payments_section.dart';
-import '../home_page/components/no_payment_data_widget.dart';
+import '../../providers/payment_provider.dart';
+import '../../utils/api/payment.dart';
 import '../home_page/components/payment_tile.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
   const PaymentHistoryPage({super.key});
-
-  static List<PaymentData> payments = [
-    PaymentData(
-        name: 'Biedronka groceries', value: 25.62, category: 'Groceries'),
-    PaymentData(
-        name: 'Media Expert electronics',
-        value: 15.22,
-        category: 'Electronics'),
-    PaymentData(
-        name: 'Biedronka chemicals', value: 12.23, category: 'Chemicals'),
-    PaymentData(name: 'Lidl shopping', value: 25.62, category: 'Groceries'),
-    PaymentData(name: 'Gym payment', value: 15.22, category: 'Gym'),
-    PaymentData(name: 'Spotify', value: 12.23, category: 'Music'),
-  ];
 
   @override
   State<PaymentHistoryPage> createState() => _PaymentHistoryPageState();
 }
 
 class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
-  DateTimeRange _dateTimeRange =
-      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  late DateTimeRange _dateTimeRange;
 
-  List<Widget> _getRows() {
-    if (PaymentHistoryPage.payments.isEmpty) {
-      return const [NoPaymentDataWidget()];
+  void fetchPayments() async {
+    try {
+      await Provider.of<PaymentProvider>(context, listen: false)
+          .getPayments(_dateTimeRange);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
     }
-    return PaymentHistoryPage.payments
-        .map((payment) => PaymentTile(payment: payment))
-        .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<PaymentProvider>(context, listen: false);
+    if (provider.range != null) {
+      _dateTimeRange = provider.range!;
+    } else {
+      final now = DateTime.now();
+      _dateTimeRange = DateTimeRange(
+        start: DateTime(now.year, now.month, now.day),
+        end: DateTime(now.year, now.month, now.day)
+            .add(const Duration(days: 1))
+            .subtract(const Duration(seconds: 1)),
+      );
+    }
+    if (provider.payments == null) fetchPayments();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return ListView(
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Column(
-              children: [
-                DateRangePicker(
-                  dateTimeRange: _dateTimeRange,
-                  onDateTimePicked: (selected) =>
-                      setState(() => _dateTimeRange = selected),
-                ),
-                ..._getRows(),
-              ],
-            ),
+      children: [
+        DateRangePicker(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          dateTimeRange: _dateTimeRange,
+          onDateTimePicked: (selected) {
+            setState(() => _dateTimeRange = selected);
+            fetchPayments();
+          },
+        ),
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
           ),
-          const SizedBox(height: 80),
-        ],
-      ),
+          elevation: 4,
+          color: Theme.of(context).colorScheme.onPrimary,
+          child: Consumer<PaymentProvider>(
+            builder: (context, provider, child) {
+              final payments = provider.payments ?? <Payment>[];
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: payments.length,
+                itemBuilder: (context, index) =>
+                    PaymentTile(payment: payments[index]),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 80),
+      ],
     );
   }
 }
