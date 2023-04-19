@@ -17,13 +17,12 @@ class _UserCategoriesPageState extends State<UserCategoriesPage> {
   void fetchCategories() async {
     final categories =
         Provider.of<CategoryProvider>(context, listen: false).categories;
-    if (categories == null) {
-      try {
-        await Provider.of<CategoryProvider>(context, listen: false)
-            .getCategories();
-      } on Exception catch (e) {
-        showExceptionSnackBar(context, e);
-      }
+    if (categories != null) return;
+    try {
+      await Provider.of<CategoryProvider>(context, listen: false)
+          .getCategories();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
     }
   }
 
@@ -45,8 +44,8 @@ class _UserCategoriesPageState extends State<UserCategoriesPage> {
           elevation: 4,
           color: Theme.of(context).colorScheme.onPrimary,
           child: Consumer<CategoryProvider>(
-            builder: (context, backendApi, child) {
-              final categories = backendApi.categories ?? <Category>[];
+            builder: (context, provider, child) {
+              final categories = provider.categories ?? <Category>[];
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
