@@ -17,6 +17,13 @@ class DateRangePicker extends StatelessWidget {
     this.width,
   });
 
+  DateTimeRange _processRange(DateTimeRange range) => DateTimeRange(
+        start: range.start,
+        end: range.end
+            .add(const Duration(days: 1))
+            .subtract(const Duration(seconds: 1)),
+      );
+
   @override
   Widget build(BuildContext context) {
     return RoundedOutlinedButton(
@@ -39,9 +46,9 @@ class DateRangePicker extends StatelessWidget {
             );
           },
         );
-
         if (selected == null) return;
-        onDateTimePicked(selected);
+        final processed = _processRange(selected);
+        onDateTimePicked(processed);
       },
       width: width ?? 100.0,
       padding: padding,
