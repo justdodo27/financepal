@@ -138,8 +138,8 @@ async def create_payment(db: AsyncSession, payment: schemas.PaymentBase):
         category_id=payment.category_id,
         user_id=payment.user_id,
         cost=payment.cost,
-        payment_date=payment_date
-        # payment_proof_id
+        payment_date=payment_date,
+        payment_proof_id=payment.payment_proof_id,
         # group_id
     )
     
@@ -156,7 +156,6 @@ async def update_payment(db: AsyncSession, payment: models.Payment, update_data:
         payment.category_id = update_data.category_id
         payment.cost = update_data.cost
         payment.payment_date = update_data.payment_date.replace(tzinfo=None)
-        # payment.payment_proof_id = 
 
         await db.commit()
         await db.refresh(payment)
@@ -169,6 +168,60 @@ async def update_payment(db: AsyncSession, payment: models.Payment, update_data:
 async def delete_payment(db: AsyncSession, payment: models.Payment):
     try:
         await db.delete(payment)
+        await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+async def create_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof):
+    try:
+        db_payment_proof = models.PaymentProof(
+            filename=payment_proof.filename,
+            url=payment_proof.url,
+            user_id=payment_proof.user_id
+        )
+
+        db.add(db_payment_proof)
+        await db.commit()
+        await db.refresh(db_payment_proof)
+        return db_payment_proof
+    except Exception as e:
+        print(e)
+        return False
+    
+async def get_payment_proof(db: AsyncSession, payment_proof_id: int):
+    q = select(models.PaymentProof).filter(models.PaymentProof.id == payment_proof_id)
+    result = await db.execute(q)
+    return result.scalars().first()
+
+async def get_user_payment_proofs(db: AsyncSession, user_id: int, start_date: Optional[datetime], end_date: Optional[datetime]):
+    q = select(models.PaymentProof).filter(
+        models.PaymentProof.user_id == user_id,
+        (models.PaymentProof.payments.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+        (models.PaymentProof.payments.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
+
+async def add_payment_to_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof, payments_ids: list[int]):
+    q = select(models.Payment).filter(models.Payment.id.in_(payments_ids))
+    result = await db.execute(q)
+    payments = result.scalars().all()
+
+    try:
+        for payment in payments:
+            payment.payment_proof_id = payment_proof.id
+        await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+async def delete_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof):
+    try:
+        await db.delete(payment_proof)
         await db.commit()
     except Exception as e:
         print(e)

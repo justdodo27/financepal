@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import schemas
@@ -12,6 +13,7 @@ from backend.dataset import generate_dataset
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="/app/backend/static"), name="static")
 
 app.include_router(users.router)
 app.include_router(categories.router)

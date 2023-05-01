@@ -43,7 +43,7 @@ class PaymentBase(BaseModel):
     user_id: Union[int, None]
     cost: float
     payment_date: datetime
-    # payment_proof_id: int
+    payment_proof_id: Union[int, None]
 
 class Payment(PaymentBase):
     id: int
@@ -51,3 +51,20 @@ class Payment(PaymentBase):
 
     class Config:
         orm_mode = True
+
+class PaymentProofBase(BaseModel):
+    filename: str
+    url: str
+    user_id: Union[int, None]
+
+class PaymentProof(PaymentProofBase):
+    id: int
+
+    class Config:
+        orm_moe = True
+
+class PaymentWithProof(Payment):
+    payment_proof: Union[PaymentProof, None]
+
+class PaymentProofPayments(PaymentProof):
+    payments: Union[list[Payment], None]

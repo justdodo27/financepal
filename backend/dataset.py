@@ -16,11 +16,11 @@ def generate_payment_name(category: str):
         return choice(['Top secret', 'Transaction', 'Bitcoin', 'New animal', 'Hitman', 'Car gasoline'])
     elif category == 'Clothes':
         return choice(['H&M', 'Pepco', 'Nike', 'Lumpex', 'Reserved', 'Supreme'])
-    elif category == 'Gym stuff':
+    elif category == 'Protein':
         return choice(['KFD protein powder', 'Black market protein powder', 'Creatine'])
     elif category == 'Shoes':
         return choice(['Nike', 'Adidas', 'New Balance', 'Cheap shoes'])
-    elif category == 'Travel':
+    elif category == 'Travels':
         return choice(['Train ticket', 'Fly ticket to Venice', 'Fly ticket to Tokyo', 'Fly ticket to Oslo', 'Fly ticket to Warsaw'])
 
 async def generate_dataset(db: AsyncSession):
@@ -69,6 +69,11 @@ async def generate_dataset(db: AsyncSession):
             await db.refresh(c1u1)
             await db.refresh(c2u1)
             await db.refresh(c3u1)
+            pp = await crud.create_payment_proof(db, schemas.PaymentProofBase(
+                filename='paragon.png',
+                url='/app/backend/static/paragon.png',
+                user_id=user.id
+            ))
             for category in [c1u1, c2u1, c3u1]:
                 await db.refresh(category)
                 for payment_count in range(10):
@@ -78,7 +83,8 @@ async def generate_dataset(db: AsyncSession):
                         category_id=category.id,
                         user_id=user.id,
                         cost=randint(10, 2137) / randint(1, 10),
-                        payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20))
+                        payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20)),
+                        payment_proof_id=pp.id
                     ))
                     await db.refresh(user)
     
