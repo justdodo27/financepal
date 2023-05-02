@@ -140,6 +140,7 @@ async def create_payment(db: AsyncSession, payment: schemas.PaymentBase):
         cost=payment.cost,
         payment_date=payment_date,
         payment_proof_id=payment.payment_proof_id,
+        renewable_id=payment.renewable_id,
         # group_id
     )
     
@@ -175,7 +176,7 @@ async def delete_payment(db: AsyncSession, payment: models.Payment):
     return True
 
 
-async def create_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof):
+async def create_payment_proof(db: AsyncSession, payment_proof: schemas.PaymentProofBase):
     try:
         db_payment_proof = models.PaymentProof(
             filename=payment_proof.filename,
@@ -223,6 +224,78 @@ async def delete_payment_proof(db: AsyncSession, payment_proof: models.PaymentPr
     try:
         await db.delete(payment_proof)
         await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+async def create_renewable(db: AsyncSession, renewable: schemas.RenewableBase):
+    payment_date = renewable.payment_date.replace(tzinfo=None)
+
+    db_renewable = models.Renewable(
+        name=renewable.name,
+        type=renewable.type,
+        category_id=renewable.category_id,
+        user_id=renewable.user_id,
+        cost=renewable.cost,
+        period=renewable.period,
+        payment_date=payment_date,
+        # group_id
+    )
+    
+    db.add(db_renewable)
+    await db.commit()
+    await db.refresh(db_renewable)
+    return db_renewable
+
+
+async def get_user_renewables(db: AsyncSession, user_id: int):
+    q = select(models.Renewable).filter(
+        models.Renewable.user_id == user_id,
+        models.Renewable.deleted_at.is_(None)
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
+
+
+async def get_user_awaiting_renewables(db: AsyncSession, start_date: Optional[datetime], end_date: Optional[datetime], renewable_id: int):
+    q = select(models.Payment).filter(
+        models.Payment.renewable_id == renewable_id,
+        (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+        (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
+
+
+async def get_renewable(db: AsyncSession, renewable_id: int):
+    q = select(models.Renewable).filter(models.Renewable.id == renewable_id, models.Renewable.deleted_at.is_(None))
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
+async def update_renewable(db: AsyncSession, renewable: models.Renewable, update_data: schemas.RenewableBase):
+    try:
+        renewable.name = update_data.name
+        renewable.type = update_data.type
+        renewable.category_id = update_data.category_id
+        renewable.cost = update_data.cost
+        renewable.period = update_data.period
+        renewable.payment_date = update_data.payment_date.replace(tzinfo=None)
+
+        await db.commit()
+        await db.refresh(renewable)
+    except Exception as e:
+        print(e)
+        return False
+    return renewable
+
+
+async def delete_renewable(db: AsyncSession, renewable: models.Renewable):
+    try:
+        renewable.deleted_at = datetime.utcnow()
+        await db.commit()
+        await db.refresh(renewable)
     except Exception as e:
         print(e)
         return False

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Union
 from datetime import datetime
 
-from backend.models import PaymentType
+from backend.models import PaymentType, PeriodType
 
 
 class Token(BaseModel):
@@ -44,6 +44,7 @@ class PaymentBase(BaseModel):
     cost: float
     payment_date: datetime
     payment_proof_id: Union[int, None]
+    renewable_id: Union[int, None]
 
 class Payment(PaymentBase):
     id: int
@@ -68,3 +69,24 @@ class PaymentWithProof(Payment):
 
 class PaymentProofPayments(PaymentProof):
     payments: Union[list[Payment], None]
+
+class RenewableBase(BaseModel):
+    name: str
+    type: PaymentType
+    category_id: Union[int, None]
+    user_id: Union[int, None]
+    cost: float
+    period: PeriodType
+    payment_date: datetime
+
+class Renewable(RenewableBase):
+    id: int
+    category: Union[Category, None]
+    payments: Union[list[Payment], None]
+
+    class Config:
+        orm_mode = True
+
+class RenewablePayment(BaseModel):
+    cost: Union[float, None]
+    payment_date: datetime

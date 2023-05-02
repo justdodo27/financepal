@@ -47,9 +47,11 @@ class Payment(Base):
     cost = sa.Column(sa.Double, nullable=False)
     payment_date = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow(), server_default=sa.sql.func.now())
     payment_proof_id = sa.Column(sa.Integer, sa.ForeignKey("payment_proofs.id"), nullable=True)
+    renewable_id = sa.Column(sa.Integer, sa.ForeignKey("renewables.id"), nullable=True)
 
     category = relationship("Category", back_populates="payments", lazy='selectin')
     payment_proof = relationship("PaymentProof", back_populates='payments', cascade='all,delete', lazy='selectin')
+    renewable = relationship("Renewable", back_populates='payments', cascade='all,delete', lazy='selectin')
 
 
 class PaymentProof(Base):
@@ -61,3 +63,26 @@ class PaymentProof(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
 
     payments = relationship("Payment", back_populates='payment_proof', cascade='all,delete', lazy='selectin')
+
+
+class PeriodType(enum.Enum):
+    YEARLY = "YEARLY"
+    MONTHLY = "MONTHLY"
+    WEEKLY = "WEEKLY"
+    DAILY = "DAILY" # may be deleted later?
+
+
+class Renewable(Base):
+    __tablename__ = "renewables"
+    id = sa.Column(sa.Integer, primary_key=True, index=True)
+    name = sa.Column(sa.String, nullable=False)
+    type = sa.Column(sa.Enum(PaymentType), nullable=False)
+    category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    cost = sa.Column(sa.Double, nullable=False)
+    period = sa.Column(sa.Enum(PeriodType), nullable=False)
+    payment_date = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow(), server_default=sa.sql.func.now())
+    deleted_at = sa.Column(sa.DateTime, nullable=True)
+
+    category = relationship("Category", back_populates=None, lazy='selectin')
+    payments = relationship("Payment", back_populates='renewable', cascade='all,delete', lazy='selectin')
