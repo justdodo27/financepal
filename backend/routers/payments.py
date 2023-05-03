@@ -1,4 +1,4 @@
-from typing import Annotated, Union, Optional
+from typing import Union, Optional
 from datetime import datetime
 import uuid
 import os
@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, UploadFile, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 import aiofiles
 
-from backend import crud, models, schemas, dependencies
+from backend import crud, schemas, dependencies
 from backend.database import get_db
 
 router = APIRouter(dependencies=[])
@@ -87,7 +87,6 @@ async def update_payments(payment_update: schemas.PaymentBase,
 
     if not (updated  := await crud.update_payment(db=db, payment=payment, update_data=payment_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")
-    print(updated)
     return updated
 
 
@@ -111,7 +110,7 @@ async def upload_payment_proof(current_user: schemas.User = Depends(dependencies
     if not file:
         return {"message": "No upload file sent"}
     
-    generated_filename = f'{current_user.username}-{uuid.uuid1()}-{file.filename}'
+    generated_filename = f'{current_user.username}-{uuid.uuid4()}-{file.filename}'
     async with aiofiles.open(f'/app/backend/static/{generated_filename}', 'wb') as out_file:
         while content := await file.read(1024):  # async read chunk
             await out_file.write(content)  # async write chunk

@@ -16,6 +16,8 @@ class User(Base):
     username = sa.Column(sa.String, unique=True, nullable=False, index=True)
 
     categories = relationship("Category", back_populates="user", lazy='selectin')
+    groups = relationship("Group", secondary='group_members', lazy='selectin')
+    owned_groups = relationship("Group", back_populates='author', lazy='selectin')
 
 
 class Category(Base):
@@ -24,9 +26,10 @@ class Category(Base):
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     category = sa.Column(sa.String, nullable=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
-    # group_id = TODO syra dodaj tu relacje do groups XD
+    group_id = sa.Column(sa.Integer, sa.ForeignKey("groups.id"))
 
     user = relationship("User", back_populates="categories", lazy='selectin')
+    group = relationship("Group", back_populates="categories", lazy='selectin')
     payments = relationship("Payment", back_populates="category", lazy='selectin')
 
 
@@ -44,6 +47,7 @@ class Payment(Base):
     type = sa.Column(sa.Enum(PaymentType), nullable=False)
     category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
     cost = sa.Column(sa.Double, nullable=False)
     payment_date = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow(), server_default=sa.sql.func.now())
     payment_proof_id = sa.Column(sa.Integer, sa.ForeignKey("payment_proofs.id"), nullable=True)
@@ -86,3 +90,22 @@ class Renewable(Base):
 
     category = relationship("Category", back_populates=None, lazy='selectin')
     payments = relationship("Payment", back_populates='renewable', cascade='all,delete', lazy='selectin')
+
+
+class GroupMember(Base):
+    __tablename__ = "group_members"
+    group_id = sa.Column(sa.Integer, sa.ForeignKey("groups.id"), primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), primary_key=True)
+
+
+class Group(Base):
+    __tablename__ = "groups"
+    id = sa.Column(sa.Integer, primary_key=True, index=True)
+    name = sa.Column(sa.String, nullable=False)
+    group_code = sa.Column(sa.String, nullable=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+
+    author = relationship("User", back_populates="owned_groups", lazy='selectin')
+    categories = relationship("Category", back_populates="group", lazy='selectin')
+    payments = relationship("Payment", back_populates=None, lazy='selectin')
+    members = relationship("User", secondary='group_members', lazy='selectin')

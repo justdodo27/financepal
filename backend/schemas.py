@@ -90,3 +90,23 @@ class Renewable(RenewableBase):
 class RenewablePayment(BaseModel):
     cost: Union[float, None]
     payment_date: datetime
+
+
+class GroupBase(BaseModel):
+    name: str
+    user_id: int
+
+class GroupUpdate(GroupBase):
+    kick_users: Union[list[int], None]
+    refresh_code: bool
+
+class Group(GroupBase):
+    id: int
+    group_code: str
+    author: Union[User, None]
+    categories: Union[list[Category], None]
+    payments: Union[list[Payment], None]
+    members: Union[list[User], None]
+
+    class Config:
+        orm_mode = True

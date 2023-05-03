@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete, or_
 import bcrypt
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from backend import models, schemas
 
@@ -12,6 +13,15 @@ async def get_user(db: AsyncSession, user_id: int):
     q = select(models.User).filter(models.User.id == user_id)
     result = await db.execute(q)
     return result.scalars().first()
+
+
+async def get_users_list(db: AsyncSession, users_ids: list[int], group_id: int):
+    q = select(models.User).filter(
+        models.User.id.in_(users_ids),
+        models.User.groups.any(models.Group.id == group_id)
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
 
 
 async def get_user_by_email(db: AsyncSession, email: str):
@@ -296,6 +306,106 @@ async def delete_renewable(db: AsyncSession, renewable: models.Renewable):
         renewable.deleted_at = datetime.utcnow()
         await db.commit()
         await db.refresh(renewable)
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+async def create_group(db: AsyncSession, group: schemas.GroupBase, group_code: str):
+    db_group = models.Group(
+        name=group.name,
+        group_code=group_code,
+        user_id=group.user_id
+    )
+
+    db.add(db_group)
+    await db.commit()
+    await db.refresh(db_group)
+    return db_group
+
+
+async def get_group(db: AsyncSession, group_id: int) -> models.Group:
+    q = select(models.Group).filter(
+        models.Group.id == group_id
+    )
+
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
+async def get_user_groups(db: AsyncSession, user: models.User):
+    q = select(models.Group).filter(
+        or_(
+            models.Group.user_id == user.id,
+            models.Group.members.any(models.User.id == user.id)
+        )
+    )
+
+    results = await db.execute(q)
+    return results.scalars().all()
+
+
+async def get_group_by_code(db: AsyncSession, group_code: str) -> models.Group:
+    q = select(models.Group).filter(
+        models.Group.group_code == group_code
+    )
+
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
+async def edit_group(db: AsyncSession, group: models.Group, updated_data: schemas.GroupBase, group_code: Union[str, None], users_to_kick: list[models.User]) -> models.Group:
+    try:
+        group.name = updated_data.name
+        if group_code:
+            group.group_code = group_code 
+        for user in users_to_kick:
+            group.members.remove(user)
+        await db.commit()
+        await db.refresh(group)
+    except Exception as e:
+        print("XD",e)
+        return False
+    return group
+
+
+async def add_to_group(db: AsyncSession, group: models.Group, user: models.User):
+    try:
+        group.members.append(user)
+
+        await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+async def remove_from_group(db: AsyncSession, group: models.Group, user: models.User):
+    try:
+        group.members.remove(user)
+
+        await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+async def delete_group(db: AsyncSession, group: models.Group):
+    try:
+        group.members.clear()
+
+        payment_proofs_ids = [ payment.payment_proof_id for payment  in group.payments if payment.payment_proof_id is not None]
+
+        q1 = delete(models.PaymentProof).filter(
+            models.PaymentProof.id.in_(payment_proofs_ids)
+        )
+        await db.execute(q1)
+        group.payments.clear()
+
+        await db.delete(group)
+        await db.commit()
     except Exception as e:
         print(e)
         return False
