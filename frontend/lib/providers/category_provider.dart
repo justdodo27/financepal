@@ -10,14 +10,14 @@ class CategoryProvider extends ChangeNotifier {
   /// List of categories obtained from the backend.
   List<Category>? categories;
 
-  void _checkIfLoggedIn() {
+  void _handleIfNotLoggedIn() {
     if (auth == null) throw Exception('User is not logged in.');
     if (!auth!.isUserLoggedIn) throw Exception('User is not logged in.');
   }
 
   /// Obtains the user's categories from backend API.
   Future<void> getCategories() async {
-    _checkIfLoggedIn();
+    _handleIfNotLoggedIn();
     try {
       categories = await auth!.apiService.getCategories(auth!.token!);
     } catch (_) {
@@ -28,7 +28,7 @@ class CategoryProvider extends ChangeNotifier {
 
   /// Adds new category.
   Future<void> addCategory(Category category) async {
-    _checkIfLoggedIn();
+    _handleIfNotLoggedIn();
     late Category created;
     try {
       created = await auth!.apiService.createCategory(auth!.token!, category);
@@ -45,7 +45,7 @@ class CategoryProvider extends ChangeNotifier {
 
   /// Edits the specified category.
   Future<void> editCategory(Category category) async {
-    _checkIfLoggedIn();
+    _handleIfNotLoggedIn();
     try {
       await auth!.apiService.updateCategory(auth!.token!, category);
     } catch (_) {
@@ -56,7 +56,7 @@ class CategoryProvider extends ChangeNotifier {
 
   /// Deletes the specified category.
   Future<void> deleteCategory(Category category) async {
-    _checkIfLoggedIn();
+    _handleIfNotLoggedIn();
     try {
       await auth!.apiService.deleteCategory(auth!.token!, category);
     } catch (_) {

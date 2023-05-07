@@ -13,14 +13,14 @@ class PaymentProvider extends ChangeNotifier {
   /// Date time rage of obtained payments.
   DateTimeRange? range;
 
-  void _checkIfLoggedIn() {
+  void _handleIfNotLoggedIn() {
     if (auth == null) throw Exception('User is not logged in.');
     if (!auth!.isUserLoggedIn) throw Exception('User is not logged in.');
   }
 
   /// Obtains the user's payments from backend API.
   Future<void> getPayments(DateTimeRange range) async {
-    _checkIfLoggedIn();
+    _handleIfNotLoggedIn();
     try {
       payments = await auth!.apiService.getPayments(auth!.token!, range);
     } catch (_) {
