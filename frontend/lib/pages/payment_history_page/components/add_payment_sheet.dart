@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/category_provider.dart';
+import 'package:frontend/utils/api/payment.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../components/category_drop_down_button.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
+import '../../../components/text_field_placeholder.dart';
+import '../../../providers/payment_provider.dart';
+import '../../../utils/api/category.dart';
 
 class AddPaymentSheet extends StatefulWidget {
   const AddPaymentSheet({
@@ -13,15 +22,40 @@ class AddPaymentSheet extends StatefulWidget {
 }
 
 class _AddPaymentSheetState extends State<AddPaymentSheet> {
+  final _name = TextEditingController();
   final _amount = TextEditingController();
-  final _category = TextEditingController();
 
-  bool _isRecurring = false;
+  bool _isInvoice = false;
+
+  late Category category;
+
+  void _handleSubmit() async {
+    if (_name.text.isEmpty) {
+      _name.text = 'Payment #${DateFormat('HHMMss').format(DateTime.now())}';
+    }
+
+    try {
+      final payment = Payment(
+        name: _name.text,
+        type: _isInvoice ? 'INVOICE' : 'BILL',
+        date: DateTime.now(),
+        cost: double.parse(_amount.text),
+        category: category,
+      );
+      await Provider.of<PaymentProvider>(context, listen: false).addPayment(
+        payment,
+      );
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   void dispose() {
+    _name.dispose();
     _amount.dispose();
-    _category.dispose();
     super.dispose();
   }
 
@@ -52,14 +86,33 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                 child: Column(
                   children: [
                     CustomTextField(
+                      controller: _name,
+                      hintText:
+                          'e.g. Payment on ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      labelText: 'Name (optional)',
+                    ),
+                    CustomTextField(
                       controller: _amount,
                       hintText: 'e.g. 21.37',
                       labelText: 'Amount',
                     ),
-                    CustomTextField(
-                      controller: _category,
-                      hintText: 'e.g. Groceries',
-                      labelText: 'Category',
+                    Consumer<CategoryProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.categories == null) {
+                          return const TextFieldPlaceholder(
+                            label: 'Category',
+                          );
+                        }
+
+                        if (provider.categories!.isEmpty) {
+                          return Container();
+                        }
+
+                        return CategoryDropDownButton(
+                          categories: provider.categories!,
+                          onSelected: (selected) => category = selected,
+                        );
+                      },
                     ),
                     const SizedBox(height: 8),
                     CheckboxListTile(
@@ -71,12 +124,11 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                       title: Text(
-                        'Recurring payment',
+                        'Invoice',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      value: _isRecurring,
-                      onChanged: (value) =>
-                          setState(() => _isRecurring = value!),
+                      value: _isInvoice,
+                      onChanged: (value) => setState(() => _isInvoice = value!),
                     ),
                     const SizedBox(height: 16),
                     RoundedOutlinedButton(
@@ -86,6 +138,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      onPressed: _handleSubmit,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Text(
@@ -93,9 +146,6 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
                     )
                   ],
                 ),

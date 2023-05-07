@@ -1,7 +1,7 @@
 import 'category.dart';
 
 class Payment {
-  final int id;
+  final int? id;
   final String name;
   final String type;
   final DateTime date;
@@ -11,7 +11,7 @@ class Payment {
   bool get isRecurring => type != 'BILL';
 
   Payment({
-    required this.id,
+    this.id,
     required this.name,
     required this.type,
     required this.date,

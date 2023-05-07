@@ -107,9 +107,9 @@ class ApiService {
   }
 
   /// Deletes the specified category.
-  Future<void> deleteCategory(String token, Category category) async {
+  Future<void> deleteCategory(String token, int id) async {
     final response = await http.delete(
-      buildUri('categories/${category.id}'),
+      buildUri('categories/$id'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -132,5 +132,37 @@ class ApiService {
 
     final data = jsonDecode(response.body);
     return List<Payment>.from(data.map((json) => Payment.fromJson(json)));
+  }
+
+  /// Creates new payment.
+  Future<Payment> createPayment(String token, Payment payment) async {
+    print(jsonEncode(<String, dynamic>{
+      'name': payment.name,
+      'type': payment.type,
+      'category_id': payment.category.id,
+      'cost': payment.cost,
+      'payment_date': payment.date.toIso8601String(),
+    }));
+
+    final response = await http.post(
+      buildUri('payments/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': payment.name,
+        'type': payment.type,
+        'category_id': payment.category.id,
+        'cost': payment.cost,
+        'payment_date': payment.date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment.');
+    }
+
+    return Payment.fromJson(jsonDecode(response.body));
   }
 }
