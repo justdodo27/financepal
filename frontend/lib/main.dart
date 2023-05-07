@@ -7,13 +7,15 @@ import 'providers/auth_provider.dart';
 import 'providers/category_provider.dart';
 import 'providers/payment_provider.dart';
 import 'themes/theme_constants.dart';
+import 'utils/api/api_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final apiService = ApiService();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProvider(create: (_) => Auth(apiService)),
         ChangeNotifierProxyProvider<Auth, CategoryProvider>(
           update: (context, auth, previousCategories) => CategoryProvider(auth),
           create: (context) => CategoryProvider(null),
