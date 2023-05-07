@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'components/add_category_sheet.dart';
-import 'components/group_categories_page.dart';
 import 'components/user_categories_page.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -28,7 +27,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           UserCategoriesPage(),
-          GroupCategoriesPage(),
+          //GroupCategoriesPage(),
         ],
       ),
       floatingActionButton: Opacity(
@@ -46,17 +45,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 color: Theme.of(context).colorScheme.tertiary,
               ),
             ),
-            const SizedBox(height: 12),
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () => _controller.animateToPage(1,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut),
-              child: Icon(
-                Icons.group,
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
-            ),
+            // TODO: Implement group categories
+            // const SizedBox(height: 12),
+            // FloatingActionButton(
+            //   heroTag: null,
+            //   onPressed: () => _controller.animateToPage(1,
+            //       duration: const Duration(milliseconds: 300),
+            //       curve: Curves.easeInOut),
+            //   child: Icon(
+            //     Icons.group,
+            //     color: Theme.of(context).colorScheme.tertiary,
+            //   ),
+            // ),
             const SizedBox(height: 12),
             FloatingActionButton(
               heroTag: null,
