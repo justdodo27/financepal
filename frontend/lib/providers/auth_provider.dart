@@ -1,16 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/api/api_settings.dart';
+import '../utils/api/api_service.dart';
 
 class Auth extends ChangeNotifier {
+  final ApiService apiService;
+
+  Auth(this.apiService);
+
   /// Token to authorize requests to the backend API.
   String? _token;
 
-   /// Saves the token to persistent storage.
+  /// Saves the token to persistent storage.
   void _saveToken(String tokenToSave) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('access_token', tokenToSave);
@@ -36,17 +37,13 @@ class Auth extends ChangeNotifier {
 
   /// Logs the user in.
   Future<void> logIn(String username, String password) async {
-    final response = await http.post(
-      ApiSettings.buildUri('token'),
-      body: {'username': username, 'password': password},
-    );
-
-    if (response.statusCode != 200) {
+    late String token;
+    try {
+      token = await apiService.getToken(username, password);
+    } catch (_) {
       throw Exception('Failed to log in.');
     }
-
-    final data = jsonDecode(response.body);
-    _saveToken(data['access_token']);
+    _saveToken(token);
   }
 
   /// Logs the user out.
@@ -59,23 +56,9 @@ class Auth extends ChangeNotifier {
 
   /// Signs the user up.
   Future<void> signUp(String email, String username, String password) async {
-    final response = await http.post(
-      ApiSettings.buildUri('users/'),
-      headers: <String, String>{'Content-Type': 'application/json'},
-      body: jsonEncode(
-        <String, String>{
-          'email': email,
-          'username': username,
-          'password': password,
-        },
-      ),
-    );
-
-    if (response.statusCode != 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      if (data.containsKey('detail')) {
-        throw Exception(data['detail']);
-      }
+    try {
+      await apiService.signUp(email, username, password);
+    } catch (_) {
       throw Exception('Failed to create an account.');
     }
   }

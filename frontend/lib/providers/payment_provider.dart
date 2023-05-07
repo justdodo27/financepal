@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:frontend/utils/api/payment.dart';
 
-import '../utils/api/api_settings.dart';
 import 'auth_provider.dart';
 
 class PaymentProvider extends ChangeNotifier {
@@ -17,21 +13,19 @@ class PaymentProvider extends ChangeNotifier {
   /// Date time rage of obtained payments.
   DateTimeRange? range;
 
+  void _checkIfLoggedIn() {
+    if (auth == null) throw Exception('User is not logged in.');
+    if (!auth!.isUserLoggedIn) throw Exception('User is not logged in.');
+  }
+
   /// Obtains the user's payments from backend API.
-  Future<void> getPayments(DateTimeRange dateTimeRange) async {
-    range = dateTimeRange;
-    final response = await http.get(
-      ApiSettings.buildUri(
-          'payments/?start_date=${range!.start.toIso8601String()}&end_date=${range!.end.toIso8601String()}'),
-      headers: <String, String>{'Authorization': 'Bearer ${auth!.token}'},
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load payments.');
+  Future<void> getPayments(DateTimeRange range) async {
+    _checkIfLoggedIn();
+    try {
+      payments = await auth!.apiService.getPayments(auth!.token!, range);
+    } catch (_) {
+      throw Exception('Failed to load the payments.');
     }
-
-    final data = jsonDecode(response.body);
-    payments = List<Payment>.from(data.map((json) => Payment.fromJson(json)));
     notifyListeners();
   }
 }
