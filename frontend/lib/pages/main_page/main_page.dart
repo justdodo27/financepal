@@ -8,9 +8,12 @@ import 'package:frontend/pages/proofs_of_payments_page/proofs_of_payments_page.d
 import 'package:frontend/pages/recurring_payments_page/recurring_payments_page.dart';
 import 'package:frontend/pages/reports_page/reports_page.dart';
 import 'package:frontend/pages/settings_page/settings_page.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/category_provider.dart';
 import '../../utils/custom_router.dart';
-import 'components/add_payment_sheet.dart';
+import '../payment_history_page/components/add_payment_sheet.dart';
 import 'components/main_drawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -24,6 +27,21 @@ class _MainPageState extends State<MainPage> {
   final _pageController = PageController();
 
   int pageSelected = 0;
+
+  void _getInitialData() async {
+    try {
+      await Provider.of<CategoryProvider>(context, listen: false)
+          .getCategories();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getInitialData();
+  }
 
   @override
   void dispose() {
