@@ -109,3 +109,14 @@ class Group(Base):
     categories = relationship("Category", back_populates="group", lazy='selectin')
     payments = relationship("Payment", back_populates=None, lazy='selectin')
     members = relationship("User", secondary='group_members', lazy='selectin')
+
+
+class Limit(Base):
+    __tablename__ = "limits"
+    id = sa.Column(sa.Integer, primary_key=True, index=True)
+    value = sa.Column(sa.Double, nullable=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
+    category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
+
+    category = relationship("Category", back_populates=None, lazy='selectin')

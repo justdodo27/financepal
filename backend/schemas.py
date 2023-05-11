@@ -110,3 +110,15 @@ class Group(GroupBase):
 
     class Config:
         orm_mode = True
+
+
+class LimitBase(BaseModel):
+    value: float
+    user_id: int
+    group_id: Union[int, None]
+    category_id: Union[int, None]
+
+
+class Limit(LimitBase):
+    id: int
+    category: Union[Category, None]
