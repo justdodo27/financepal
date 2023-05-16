@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/payment_history_page/components/add_payment_sheet.dart';
+import 'package:frontend/utils/snackbars.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../providers/payment_provider.dart';
 import '../../../utils/api/payment.dart';
 
 class PaymentTile extends StatelessWidget {
@@ -14,6 +18,17 @@ class PaymentTile extends StatelessWidget {
     this.icon = Icons.monetization_on,
     this.showDate,
   });
+
+  void deletePayment(BuildContext context) async {
+    try {
+      await Provider.of<PaymentProvider>(context, listen: false)
+          .deletePayment(payment.id!);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +121,33 @@ class PaymentTile extends StatelessWidget {
                           .secondary
                           .withOpacity(0.5),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.background,
+                            title: Text(
+                              'Are you sure you want to delete the "${payment.name}"?',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => deletePayment(context),
+                                child: Text(
+                                  'Yes',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text(
+                                  'No',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                         icon: const Icon(Icons.delete),
                         iconSize: 19,
                         color: Colors.white,
@@ -124,7 +165,21 @@ class PaymentTile extends StatelessWidget {
                           .secondary
                           .withOpacity(0.5),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () => showModalBottomSheet(
+                          context: context,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(30),
+                              topLeft: Radius.circular(30),
+                            ),
+                          ),
+                          useSafeArea: true,
+                          isScrollControlled: true,
+                          builder: (context) =>
+                              AddPaymentSheet(payment: payment),
+                        ),
                         icon: const Icon(Icons.edit),
                         iconSize: 19,
                         color: Colors.white,

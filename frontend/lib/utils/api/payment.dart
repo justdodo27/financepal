@@ -1,22 +1,24 @@
 import 'category.dart';
 
 class Payment {
-  final int id;
+  final int? id;
   final String name;
   final String type;
   final DateTime date;
   final double cost;
   final Category category;
+  final int? recurringPaymentId;
 
-  bool get isRecurring => type != 'BILL';
+  bool get isRecurring => recurringPaymentId != null;
 
   Payment({
-    required this.id,
+    this.id,
     required this.name,
     required this.type,
     required this.date,
     required this.cost,
     required this.category,
+    this.recurringPaymentId,
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(

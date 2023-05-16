@@ -19,8 +19,8 @@ class SettingsPage extends StatelessWidget {
                 .apply(color: Colors.white),
           ),
         ),
-        body: Column(
-          children: const [
+        body: const Column(
+          children: [
             DarkModeSetting(),
             AccountSetting(),
           ],

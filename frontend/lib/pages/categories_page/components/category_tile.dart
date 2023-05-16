@@ -152,8 +152,8 @@ class GroupCategoryIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         SizedBox(height: 25, width: 25),
         Positioned.fill(
           child: Align(

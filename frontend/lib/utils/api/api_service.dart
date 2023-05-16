@@ -1,6 +1,7 @@
 import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/recurring_payment.dart';
 import 'package:http/http.dart' as http;
 
 import 'category.dart';
@@ -107,9 +108,9 @@ class ApiService {
   }
 
   /// Deletes the specified category.
-  Future<void> deleteCategory(String token, Category category) async {
+  Future<void> deleteCategory(String token, int id) async {
     final response = await http.delete(
-      buildUri('categories/${category.id}'),
+      buildUri('categories/$id'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -132,5 +133,148 @@ class ApiService {
 
     final data = jsonDecode(response.body);
     return List<Payment>.from(data.map((json) => Payment.fromJson(json)));
+  }
+
+  /// Creates new payment.
+  Future<Payment> createPayment(String token, Payment payment) async {
+    final response = await http.post(
+      buildUri('payments/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': payment.name,
+        'type': payment.type,
+        'category_id': payment.category.id,
+        'cost': payment.cost,
+        'payment_date': payment.date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment.');
+    }
+
+    return Payment.fromJson(jsonDecode(response.body));
+  }
+
+  /// Updates the specified payment.
+  Future<void> updatePayment(String token, Payment payment) async {
+    final response = await http.put(
+      buildUri('payments/${payment.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': payment.name,
+          'type': payment.type,
+          'category_id': payment.category.id,
+          'user_id': 1,
+          'cost': payment.cost,
+          'payment_date': payment.date.toIso8601String(),
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to edit payment.');
+    }
+  }
+
+  /// Deltes the specified payment.
+  Future<void> deletePayment(String token, int id) async {
+    final response = await http.delete(
+      buildUri('payments/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete payment.');
+    }
+  }
+
+  /// Obtains the user's recurring payments from backend API.
+  Future<List<RecurringPayment>> getRecurringPayments(String token) async {
+    final response = await http.get(
+      buildUri('renewables/awaiting/'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load payments.');
+    }
+
+    final data = jsonDecode(response.body);
+    return List<RecurringPayment>.from(
+        data.map((json) => RecurringPayment.fromJson(json)));
+  }
+
+  /// Creates new recurring payment.
+  Future<RecurringPayment> createRecurringPayment(
+      String token, RecurringPayment recurringPayment) async {
+    final response = await http.post(
+      buildUri('renewables/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': recurringPayment.name,
+        'type': recurringPayment.type,
+        'category_id': recurringPayment.category.id,
+        'user_id': 1,
+        'cost': recurringPayment.cost,
+        'period': recurringPayment.frequency,
+        'payment_date': recurringPayment.paymentDate.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment.');
+    }
+
+    return RecurringPayment.fromJson(jsonDecode(response.body));
+  }
+
+  /// Updates the specified recurring payment.
+  Future<void> updateRecurringPayment(
+      String token, RecurringPayment recurringPayment) async {
+    final response = await http.put(
+      buildUri('renewables/${recurringPayment.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': recurringPayment.name,
+          'type': recurringPayment.type,
+          'category_id': recurringPayment.category.id,
+          'user_id': 1,
+          'cost': recurringPayment.cost,
+          'period': recurringPayment.frequency,
+          'payment_date': recurringPayment.paymentDate.toIso8601String(),
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to edit recurring payment.');
+    }
+  }
+
+  /// Deltes the specified recurring payment.
+  Future<void> deleteRecurringPayment(String token, int id) async {
+    final response = await http.delete(
+      buildUri('renewables/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete recurring payment.');
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../components/date_range_picker.dart';
 import '../../providers/payment_provider.dart';
 import '../../utils/api/payment.dart';
+import '../home_page/components/no_payment_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
@@ -66,6 +67,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           child: Consumer<PaymentProvider>(
             builder: (context, provider, child) {
               final payments = provider.payments ?? <Payment>[];
+              if (payments.isEmpty) return const NoPaymentDataWidget();
+
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),

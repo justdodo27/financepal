@@ -13,21 +13,24 @@ class NoPaymentDataWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(
-              Icons.monetization_on,
-              color: Colors.redAccent,
-            ),
-            Text('No payments to display'),
-            Icon(
-              Icons.close,
-              color: Colors.redAccent,
-            ),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Icon(
+                Icons.monetization_on,
+                color: Colors.redAccent,
+              ),
+              Text('No payments to display'),
+              Icon(
+                Icons.close,
+                color: Colors.redAccent,
+              ),
+            ],
+          ),
         ),
       ),
     );
