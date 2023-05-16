@@ -38,5 +38,39 @@ class RecurringPaymentProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
-  
+
+  /// Updates the recurring payment.
+  Future<void> updateRecurringPayment(RecurringPayment recurringPayment) async {
+    handleIfNotLoggedIn(auth);
+    try {
+      await auth!.apiService.updateRecurringPayment(
+        auth!.token!,
+        recurringPayment,
+      );
+      if (recurringPayments == null) return;
+      final index = recurringPayments!.indexWhere(
+        (element) => element.id == recurringPayment.id,
+      );
+      if (index == -1) return;
+      recurringPayments![index] = recurringPayment;
+    } catch (_) {
+      throw Exception('Failed to update the recurring payment.');
+    }
+    notifyListeners();
+  }
+
+  /// Deletes the recurring payment.
+  Future<void> deleteRecurringPayment(int id) async {
+    handleIfNotLoggedIn(auth);
+    try {
+      await auth!.apiService.deleteRecurringPayment(auth!.token!, id);
+      if (recurringPayments == null) return;
+      recurringPayments!.removeWhere(
+        (element) => element.id == id,
+      );
+    } catch (_) {
+      throw Exception('Failed to delete the recurring payment.');
+    }
+    notifyListeners();
+  }
 }

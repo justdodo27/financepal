@@ -238,4 +238,43 @@ class ApiService {
 
     return RecurringPayment.fromJson(jsonDecode(response.body));
   }
+
+  /// Updates the specified recurring payment.
+  Future<void> updateRecurringPayment(
+      String token, RecurringPayment recurringPayment) async {
+    final response = await http.put(
+      buildUri('renewables/${recurringPayment.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': recurringPayment.name,
+          'type': recurringPayment.type,
+          'category_id': recurringPayment.category.id,
+          'user_id': 1,
+          'cost': recurringPayment.cost,
+          'period': recurringPayment.frequency,
+          'payment_date': recurringPayment.paymentDate.toIso8601String(),
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to edit recurring payment.');
+    }
+  }
+
+  /// Deltes the specified recurring payment.
+  Future<void> deleteRecurringPayment(String token, int id) async {
+    final response = await http.delete(
+      buildUri('renewables/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete recurring payment.');
+    }
+  }
 }

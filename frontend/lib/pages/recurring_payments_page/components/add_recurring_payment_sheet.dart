@@ -56,12 +56,35 @@ class _AddRecurringPaymentSheetState extends State<AddRecurringPaymentSheet> {
     }
   }
 
-  void _handleSubmit() {
-    if (widget.payment == null) {
-      createPayment();
-    } else {
-      // updatePayment();
+  Future<void> updatePayment() async {
+    if (_name.text.isEmpty) {
+      _name.text = 'Payment #${DateFormat('HHMMss').format(DateTime.now())}';
     }
+
+    try {
+      final payment = RecurringPayment(
+        id: widget.payment!.id,
+        name: _name.text,
+        type: _isInvoice ? 'INVOICE' : 'BILL',
+        cost: double.parse(_amount.text),
+        category: category,
+        frequency: frequency.toUpperCase(),
+        paymentDate: date,
+      );
+      await Provider.of<RecurringPaymentProvider>(context, listen: false)
+          .updateRecurringPayment(payment);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _handleSubmit() async {
+    if (widget.payment == null) {
+      return await createPayment();
+    }
+    return await updatePayment();
   }
 
   @override

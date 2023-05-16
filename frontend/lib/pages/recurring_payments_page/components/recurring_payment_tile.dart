@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
+import 'package:provider/provider.dart';
 
+import '../../../providers/recurring_payment_provider.dart';
 import '../../../utils/api/recurring_payment.dart';
+import '../../../utils/snackbars.dart';
 import 'add_recurring_payment_sheet.dart';
 
 class RecurringPaymentTile extends StatelessWidget {
@@ -11,6 +14,16 @@ class RecurringPaymentTile extends StatelessWidget {
     super.key,
     required this.recurringPayment,
   });
+
+  void deleteRecurringPayment(BuildContext context) {
+    try {
+      Provider.of<RecurringPaymentProvider>(context, listen: false)
+          .deleteRecurringPayment(recurringPayment.id!);
+      Navigator.of(context).pop();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +144,7 @@ class RecurringPaymentTile extends StatelessWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () => deleteRecurringPayment(context),
                               child: Text(
                                 'Yes',
                                 style: Theme.of(context).textTheme.bodySmall,
