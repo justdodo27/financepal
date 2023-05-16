@@ -1,6 +1,7 @@
 import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/recurring_payment.dart';
 import 'package:http/http.dart' as http;
 
 import 'category.dart';
@@ -193,5 +194,48 @@ class ApiService {
     if (response.statusCode != 200) {
       throw Exception('Failed to delete payment.');
     }
+  }
+
+  /// Obtains the user's recurring payments from backend API.
+  Future<List<RecurringPayment>> getRecurringPayments(String token) async {
+    final response = await http.get(
+      buildUri('renewables/awaiting/'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load payments.');
+    }
+
+    final data = jsonDecode(response.body);
+    return List<RecurringPayment>.from(
+        data.map((json) => RecurringPayment.fromJson(json)));
+  }
+
+  /// Creates new recurring payment.
+  Future<RecurringPayment> createRecurringPayment(
+      String token, RecurringPayment recurringPayment) async {
+    final response = await http.post(
+      buildUri('renewables/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': recurringPayment.name,
+        'type': recurringPayment.type,
+        'category_id': recurringPayment.category.id,
+        'user_id': 1,
+        'cost': recurringPayment.cost,
+        'period': recurringPayment.frequency,
+        'payment_date': recurringPayment.paymentDate.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment.');
+    }
+
+    return RecurringPayment.fromJson(jsonDecode(response.body));
   }
 }
