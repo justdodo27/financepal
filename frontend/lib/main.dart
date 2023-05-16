@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/recurring_payment_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,11 @@ void main() {
         ChangeNotifierProxyProvider<Auth, PaymentProvider>(
           update: (context, auth, previousCategories) => PaymentProvider(auth),
           create: (context) => PaymentProvider(null),
+        ),
+        ChangeNotifierProxyProvider<Auth, RecurringPaymentProvider>(
+          update: (context, auth, previousCategories) =>
+              RecurringPaymentProvider(auth),
+          create: (context) => RecurringPaymentProvider(null),
         ),
       ],
       child: const MyApp(),
