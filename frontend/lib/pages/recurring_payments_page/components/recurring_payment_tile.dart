@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/rounded_outlined_button.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/recurring_payment_provider.dart';
@@ -23,6 +24,16 @@ class RecurringPaymentTile extends StatelessWidget {
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
     }
+  }
+
+  void payTheBill(BuildContext context) {
+    try {
+      Provider.of<RecurringPaymentProvider>(context, listen: false)
+          .payTheBill(recurringPayment);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+    showSuccessSnackBar(context, 'Payment successfully saved!');
   }
 
   @override
@@ -106,7 +117,10 @@ class RecurringPaymentTile extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                'N/A',
+                recurringPayment.lastPaymentDate != null
+                    ? DateFormat('dd/MM/yyyy')
+                        .format(recurringPayment.lastPaymentDate!)
+                    : 'N/A',
                 style: Theme.of(context).textTheme.bodySmall,
               )
             ],
@@ -122,7 +136,7 @@ class RecurringPaymentTile extends StatelessWidget {
                   'Pay the bill',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                onPressed: () {},
+                onPressed: () => payTheBill(context),
               ),
               Row(
                 children: [

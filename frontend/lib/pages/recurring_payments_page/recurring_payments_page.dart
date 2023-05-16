@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/recurring_payments_page/components/add_recurring_payment_sheet.dart';
 import 'package:frontend/utils/api/payment.dart';
-import 'package:frontend/utils/api/recurring_payment.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/recurring_payment_provider.dart';
@@ -64,9 +63,18 @@ class _RecurringPaymentsPageState extends State<RecurringPaymentsPage> {
             color: Theme.of(context).colorScheme.onPrimary,
             child: Consumer<RecurringPaymentProvider>(
               builder: (context, provider, child) {
-                final recurringPayments =
-                    provider.recurringPayments ?? <RecurringPayment>[];
+                final recurringPayments = provider.recurringPayments;
 
+                if (recurringPayments == null) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.85,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    ),
+                  );
+                }
+                
                 if (recurringPayments.isEmpty) {
                   return const NoPaymentDataWidget();
                 }
