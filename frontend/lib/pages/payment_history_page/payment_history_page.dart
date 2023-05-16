@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../components/date_range_picker.dart';
 import '../../providers/payment_provider.dart';
-import '../../utils/api/payment.dart';
 import '../home_page/components/no_payment_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
 
@@ -66,7 +65,18 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           color: Theme.of(context).colorScheme.onPrimary,
           child: Consumer<PaymentProvider>(
             builder: (context, provider, child) {
-              final payments = provider.payments ?? <Payment>[];
+              final payments = provider.payments;
+
+              if (payments == null) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.85,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.tertiary),
+                  ),
+                );
+              }
+
               if (payments.isEmpty) return const NoPaymentDataWidget();
 
               return ListView.builder(
