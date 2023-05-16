@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/rounded_outlined_button.dart';
 
 import '../../../utils/api/recurring_payment.dart';
+import 'add_recurring_payment_sheet.dart';
 
 class RecurringPaymentTile extends StatelessWidget {
   final RecurringPayment recurringPayment;
@@ -45,6 +47,20 @@ class RecurringPaymentTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
+                'Amount',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                '${recurringPayment.cost}',
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
                 'Payment date:',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -52,6 +68,124 @@ class RecurringPaymentTile extends StatelessWidget {
                 recurringPayment.date,
                 style: Theme.of(context).textTheme.bodySmall,
               )
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Category',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                recurringPayment.category.name,
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Last payment date:',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                'N/A',
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RoundedOutlinedButton(
+                padding: EdgeInsets.zero,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                child: Text(
+                  'Pay the bill',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                onPressed: () {},
+              ),
+              Row(
+                children: [
+                  CircleAvatar(
+                    maxRadius: 18,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.5),
+                    child: IconButton(
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
+                          title: Text(
+                            'Are you sure you want to delete the "${recurringPayment.name}"?',
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                'Yes',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text(
+                                'No',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      icon: const Icon(Icons.delete),
+                      iconSize: 19,
+                      color: Colors.white,
+                      splashColor: Theme.of(context).colorScheme.tertiary,
+                      splashRadius: 25,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    maxRadius: 18,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.5),
+                    child: IconButton(
+                      onPressed: () => showModalBottomSheet(
+                        context: context,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(30),
+                            topLeft: Radius.circular(30),
+                          ),
+                        ),
+                        useSafeArea: true,
+                        isScrollControlled: true,
+                        builder: (context) =>
+                            AddRecurringPaymentSheet(payment: recurringPayment),
+                      ),
+                      icon: const Icon(Icons.edit),
+                      iconSize: 19,
+                      color: Colors.white,
+                      splashColor: Theme.of(context).colorScheme.tertiary,
+                      splashRadius: 25,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ],

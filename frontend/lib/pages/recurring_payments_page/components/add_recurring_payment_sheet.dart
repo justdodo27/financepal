@@ -65,6 +65,19 @@ class _AddRecurringPaymentSheetState extends State<AddRecurringPaymentSheet> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.payment != null) {
+      _name.text = widget.payment!.name;
+      _amount.text = widget.payment!.cost.toString();
+      _isInvoice = widget.payment!.type == 'INVOICE';
+      category = widget.payment!.category;
+      frequency = widget.payment!.frequency;
+      date = widget.payment!.paymentDate;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),

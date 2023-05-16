@@ -29,7 +29,9 @@ class _FrequencyDropDownButtonState extends State<FrequencyDropDownButton> {
   void initState() {
     super.initState();
     if (widget.selected != null) {
-      selectedFrequency = widget.selected!;
+      selectedFrequency = frequencies.firstWhere(
+        (freq) => freq.toUpperCase() == widget.selected,
+      );
     } else {
       selectedFrequency = frequencies.first;
     }
