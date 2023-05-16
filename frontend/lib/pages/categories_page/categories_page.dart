@@ -35,17 +35,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () => _controller.animateToPage(0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut),
-              child: Icon(
-                Icons.person,
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
-            ),
             // TODO: Implement group categories
+
+            // FloatingActionButton(
+            //   heroTag: null,
+            //   onPressed: () => _controller.animateToPage(0,
+            //       duration: const Duration(milliseconds: 300),
+            //       curve: Curves.easeInOut),
+            //   child: Icon(
+            //     Icons.person,
+            //     color: Theme.of(context).colorScheme.tertiary,
+            //   ),
+            // ),
             // const SizedBox(height: 12),
             // FloatingActionButton(
             //   heroTag: null,
@@ -84,4 +85,3 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 }
-

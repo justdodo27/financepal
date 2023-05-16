@@ -39,4 +39,31 @@ class PaymentProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// Updates the specified payment.
+  Future<void> updatePayment(Payment payment) async {
+    handleIfNotLoggedIn(auth);
+    try {
+      await auth!.apiService.updatePayment(auth!.token!, payment);
+      if (payments == null) return;
+      final index = payments!.indexWhere((element) => element.id == payment.id);
+      payments![index] = payment;
+    } catch (_) {
+      throw Exception('Failed to update the payment.');
+    }
+    notifyListeners();
+  }
+
+  /// Deletes the specified payment.
+  Future<void> deletePayment(int id) async {
+    handleIfNotLoggedIn(auth);
+    try {
+      await auth!.apiService.deletePayment(auth!.token!, id);
+      if (payments == null) return;
+      payments!.removeWhere((element) => element.id == id);
+    } catch (_) {
+      throw Exception('Failed to delete the payment.');
+    }
+    notifyListeners();
+  }
 }

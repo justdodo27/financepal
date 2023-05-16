@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../utils/api/category.dart';
 
 class CategoryDropDownButton extends StatefulWidget {
+  final Category? selected;
   final List<Category> categories;
   final Function(Category selected) onSelected;
 
   const CategoryDropDownButton({
     super.key,
+    this.selected,
     required this.categories,
     required this.onSelected,
   });
@@ -22,7 +24,13 @@ class _CategoryDropDownButtonState extends State<CategoryDropDownButton> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = widget.categories.first;
+    if (widget.selected != null) {
+      selectedCategory = widget.categories.firstWhere(
+        (category) => category.id == widget.selected!.id,
+      );
+    } else {
+      selectedCategory = widget.categories.first;
+    }
     widget.onSelected(selectedCategory);
   }
 

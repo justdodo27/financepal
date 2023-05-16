@@ -13,8 +13,11 @@ import '../../../providers/payment_provider.dart';
 import '../../../utils/api/category.dart';
 
 class AddPaymentSheet extends StatefulWidget {
+  final Payment? payment;
+
   const AddPaymentSheet({
     super.key,
+    this.payment,
   });
 
   @override
@@ -29,7 +32,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
 
   late Category category;
 
-  void _handleSubmit() async {
+  Future<void> createPayment() async {
     if (_name.text.isEmpty) {
       _name.text = 'Payment #${DateFormat('HHMMss').format(DateTime.now())}';
     }
@@ -42,13 +45,51 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
         cost: double.parse(_amount.text),
         category: category,
       );
-      await Provider.of<PaymentProvider>(context, listen: false).addPayment(
-        payment,
-      );
+      await Provider.of<PaymentProvider>(context, listen: false)
+          .addPayment(payment);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
     } finally {
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> updatePayment() async {
+    if (widget.payment == null) return;
+    final payment = Payment(
+      id: widget.payment!.id,
+      name: _name.text,
+      type: _isInvoice ? 'INVOICE' : 'BILL',
+      date: widget.payment!.date,
+      cost: double.parse(_amount.text),
+      category: category,
+    );
+    
+    try {
+      await Provider.of<PaymentProvider>(context, listen: false)
+          .updatePayment(payment);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _handleSubmit() async {
+    if (widget.payment == null) {
+      return await createPayment();
+    }
+    return await updatePayment();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.payment != null) {
+      _name.text = widget.payment!.name;
+      _amount.text = widget.payment!.cost.toString();
+      _isInvoice = widget.payment!.type == 'INVOICE';
+      category = widget.payment!.category;
     }
   }
 
@@ -109,6 +150,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                         }
 
                         return CategoryDropDownButton(
+                          selected: widget.payment?.category,
                           categories: provider.categories!,
                           onSelected: (selected) => category = selected,
                         );

@@ -157,4 +157,41 @@ class ApiService {
 
     return Payment.fromJson(jsonDecode(response.body));
   }
+
+  /// Updates the specified payment.
+  Future<void> updatePayment(String token, Payment payment) async {
+    final response = await http.put(
+      buildUri('payments/${payment.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': payment.name,
+          'type': payment.type,
+          'category_id': payment.category.id,
+          'user_id': 1,
+          'cost': payment.cost,
+          'payment_date': payment.date.toIso8601String(),
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to edit payment.');
+    }
+  }
+
+  /// Deltes the specified payment.
+  Future<void> deletePayment(String token, int id) async {
+    final response = await http.delete(
+      buildUri('payments/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete payment.');
+    }
+  }
 }
