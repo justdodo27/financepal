@@ -1,13 +1,9 @@
-from typing import Annotated, Union, Optional
-from datetime import datetime
 import uuid
-import os
 
-from fastapi import APIRouter, Depends, HTTPException, Path, UploadFile, Request
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.ext.asyncio import AsyncSession
-import aiofiles
 
-from backend import crud, models, schemas, dependencies
+from backend import crud, schemas, dependencies
 from backend.database import get_db
 
 router = APIRouter(dependencies=[])
@@ -34,6 +30,19 @@ async def get_user_groups_list(current_user: schemas.User = Depends(dependencies
     groups = await crud.get_user_groups(db, current_user)
 
     return groups
+
+
+@router.get("/groups/{group_id}/limits/", response_model=list[schemas.Limit])
+async def get_group_limits_list(current_user: schemas.User = Depends(dependencies.get_current_user),
+                                group_id: int = Path(title="The ID of the group to get"),
+                                db: AsyncSession = Depends(get_db)):
+    if not (group := await crud.get_group(db, group_id)):
+        raise HTTPException(status_code=404, detail=f"Group doesn't exist")
+    if current_user not in group.members and current_user.id != group.user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    limits = await crud.get_group_limits(db, group_id)
+
+    return limits
 
 
 @router.put("/groups/join/{group_code}", tags=["groups"])
@@ -141,7 +150,7 @@ async def update_group(group_data: schemas.GroupUpdate,
     raise HTTPException(status_code=500, detail=f"Error while updating group")
 
 
-@router.delete("/groups/{group_id}", tags=["groups"])
+@router.delete("/groups/{group_id}/", tags=["groups"])
 async def delete_group(current_user: schemas.User = Depends(dependencies.get_current_user),
                        group_id: int = Path(title="The ID of the group to get"),
                        db: AsyncSession = Depends(get_db)):

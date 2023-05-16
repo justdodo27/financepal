@@ -365,7 +365,6 @@ async def edit_group(db: AsyncSession, group: models.Group, updated_data: schema
         await db.commit()
         await db.refresh(group)
     except Exception as e:
-        print("XD",e)
         return False
     return group
 
@@ -405,6 +404,69 @@ async def delete_group(db: AsyncSession, group: models.Group):
         group.payments.clear()
 
         await db.delete(group)
+        await db.commit()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+async def create_limit(db: AsyncSession, limit: schemas.LimitBase):
+    db_limit = models.Limit(
+        value=limit.value,
+        user_id=limit.user_id,
+        group_id=limit.group_id,
+        category_id=limit.category_id
+    )
+
+    db.add(db_limit)
+    await db.commit()
+    await db.refresh(db_limit)
+    return db_limit
+
+
+async def get_limit(db: AsyncSession, limit_id: int):
+    q = select(models.Limit).filter(
+        models.Limit.id == limit_id
+    )
+
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
+async def get_user_limits(db: AsyncSession, user_id: int):
+    q = select(models.Limit).filter(
+        models.Limit.user_id == user_id,
+        models.Limit.group_id == None
+    )
+
+    result = await db.execute(q)
+    return result.scalars().all()
+
+
+async def get_group_limits(db: AsyncSession, group_id: int):
+    q = select(models.Limit).filter(
+        models.Limit.group_id == group_id
+    )
+
+    result = await db.execute(q)
+    return result.scalars().all()
+
+
+async def update_limit(db: AsyncSession, limit: models.Limit, updated_data: schemas.LimitBase):
+    try:
+        limit.value = updated_data.value
+        limit.category_id = updated_data.category_id
+        await db.commit()
+        await db.refresh(limit)
+    except Exception as e:
+        return False
+    return limit
+
+
+async def remove_limit(db: AsyncSession, limit: models.Limit):
+    try:
+        await db.delete(limit)
         await db.commit()
     except Exception as e:
         print(e)

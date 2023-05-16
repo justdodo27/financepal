@@ -26,13 +26,13 @@ final textTheme = TextTheme(
 );
 
 const lightColorScheme = ColorScheme.light(
-  primary: Colors.white,
-  onPrimary: Colors.white,
-  secondary: Color.fromARGB(255, 250, 250, 250),
-  onSecondary: Color.fromARGB(255, 230, 230, 230),
-  background: Color(0xff6200ee),
-  onBackground: Color.fromARGB(255, 109, 25, 254),
-  tertiary: Color.fromARGB(255, 134, 178, 255),
+  primary: Color.fromARGB(255, 255, 255, 255),
+  onPrimary: Color.fromARGB(255, 103, 151, 238), 
+  secondary: Color.fromARGB(255, 255, 255, 255), 
+  onSecondary: Color.fromARGB(255, 235, 228, 228),
+  background: Color.fromARGB(255, 55, 89, 201),
+  onBackground: Color.fromARGB(255, 103, 151, 238), 
+  tertiary: Color.fromARGB(255, 55, 57, 158),
 );
 
 const darkColorScheme = ColorScheme.dark(
