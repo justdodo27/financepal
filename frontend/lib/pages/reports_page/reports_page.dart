@@ -53,11 +53,35 @@ class _ReportsPageState extends State<ReportsPage> {
   final todayPayments = [
     Payment(
       id: 0,
-      name: 'Test',
-      type: 'RECURRING',
+      name: 'Groceries',
+      type: 'BILL',
       date: DateTime.now(),
       cost: 89.99,
       category: Category(name: 'Groceries'),
+    ),
+    Payment(
+      id: 1,
+      name: 'Gym',
+      type: 'RECURRING',
+      date: DateTime.now(),
+      cost: 15.99,
+      category: Category(name: 'Sport'),
+    ),
+    Payment(
+      id: 2,
+      name: 'Internet bill',
+      type: 'RECURRING',
+      date: DateTime.now(),
+      cost: 59.99,
+      category: Category(name: 'Internet'),
+    ),
+    Payment(
+      id: 3,
+      name: 'Batteries',
+      type: 'RECURRING',
+      date: DateTime.now(),
+      cost: 19.99,
+      category: Category(name: 'Electornics'),
     ),
   ];
 
