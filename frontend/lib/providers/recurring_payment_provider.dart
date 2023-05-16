@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/payment.dart';
+import 'package:intl/intl.dart';
 
 import '../utils/api/recurring_payment.dart';
 import '../utils/helpers.dart';
@@ -70,6 +72,26 @@ class RecurringPaymentProvider extends ChangeNotifier {
       );
     } catch (_) {
       throw Exception('Failed to delete the recurring payment.');
+    }
+    notifyListeners();
+  }
+
+  /// Pays the bill for the recurring payment.
+  Future<void> payTheBill(RecurringPayment recurringPayment) async {
+    handleIfNotLoggedIn(auth);
+    try {
+      final payment = Payment(
+        name:
+            '${recurringPayment.name} payment on ${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
+        type: recurringPayment.type,
+        date: DateTime.now(),
+        cost: recurringPayment.cost,
+        category: recurringPayment.category,
+      );
+      await auth!.apiService.createPayment(auth!.token!, payment);
+      recurringPayment.lastPaymentDate = DateTime.now();
+    } catch (_) {
+      throw Exception('Failed to pay the bill.');
     }
     notifyListeners();
   }

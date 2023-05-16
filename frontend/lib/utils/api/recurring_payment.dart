@@ -1,5 +1,4 @@
 import 'package:frontend/utils/api/category.dart';
-import 'package:frontend/utils/api/payment.dart';
 
 class RecurringPayment {
   final int? id;
@@ -9,7 +8,7 @@ class RecurringPayment {
   final double cost;
   final String frequency;
   final DateTime paymentDate;
-  final List<Payment>? payments;
+  DateTime? lastPaymentDate;
 
   String get date {
     switch (frequency) {
@@ -32,7 +31,6 @@ class RecurringPayment {
     required this.cost,
     required this.frequency,
     required this.paymentDate,
-    this.payments = const [],
   });
 
   factory RecurringPayment.fromJson(Map<String, dynamic> json) =>
@@ -46,9 +44,8 @@ class RecurringPayment {
         cost: json['cost'],
         frequency: json['period'],
         paymentDate: DateTime.parse(json['payment_date']),
-        payments: json['payments'] != null
-            ? List<Payment>.from(
-                json['payments'].map((payment) => Payment.fromJson(payment)))
-            : [],
+        // lastPaymentDate: json['last_payment_date'] != null
+        //     ? DateTime.parse(json['last_payment_date'])
+        //     : null,
       );
 }
