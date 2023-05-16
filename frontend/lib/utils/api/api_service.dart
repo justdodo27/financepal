@@ -136,14 +136,6 @@ class ApiService {
 
   /// Creates new payment.
   Future<Payment> createPayment(String token, Payment payment) async {
-    print(jsonEncode(<String, dynamic>{
-      'name': payment.name,
-      'type': payment.type,
-      'category_id': payment.category.id,
-      'cost': payment.cost,
-      'payment_date': payment.date.toIso8601String(),
-    }));
-
     final response = await http.post(
       buildUri('payments/'),
       headers: <String, String>{

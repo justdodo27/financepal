@@ -15,9 +15,9 @@ class NoPaymentDataWidget extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
+          children: [
             Icon(
               Icons.monetization_on,
               color: Colors.redAccent,
