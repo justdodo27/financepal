@@ -7,8 +7,9 @@ class Payment {
   final DateTime date;
   final double cost;
   final Category category;
+  final int? recurringPaymentId;
 
-  bool get isRecurring => type != 'BILL';
+  bool get isRecurring => recurringPaymentId != null;
 
   Payment({
     this.id,
@@ -17,6 +18,7 @@ class Payment {
     required this.date,
     required this.cost,
     required this.category,
+    this.recurringPaymentId,
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(

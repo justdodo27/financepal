@@ -116,7 +116,7 @@ class _MainPageState extends State<MainPage> {
             NotificationsPage(),
           ],
         ),
-        floatingActionButton: [0, 1, 2].contains(pageSelected)
+        floatingActionButton: [0, 1].contains(pageSelected)
             ? Opacity(
                 opacity: 0.85,
                 child: FloatingActionButton(
