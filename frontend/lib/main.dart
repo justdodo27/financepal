@@ -48,27 +48,27 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'FinancePal',
           theme: ThemeData(
-            splashColor: Colors.blue,
+            appBarTheme: AppBarTheme(
+              backgroundColor: lightColorScheme.background,
+            ),
+            shadowColor: Colors.grey,
             brightness: Brightness.light,
             primarySwatch: Colors.blue,
             scaffoldBackgroundColor: Colors.white,
             textTheme: textTheme.apply(
                 bodyColor: Colors.black, displayColor: Colors.black),
             colorScheme: lightColorScheme,
-            appBarTheme: AppBarTheme(
-              backgroundColor: lightColorScheme.background,
-            ),
           ),
           darkTheme: ThemeData(
+            appBarTheme: AppBarTheme(
+              backgroundColor: darkColorScheme.background,
+            ),
             brightness: Brightness.dark,
             primarySwatch: Colors.purple,
             scaffoldBackgroundColor: const Color(0xff121212),
             textTheme: textTheme.apply(
                 bodyColor: Colors.white, displayColor: Colors.white),
             colorScheme: darkColorScheme,
-            appBarTheme: AppBarTheme(
-              backgroundColor: darkColorScheme.background,
-            ),
           ),
           themeMode: themeManager.themeMode,
           debugShowCheckedModeBanner: false,

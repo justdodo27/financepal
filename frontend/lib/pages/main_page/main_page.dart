@@ -12,6 +12,7 @@ import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/category_provider.dart';
+import '../../themes/theme_manager.dart';
 import '../../utils/custom_router.dart';
 import '../payment_history_page/components/add_payment_sheet.dart';
 import 'components/main_drawer.dart';
@@ -75,24 +76,45 @@ class _MainPageState extends State<MainPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .displayMedium!
-                .apply(color: Colors.white),
+          leading: Builder(
+            builder: (context) => IconButton(
+              splashRadius: 25,
+              icon: Consumer<ThemeManager>(
+                builder: (context, theme, child) => Icon(
+                  Icons.menu,
+                  color: theme.isDark ? Colors.white : Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            ),
+          ),
+          title: Consumer<ThemeManager>(
+            builder: (context, theme, child) => Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .apply(color: theme.isDark ? Colors.white : Colors.black),
+            ),
           ),
           elevation: 0,
           actions: [
-            IconButton(
-              splashRadius: 25,
-              icon: const Icon(Icons.settings),
-              onPressed: () => CustomRouter.push(
-                context: context,
-                page: const SettingsPage(),
-                animation: RouterAnimation.rightToLeft,
+            Consumer<ThemeManager>(
+              builder: (context, theme, child) => IconButton(
+                splashRadius: 25,
+                icon: Icon(
+                  Icons.settings,
+                  color: theme.isDark ? Colors.white : Colors.black,
+                ),
+                onPressed: () => CustomRouter.push(
+                  context: context,
+                  page: const SettingsPage(),
+                  animation: RouterAnimation.rightToLeft,
+                ),
               ),
-            )
+            ),
           ],
         ),
         drawer: MainDrawer(
