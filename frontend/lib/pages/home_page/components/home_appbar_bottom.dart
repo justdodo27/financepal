@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/appbar_bottom.dart';
+import 'package:provider/provider.dart';
 
 import '../../../components/rounded_outlined_button.dart';
+import '../../../themes/theme_manager.dart';
 
 class HomeAppBarBottom extends StatefulWidget {
   final double height;
@@ -51,59 +53,66 @@ class _AppBarBottomState extends State<HomeAppBarBottom> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Text(
-                'Your spendings',
-                style: Theme.of(context)
-                    .textTheme
-                    .apply(bodyColor: Colors.white)
-                    .bodyLarge,
-              ),
-              Text(
-                '$spendings',
-                style: Theme.of(context)
-                    .textTheme
-                    .apply(displayColor: Colors.white)
-                    .displayLarge,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  SmallRoundedOutlinedTextButton(
-                    label: 'Today',
-                    onPressed: () {
-                      setState(() => optionSelected = 'TODAY');
-                      widget.onSelectionChanged('TODAY');
-                    },
-                    borderColor: optionSelected == 'TODAY'
-                        ? Theme.of(context).colorScheme.tertiary
-                        : null,
-                  ),
-                  SmallRoundedOutlinedTextButton(
-                    label: 'This month',
-                    onPressed: () {
-                      setState(() => optionSelected = 'MONTH');
-                      widget.onSelectionChanged('MONTH');
-                    },
-                    borderColor: optionSelected == 'MONTH'
-                        ? Theme.of(context).colorScheme.tertiary
-                        : null,
-                  ),
-                  SmallRoundedOutlinedTextButton(
-                    label: 'This year',
-                    onPressed: () {
-                      setState(() => optionSelected = 'YEAR');
-                      widget.onSelectionChanged('YEAR');
-                    },
-                    borderColor: optionSelected == 'YEAR'
-                        ? Theme.of(context).colorScheme.tertiary
-                        : null,
-                  ),
-                ],
-              ),
-            ],
+          Consumer<ThemeManager>(
+            builder: (context, theme, child) => Column(
+              children: [
+                Text(
+                  'Your spendings',
+                  style: Theme.of(context)
+                      .textTheme
+                      .apply(
+                        bodyColor: theme.isDark ? Colors.white : Colors.black,
+                      )
+                      .bodyLarge,
+                ),
+                Text(
+                  '$spendings',
+                  style: Theme.of(context)
+                      .textTheme
+                      .apply(
+                        displayColor:
+                            theme.isDark ? Colors.white : Colors.black,
+                      )
+                      .displayLarge,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SmallRoundedOutlinedTextButton(
+                      label: 'Today',
+                      onPressed: () {
+                        setState(() => optionSelected = 'TODAY');
+                        widget.onSelectionChanged('TODAY');
+                      },
+                      borderColor: optionSelected == 'TODAY'
+                          ? Theme.of(context).colorScheme.tertiary
+                          : null,
+                    ),
+                    SmallRoundedOutlinedTextButton(
+                      label: 'This month',
+                      onPressed: () {
+                        setState(() => optionSelected = 'MONTH');
+                        widget.onSelectionChanged('MONTH');
+                      },
+                      borderColor: optionSelected == 'MONTH'
+                          ? Theme.of(context).colorScheme.tertiary
+                          : null,
+                    ),
+                    SmallRoundedOutlinedTextButton(
+                      label: 'This year',
+                      onPressed: () {
+                        setState(() => optionSelected = 'YEAR');
+                        widget.onSelectionChanged('YEAR');
+                      },
+                      borderColor: optionSelected == 'YEAR'
+                          ? Theme.of(context).colorScheme.tertiary
+                          : null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
