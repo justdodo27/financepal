@@ -287,7 +287,7 @@ class _HomePageState extends State<HomePage> {
         ),
         HomeAppBarBottom(
           height: appBarBottomHeight,
-          todaySpendings: 34.99,
+          todaySpendings: 95.97,
           thisMonthSpendings: 534.81,
           thisYearSpendings: 2548.08,
           onSelectionChanged: (selected) =>

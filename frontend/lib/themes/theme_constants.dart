@@ -27,11 +27,11 @@ final textTheme = TextTheme(
 
 const lightColorScheme = ColorScheme.light(
   primary: Color(0xffededed),
-  onPrimary: Color(0xffe1e1e1),
-  secondary: Color(0xffdcdcdc),
+  onPrimary: Color.fromARGB(255, 240, 240, 240),
+  secondary: Color.fromARGB(255, 234, 234, 234),
   onSecondary: Color(0xffc3c3c3),
-  background: Color(0xffe1e1e1),
-  onBackground: Color(0xffc8c8c8),
+  background: Color.fromARGB(255, 240, 240, 240),
+  onBackground: Color.fromARGB(255, 145, 145, 145),
   tertiary: Color.fromARGB(255, 149, 62, 255),
 );
 

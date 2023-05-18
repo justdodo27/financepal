@@ -12,7 +12,7 @@ class PaymentProofTile extends StatelessWidget {
   });
 
   void _downloadFile() async {
-    await launchUrl(Uri.parse(proof.url), mode: LaunchMode.platformDefault);
+    await launchUrl(Uri.parse(proof.url), mode: LaunchMode.externalApplication);
   }
 
   @override
