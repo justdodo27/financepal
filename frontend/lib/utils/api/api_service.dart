@@ -1,11 +1,12 @@
 import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/recurring_payment.dart';
+import 'package:frontend/utils/api/models/payment_proof.dart';
+import 'package:frontend/utils/api/models/recurring_payment.dart';
 import 'package:http/http.dart' as http;
 
-import 'category.dart';
-import 'payment.dart';
+import 'models/category.dart';
+import 'models/payment.dart';
 
 class ApiService {
   /// Server address.
@@ -275,6 +276,54 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete recurring payment.');
+    }
+  }
+
+  /// Obtains the user's payment proofs from backend API.
+  Future<List<PaymentProof>> getPaymentProofs(String token) async {
+    final response = await http.get(
+      buildUri('payment_proofs/'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load payment proofs.');
+    }
+
+    final data = jsonDecode(response.body);
+    return List<PaymentProof>.from(
+        data.map((json) => PaymentProof.fromJson(json)));
+  }
+
+  /// Creates new payment proof.
+  Future<PaymentProof> createPaymentProof(String token, String path) async {
+    final request = http.MultipartRequest(
+      'POST',
+      buildUri('payment_proofs/'),
+    );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.files.add(await http.MultipartFile.fromPath('file', path));
+
+    final response = await request.send();
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment proof. Response body:\n'
+          '${String.fromCharCodes(await response.stream.toBytes())}');
+    }
+
+    final data = jsonDecode(await response.stream.bytesToString());
+    return PaymentProof.fromJson(data);
+  }
+
+  /// Deletes the specified payment proof.
+  Future<void> deletePaymentProof(String token, int id) async {
+     final response = await http.delete(
+      buildUri('payment_proofs/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete payment proof.');
     }
   }
 }

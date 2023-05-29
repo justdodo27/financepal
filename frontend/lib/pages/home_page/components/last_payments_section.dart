@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../utils/api/payment.dart';
+import '../../../utils/api/models/payment.dart';
 import 'no_payment_data_widget.dart';
 import 'payment_tile.dart';
 

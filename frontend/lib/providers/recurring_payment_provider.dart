@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/payment.dart';
+import 'package:frontend/utils/api/models/payment.dart';
 import 'package:intl/intl.dart';
 
-import '../utils/api/recurring_payment.dart';
+import '../utils/api/models/recurring_payment.dart';
 import '../utils/helpers.dart';
 import 'auth_provider.dart';
 

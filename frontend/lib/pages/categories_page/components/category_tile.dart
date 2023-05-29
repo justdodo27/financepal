@@ -3,7 +3,7 @@ import 'package:frontend/providers/category_provider.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
-import '../../../utils/api/category.dart';
+import '../../../utils/api/models/category.dart';
 import 'add_category_sheet.dart';
 
 class CategoryTile extends StatelessWidget {

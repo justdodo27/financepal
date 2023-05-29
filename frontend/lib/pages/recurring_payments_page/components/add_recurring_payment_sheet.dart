@@ -10,8 +10,8 @@ import '../../../components/rounded_outlined_button.dart';
 import '../../../components/text_field_placeholder.dart';
 import '../../../providers/category_provider.dart';
 import '../../../providers/recurring_payment_provider.dart';
-import '../../../utils/api/category.dart';
-import '../../../utils/api/recurring_payment.dart';
+import '../../../utils/api/models/category.dart';
+import '../../../utils/api/models/recurring_payment.dart';
 import '../../../utils/snackbars.dart';
 
 class AddRecurringPaymentSheet extends StatefulWidget {
