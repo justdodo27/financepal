@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/payment_provider.dart';
-import '../../../utils/api/payment.dart';
+import '../../../utils/api/models/payment.dart';
 
 class PaymentTile extends StatelessWidget {
   final Payment payment;

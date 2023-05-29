@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/category.dart';
-import 'package:frontend/utils/api/payment.dart';
+import 'package:frontend/utils/api/models/category.dart';
+import 'package:frontend/utils/api/models/payment.dart';
 
 import 'components/home_appbar_bottom.dart';
 import 'components/pie_chart_section.dart';

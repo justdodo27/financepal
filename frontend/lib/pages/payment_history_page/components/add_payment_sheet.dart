@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/category_provider.dart';
-import 'package:frontend/utils/api/payment.dart';
+import 'package:frontend/utils/api/models/payment.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +10,7 @@ import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 import '../../../components/text_field_placeholder.dart';
 import '../../../providers/payment_provider.dart';
-import '../../../utils/api/category.dart';
+import '../../../utils/api/models/category.dart';
 
 class AddPaymentSheet extends StatefulWidget {
   final Payment? payment;

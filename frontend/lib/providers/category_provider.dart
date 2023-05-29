@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/auth_provider.dart';
-import 'package:frontend/utils/api/category.dart';
+import 'package:frontend/utils/api/models/category.dart';
 
 import '../utils/helpers.dart';
 

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/recurring_payment_provider.dart';
-import '../../../utils/api/recurring_payment.dart';
+import '../../../utils/api/models/recurring_payment.dart';
 import '../../../utils/snackbars.dart';
 import 'add_recurring_payment_sheet.dart';
 
