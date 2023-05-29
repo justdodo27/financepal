@@ -11,6 +11,8 @@ class Auth extends ChangeNotifier {
   /// Token to authorize requests to the backend API.
   String? _token;
 
+  bool isLoading = true;
+
   /// Saves the token to persistent storage.
   void _saveToken(String tokenToSave) async {
     final prefs = await SharedPreferences.getInstance();
@@ -29,6 +31,7 @@ class Auth extends ChangeNotifier {
   Future<void> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('access_token');
+    isLoading = false;
     notifyListeners();
   }
 
