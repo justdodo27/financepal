@@ -281,7 +281,7 @@ class ApiService {
 
   /// Obtains the user's payment proofs from backend API.
   Future<List<PaymentProof>> getPaymentProofs(String token) async {
-     final response = await http.get(
+    final response = await http.get(
       buildUri('payment_proofs/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
@@ -293,5 +293,37 @@ class ApiService {
     final data = jsonDecode(response.body);
     return List<PaymentProof>.from(
         data.map((json) => PaymentProof.fromJson(json)));
+  }
+
+  /// Creates new payment proof.
+  Future<PaymentProof> createPaymentProof(String token, String path) async {
+    final request = http.MultipartRequest(
+      'POST',
+      buildUri('payment_proofs/'),
+    );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.files.add(await http.MultipartFile.fromPath('file', path));
+
+    final response = await request.send();
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create payment proof. Response body:\n'
+          '${String.fromCharCodes(await response.stream.toBytes())}');
+    }
+
+    final data = jsonDecode(await response.stream.bytesToString());
+    return PaymentProof.fromJson(data);
+  }
+
+  /// Deletes the specified payment proof.
+  Future<void> deletePaymentProof(String token, int id) async {
+     final response = await http.delete(
+      buildUri('payment_proofs/$id'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete payment proof.');
+    }
   }
 }
