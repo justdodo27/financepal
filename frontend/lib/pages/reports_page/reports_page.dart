@@ -3,8 +3,8 @@ import 'package:frontend/components/date_range_picker.dart';
 
 import '../../components/appbar_bottom.dart';
 import '../../utils/api/models/category.dart';
+import '../../utils/api/models/group.dart';
 import '../../utils/api/models/payment.dart';
-import '../groups_page/groups_page.dart';
 import '../home_page/components/bar_chart_section.dart';
 import '../home_page/components/last_payments_section.dart';
 import '../home_page/components/pie_chart_section.dart';

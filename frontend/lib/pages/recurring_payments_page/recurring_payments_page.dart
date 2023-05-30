@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../providers/recurring_payment_provider.dart';
 import '../../utils/api/models/category.dart';
 import '../../utils/snackbars.dart';
-import '../home_page/components/no_payment_data_widget.dart';
+import '../home_page/components/no_data_widget.dart';
 import 'components/recurring_payment_tile.dart';
 
 class RecurringPaymentsPage extends StatefulWidget {
@@ -74,9 +74,9 @@ class _RecurringPaymentsPageState extends State<RecurringPaymentsPage> {
                     ),
                   );
                 }
-                
+
                 if (recurringPayments.isEmpty) {
-                  return const NoPaymentDataWidget();
+                  return const NoDataWidget(text: 'No payments to display.');
                 }
 
                 return ListView.builder(

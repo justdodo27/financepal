@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/date_range_picker.dart';
 import '../../providers/payment_provider.dart';
-import '../home_page/components/no_payment_data_widget.dart';
+import '../home_page/components/no_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
@@ -77,7 +77,11 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 );
               }
 
-              if (payments.isEmpty) return const NoPaymentDataWidget();
+              if (payments.isEmpty) {
+                return const NoDataWidget(
+                  text: 'No payments to display.',
+                );
+              }
 
               return ListView.builder(
                 shrinkWrap: true,
