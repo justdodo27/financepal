@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/reports_page/reports_page.dart';
 import 'package:frontend/utils/custom_router.dart';
 
+import '../../../utils/api/models/group.dart';
 import '../../payment_history_page/components/add_payment_sheet.dart';
 import '../../settings_page/settings_page.dart';
-import '../groups_page.dart';
 
 class GroupTile extends StatefulWidget {
   final Group group;

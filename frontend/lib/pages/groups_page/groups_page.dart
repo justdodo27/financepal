@@ -1,47 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/groups_page/components/add_group_sheet.dart';
+import 'package:frontend/pages/home_page/components/no_data_widget.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/group_provider.dart';
 import 'components/group_tile.dart';
 
-class Group {
-  final String name;
-
-  Group({required this.name});
-}
-
-class GroupsPage extends StatelessWidget {
+class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
 
-  static List<Group> data = [
-    Group(name: 'Friends'),
-    Group(name: 'Family'),
-    Group(name: 'Students'),
-  ];
+  @override
+  State<GroupsPage> createState() => _GroupsPageState();
+}
 
-  List<Widget> _getRows() {
-    return data.map((group) => GroupTile(group: group)).toList();
+class _GroupsPageState extends State<GroupsPage> {
+  void fetchGroups() async {
+    final provider = Provider.of<GroupProvider>(context, listen: false);
+    if (provider.groups != null) return;
+    try {
+      await provider.fetchGroups();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGroups();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: ListView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              elevation: 4,
-              color: Theme.of(context).colorScheme.onPrimary,
-              child: Column(
-                children: _getRows(),
-              ),
+        children: [
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
             ),
-            const SizedBox(height: 80),
-          ],
-        ),
+            elevation: 4,
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Consumer<GroupProvider>(
+              builder: (context, provider, child) {
+                final groups = provider.groups ?? [];
+
+                if (groups.isEmpty) {
+                  return const NoDataWidget(text: 'No groups to display.');
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: groups.length,
+                  itemBuilder: (context, index) => GroupTile(
+                    group: groups[index],
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 80),
+        ],
       ),
       floatingActionButton: Opacity(
         opacity: 0.85,

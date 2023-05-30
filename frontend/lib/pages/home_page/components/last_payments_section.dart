@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../utils/api/models/payment.dart';
-import 'no_payment_data_widget.dart';
+import 'no_data_widget.dart';
 import 'payment_tile.dart';
 
 class LastPaymentsSection extends StatelessWidget {
@@ -13,7 +13,11 @@ class LastPaymentsSection extends StatelessWidget {
 
   List<Widget> _getRows() {
     if (data.isEmpty) {
-      return [const NoPaymentDataWidget()];
+      return [
+        const NoDataWidget(
+          text: 'No payments to display.',
+        ),
+      ];
     }
 
     return data.map((payment) => PaymentTile(payment: payment)).toList();
