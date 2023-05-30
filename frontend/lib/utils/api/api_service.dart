@@ -327,4 +327,19 @@ class ApiService {
       throw Exception('Failed to delete payment proof.');
     }
   }
+
+  /// Obtains list of user's group from the API.
+  Future<List<Group>> getGroups(String token) async {
+    final response = await http.get(
+      buildUri('groups/'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load groups.');
+    }
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    return List<Group>.from(data.map((json) => Group.fromJson(json)));
+  }
 }
