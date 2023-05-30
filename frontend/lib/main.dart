@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/group_provider.dart';
 import 'package:frontend/providers/payment_proof_provider.dart';
 import 'package:frontend/providers/recurring_payment_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
@@ -33,6 +34,10 @@ void main() {
         ChangeNotifierProxyProvider<Auth, PaymentProofProvider>(
           update: (context, auth, _) => PaymentProofProvider(auth),
           create: (context) => PaymentProofProvider(null),
+        ),
+        ChangeNotifierProxyProvider<Auth, GroupProvider>(
+          update: (context, auth, _) => GroupProvider(auth),
+          create: (context) => GroupProvider(null),
         ),
       ],
       child: const MyApp(),
