@@ -1,4 +1,4 @@
-import 'dart:convert' show jsonDecode, jsonEncode;
+import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/api/models/payment_proof.dart';
@@ -6,6 +6,7 @@ import 'package:frontend/utils/api/models/recurring_payment.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
+import 'models/group.dart';
 import 'models/payment.dart';
 
 class ApiService {
@@ -30,7 +31,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
       if (data.containsKey('detail')) {
         throw Exception(data['detail']);
       }
@@ -49,7 +50,7 @@ class ApiService {
       throw Exception('Failed to log in.');
     }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
     return data['access_token'];
   }
 
@@ -64,7 +65,7 @@ class ApiService {
       throw Exception('Failed to load categories.');
     }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<Category>.from(
       data.map((json) => Category.fromJson(json)),
     );
@@ -87,7 +88,7 @@ class ApiService {
       throw Exception('Failed to create category.');
     }
 
-    return Category.fromJson(jsonDecode(response.body));
+    return Category.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   /// Updates the specified category.
@@ -132,7 +133,7 @@ class ApiService {
       throw Exception('Failed to load payments.');
     }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<Payment>.from(data.map((json) => Payment.fromJson(json)));
   }
 
@@ -157,7 +158,7 @@ class ApiService {
       throw Exception('Failed to create payment.');
     }
 
-    return Payment.fromJson(jsonDecode(response.body));
+    return Payment.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   /// Updates the specified payment.
@@ -208,7 +209,7 @@ class ApiService {
       throw Exception('Failed to load payments.');
     }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<RecurringPayment>.from(
         data.map((json) => RecurringPayment.fromJson(json)));
   }
@@ -237,7 +238,7 @@ class ApiService {
       throw Exception('Failed to create payment.');
     }
 
-    return RecurringPayment.fromJson(jsonDecode(response.body));
+    return RecurringPayment.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   /// Updates the specified recurring payment.
@@ -290,7 +291,7 @@ class ApiService {
       throw Exception('Failed to load payment proofs.');
     }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<PaymentProof>.from(
         data.map((json) => PaymentProof.fromJson(json)));
   }
@@ -317,7 +318,7 @@ class ApiService {
 
   /// Deletes the specified payment proof.
   Future<void> deletePaymentProof(String token, int id) async {
-     final response = await http.delete(
+    final response = await http.delete(
       buildUri('payment_proofs/$id'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
