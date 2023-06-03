@@ -79,18 +79,17 @@ class RenewableBase(BaseModel):
     period: PeriodType
     payment_date: datetime
 
-class Renewable(RenewableBase):
-    id: int
-    category: Union[Category, None]
-    payments: Union[list[Payment], None]
-
-    class Config:
-        orm_mode = True
-
 class RenewablePayment(BaseModel):
     cost: Union[float, None]
     payment_date: datetime
 
+class Renewable(RenewableBase):
+    id: int
+    category: Union[Category, None]
+    last_payment: Union[RenewablePayment, None]
+
+    class Config:
+        orm_mode = True
 
 class GroupBase(BaseModel):
     name: str

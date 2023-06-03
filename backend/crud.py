@@ -278,6 +278,14 @@ async def get_user_awaiting_renewables(db: AsyncSession, start_date: Optional[da
     return result.scalars().all()
 
 
+async def get_last_payment_for_renewable(db: AsyncSession, renewable_id: int):
+    q = select(models.Payment).filter(
+        models.Payment.renewable_id == renewable_id
+    ).order_by(models.Payment.payment_date.desc())
+    result = await db.execute(q)
+    return result.scalars().first()
+
+
 async def get_renewable(db: AsyncSession, renewable_id: int):
     q = select(models.Renewable).filter(models.Renewable.id == renewable_id, models.Renewable.deleted_at.is_(None))
     result = await db.execute(q)

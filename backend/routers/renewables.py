@@ -1,5 +1,6 @@
 from typing import Annotated, Union, Optional
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import uuid
 import os
 
@@ -90,67 +91,44 @@ async def create_payment(payment_data: schemas.RenewablePayment,
     raise HTTPException(status_code=404, detail="Renewable with given ID don't exist")
 
 
-@router.get("/renewables/awaiting/", tags=["renewables"], response_model=list[schemas.Renewable])
+@router.get("/renewables/", tags=["renewables"], response_model=list[schemas.Renewable])
 async def get_user_awaiting_renewables(request: Request,
-                                       start_date: Optional[datetime] = None,
-                                       end_date: Optional[datetime] = None, 
                                        group_id: Optional[int] = None,
                                        current_user: schemas.User = Depends(dependencies.get_current_user), 
                                        db: AsyncSession = Depends(get_db)):
     renewables = await crud.get_user_renewables(db, current_user.id)
 
     results = []
-    now = datetime.utcnow()
-    begin_date = None
     for renewable in renewables:
-        if renewable.period.value == 'YEARLY':
-            due_date = renewable.payment_date.replace(
-                year=end_date.year if end_date else now.year
+        if payment := await crud.get_last_payment_for_renewable(db, renewable.id):
+            if renewable.period.value == 'YEARLY':
+                next_payment = payment.payment_date + relativedelta(years=1)
+            elif renewable.period.value == 'MONTHLY':
+                next_payment = payment.payment_date + relativedelta(months=1)
+            elif renewable.period.value == 'WEEKLY':
+                next_payment = payment.payment_date + relativedelta(weeks=1)
+        else: 
+            next_payment = datetime.now()
+        results.append(
+            schemas.Renewable(
+                id=renewable.id,
+                name=renewable.name,
+                type=renewable.type,
+                category_id=renewable.category_id,
+                user_id=current_user.id,
+                cost=renewable.cost,
+                payment_date=next_payment,
+                category=schemas.Category(
+                    id=renewable.category.id,
+                    category=renewable.category.category,
+                    user_id=renewable.category.user_id
+                ) if renewable.category_id else None,
+                period=renewable.period,
+                last_payment=schemas.RenewablePayment(
+                    cost=payment.cost,
+                    payment_date=payment.payment_date
+                ) if payment else None
             )
-            begin_date = datetime.utcnow().replace(
-                month=1, 
-                day=1
-            )
-        if renewable.period.value == 'MONTHLY':
-            due_date = renewable.payment_date.replace(
-                year=end_date.year if end_date else now.year, 
-                month=end_date.month if end_date else now.month
-            )
-            begin_date = datetime.utcnow().replace(
-                month=start_date.month if start_date else now.month, 
-                day=start_date.day if start_date else 1
-            )
-        if renewable.period.value == 'WEEKLY':
-            due_date = renewable.payment_date.replace(
-                year=end_date.year if end_date else (now + timedelta(days=renewable.payment_date.weekday-now.weekday)).year, 
-                month=end_date.month if end_date else (now + timedelta(days=renewable.payment_date.weekday-now.weekday)).month,
-                day=end_date.day if end_date else (now + timedelta(days=renewable.payment_date.weekday-now.weekday)).day
-            )
-            begin_date = datetime.utcnow().replace(
-                year=start_date.year if start_date else (now - timedelta(days=now.weekday)).year, 
-                month=start_date.month if start_date else (now - timedelta(days=now.weekday)).month,
-                day=start_date.day if start_date else (now - timedelta(days=now.weekday)).day
-            )
-        if renewable.period == 'DAILY':
-            continue
-        payments = await crud.get_user_awaiting_renewables(db, begin_date, due_date, renewable.id)
-        print(payments, renewable.name, due_date, begin_date)
-        if not payments:
-            results.append(
-                schemas.Renewable(
-                    id=renewable.id,
-                    name=renewable.name,
-                    type=renewable.type,
-                    category_id=renewable.category_id,
-                    cost=renewable.cost,
-                    payment_date=due_date,
-                    category=schemas.Category(
-                        id=renewable.category.id,
-                        category=renewable.category.category,
-                        user_id=renewable.category.user_id
-                    ) if renewable.category_id else None,
-                    period=renewable.period
-                )
-            )
+        )
 
     return results
