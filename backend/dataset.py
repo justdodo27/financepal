@@ -71,6 +71,7 @@ async def generate_dataset(db: AsyncSession):
             await db.refresh(c3u1)
             pp = await crud.create_payment_proof(db, schemas.PaymentProofBase(
                 filename='paragon.png',
+                name="Paragon ;-)",
                 url='/app/backend/static/paragon.png',
                 user_id=user.id
             ))

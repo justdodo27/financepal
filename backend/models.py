@@ -62,6 +62,7 @@ class PaymentProof(Base):
     __tablename__ = "payment_proofs"
 
     id = sa.Column(sa.Integer, primary_key=True, index=True)
+    name = sa.Column(sa.String, nullable=False)
     filename = sa.Column(sa.String, nullable=False, index=True)
     url = sa.Column(sa.String, nullable=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)

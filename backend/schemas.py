@@ -53,8 +53,15 @@ class Payment(PaymentBase):
     class Config:
         orm_mode = True
 
+class PaymentProofCreate(BaseModel):
+    name: str
+
+    class Config:
+        orm_moe = True
+
 class PaymentProofBase(BaseModel):
     filename: str
+    name: str
     url: str
     user_id: Union[int, None]
 

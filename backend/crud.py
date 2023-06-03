@@ -191,6 +191,7 @@ async def create_payment_proof(db: AsyncSession, payment_proof: schemas.PaymentP
         db_payment_proof = models.PaymentProof(
             filename=payment_proof.filename,
             url=payment_proof.url,
+            name=payment_proof.name,
             user_id=payment_proof.user_id
         )
 

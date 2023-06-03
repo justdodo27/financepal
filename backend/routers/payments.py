@@ -104,7 +104,9 @@ async def delete_payment(current_user: schemas.User = Depends(dependencies.get_c
 
 
 @router.post("/payment_proofs/", tags=["payment_proofs"])
-async def upload_payment_proof(current_user: schemas.User = Depends(dependencies.get_current_user),
+async def upload_payment_proof(request: Request,
+                               payment_proof_name: str,
+                               current_user: schemas.User = Depends(dependencies.get_current_user),
                                file: Union[UploadFile, None] = None,
                                db: AsyncSession = Depends(get_db)):
     if not file:
@@ -117,11 +119,22 @@ async def upload_payment_proof(current_user: schemas.User = Depends(dependencies
     
     payment_proof = schemas.PaymentProofBase(
         filename=generated_filename,
+        name=payment_proof_name,
         url=f'/app/backend/static/{generated_filename}',
         user_id=current_user.id
         )
     db_payment_proof = await crud.create_payment_proof(db, payment_proof)
-    return db_payment_proof
+    
+    if not db_payment_proof:
+        raise HTTPException(status_code=500, detail="Error while creating payment proof") 
+
+    return schemas.PaymentProof(
+        filename=db_payment_proof.filename,
+        name=db_payment_proof.name,
+        url=f"{request.base_url}static/{db_payment_proof.filename}",
+        user_id=db_payment_proof.user_id,
+        id=db_payment_proof.id
+    )
 
 
 @router.get("/payment_proofs/", tags=["payment_proofs"], response_model=list[schemas.PaymentProofPayments])
@@ -134,7 +147,6 @@ async def get_payment_proofs(request: Request,
     if group_id: # TODO - check if user is in group and if group exist
         return []
     proofs = await crud.get_user_payment_proofs(db=db, user_id=current_user.id, start_date=start_date, end_date=end_date)
-    print()
     p = []
     for proof in proofs:
         p.append(schemas.PaymentProofPayments(
