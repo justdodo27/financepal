@@ -3,7 +3,7 @@ import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/category_provider.dart';
-import '../../../utils/api/category.dart';
+import '../../../utils/api/models/category.dart';
 import 'category_tile.dart';
 
 class UserCategoriesPage extends StatefulWidget {

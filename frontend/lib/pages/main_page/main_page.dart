@@ -12,6 +12,7 @@ import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/category_provider.dart';
+import '../../providers/payment_proof_provider.dart';
 import '../../themes/theme_manager.dart';
 import '../../utils/custom_router.dart';
 import '../payment_history_page/components/add_payment_sheet.dart';
@@ -33,6 +34,9 @@ class _MainPageState extends State<MainPage> {
     try {
       await Provider.of<CategoryProvider>(context, listen: false)
           .getCategories();
+      if (!mounted) return;
+      await Provider.of<PaymentProofProvider>(context, listen: false)
+          .fetchProofsOfPayments();
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
     }

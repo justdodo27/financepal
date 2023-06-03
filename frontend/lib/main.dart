@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/group_provider.dart';
+import 'package:frontend/providers/payment_proof_provider.dart';
 import 'package:frontend/providers/recurring_payment_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
@@ -18,17 +20,24 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => Auth(apiService)),
         ChangeNotifierProxyProvider<Auth, CategoryProvider>(
-          update: (context, auth, previousCategories) => CategoryProvider(auth),
+          update: (context, auth, _) => CategoryProvider(auth),
           create: (context) => CategoryProvider(null),
         ),
         ChangeNotifierProxyProvider<Auth, PaymentProvider>(
-          update: (context, auth, previousCategories) => PaymentProvider(auth),
+          update: (context, auth, _) => PaymentProvider(auth),
           create: (context) => PaymentProvider(null),
         ),
         ChangeNotifierProxyProvider<Auth, RecurringPaymentProvider>(
-          update: (context, auth, previousCategories) =>
-              RecurringPaymentProvider(auth),
+          update: (context, auth, _) => RecurringPaymentProvider(auth),
           create: (context) => RecurringPaymentProvider(null),
+        ),
+        ChangeNotifierProxyProvider<Auth, PaymentProofProvider>(
+          update: (context, auth, _) => PaymentProofProvider(auth),
+          create: (context) => PaymentProofProvider(null),
+        ),
+        ChangeNotifierProxyProvider<Auth, GroupProvider>(
+          update: (context, auth, _) => GroupProvider(auth),
+          create: (context) => GroupProvider(null),
         ),
       ],
       child: const MyApp(),

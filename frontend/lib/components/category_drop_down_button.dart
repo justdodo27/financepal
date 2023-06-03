@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/api/category.dart';
+import '../utils/api/models/category.dart';
 
 class CategoryDropDownButton extends StatefulWidget {
   final Category? selected;

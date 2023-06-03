@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
-class NoPaymentDataWidget extends StatelessWidget {
-  const NoPaymentDataWidget({
+class NoDataWidget extends StatelessWidget {
+  final String text;
+
+  const NoDataWidget({
     super.key,
+    required this.text,
   });
 
   @override
@@ -17,15 +20,15 @@ class NoPaymentDataWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Icon(
-                Icons.monetization_on,
+              const Icon(
+                Icons.bar_chart,
                 color: Colors.redAccent,
               ),
-              Text('No payments to display'),
-              Icon(
+              Text(text),
+              const Icon(
                 Icons.close,
                 color: Colors.redAccent,
               ),

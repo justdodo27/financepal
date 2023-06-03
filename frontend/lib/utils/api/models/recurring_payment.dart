@@ -1,4 +1,4 @@
-import 'package:frontend/utils/api/category.dart';
+import 'package:frontend/utils/api/models/category.dart';
 
 class RecurringPayment {
   final int? id;
