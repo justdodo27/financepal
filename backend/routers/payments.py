@@ -59,7 +59,7 @@ async def get_payments(request: Request,
                 id=payment.category.id,
                 category=payment.category.category,
                 user_id=payment.category.user_id
-            ),
+            ) if payment.category else None,
             payment_proof_id=payment.payment_proof_id,
             payment_proof=schemas.PaymentProof(
                 filename=payment.payment_proof.filename,
@@ -154,7 +154,7 @@ async def get_payment_proofs(request: Request,
                         id=payment.category.id,
                         category=payment.category.category,
                         user_id=payment.category.user_id
-                    )
+                    ) if payment.category else None
                 ) for payment in proof.payments
             ]
         ))
