@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import schemas
 from backend.dependencies import authenticate_user, create_access_token
-from backend.routers import users, categories, payments, renewables, groups
+from backend.routers import users, categories, payments, renewables, groups, statistics
 from backend.database import engine, Base, get_db
 from backend.dataset import generate_dataset
 
@@ -20,6 +20,7 @@ app.include_router(categories.router)
 app.include_router(payments.router)
 app.include_router(renewables.router)
 app.include_router(groups.router)
+app.include_router(statistics.router)
 
 
 @app.get("/")

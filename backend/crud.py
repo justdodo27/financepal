@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete, or_
+from sqlalchemy import delete, or_, func
 import bcrypt
 
 from datetime import datetime
@@ -481,3 +481,51 @@ async def remove_limit(db: AsyncSession, limit: models.Limit):
         print(e)
         return False
     return True
+
+# STATISTICS
+
+async def categories_grouped(db: AsyncSession, start_date: datetime, end_date: datetime, user_id: Union[int, None], group_id: Union[int, None]):
+    if group_id: # do it for group
+        q = select(
+            models.Category.id,
+            models.Category.category,
+            func.sum(models.Payment.cost).label("category_sum"),
+            func.count(models.Payment.id).label("category_count")
+        ).select_from(
+            models.Category
+        ).join(
+            models.Payment, models.Payment.category_id == models.Category.id
+        ).filter(
+            models.Payment.group_id == group_id,
+            models.Payment.payment_date >= start_date.replace(tzinfo=None),
+            models.Payment.payment_date <= end_date.replace(tzinfo=None)
+        ).group_by(
+            models.Category.id,
+            models.Category.category
+        ).having(
+            func.sum(models.Payment.cost) > 0
+        )
+    else:
+        q = select(
+            models.Category.id,
+            models.Category.category,
+            func.sum(models.Payment.cost).label("category_sum"),
+            func.count(models.Payment.id).label("category_count")
+        ).select_from(
+            models.Category
+        ).join(
+            models.Payment, models.Payment.category_id == models.Category.id
+        ).filter(
+            models.Payment.user_id == user_id,
+            models.Payment.payment_date >= start_date.replace(tzinfo=None),
+            models.Payment.payment_date <= end_date.replace(tzinfo=None)
+        ).group_by(
+            models.Category.id,
+            models.Category.category
+        ).having(
+            func.sum(models.Payment.cost) > 0
+        )
+
+    results = await db.execute(q)
+
+    return results.all()
