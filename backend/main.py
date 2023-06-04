@@ -4,12 +4,17 @@ from fastapi import Depends, FastAPI, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
+import firebase_admin
+from firebase_admin import credentials
 
 from backend import schemas
 from backend.dependencies import authenticate_user, create_access_token
-from backend.routers import users, categories, payments, renewables, groups, statistics
+from backend.routers import users, categories, payments, renewables, groups, statistics, limits
 from backend.database import engine, Base, get_db
 from backend.dataset import generate_dataset
+
+cred = credentials.Certificate("./serviceAccountKey.json")
+default_app = firebase_admin.initialize_app(cred)
 
 app = FastAPI()
 
@@ -21,6 +26,7 @@ app.include_router(payments.router)
 app.include_router(renewables.router)
 app.include_router(groups.router)
 app.include_router(statistics.router)
+app.include_router(limits.router)
 
 
 @app.get("/")

@@ -22,15 +22,29 @@ async def create_limit(limit: schemas.LimitBase,
         raise HTTPException(status_code=409, detail="Limit value must be greater than 0")
     limit_db = await crud.create_limit(db, limit)
 
-    return limit_db
+    return schemas.Limit(
+        value=limit_db.value,
+        user_id=limit_db.user_id,
+        group_id=limit_db.group_id,
+        category_id=limit_db.category_id,
+        id=limit_db.id,
+        category=limit_db.category
+    )
 
 
-@router.get("/limits/", tags=["limits"], response_model=schemas.Limit)
+@router.get("/limits/", tags=["limits"], response_model=list[schemas.Limit])
 async def get_limits(current_user: schemas.User = Depends(dependencies.get_current_user),
                      db: AsyncSession = Depends(get_db)):
     limits = await crud.get_user_limits(db, current_user.id)
 
-    return limits
+    return [schemas.Limit(
+        value=limit.value,
+        user_id=limit.user_id,
+        group_id=limit.group_id,
+        category_id=limit.category_id,
+        id=limit.id,
+        category=limit.category
+    ) for limit in limits]
 
 
 @router.put("/limits/{limit_id}/", tags=["limits"])

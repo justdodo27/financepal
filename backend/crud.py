@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete, or_, func
+from sqlalchemy import delete, or_, func, and_
 import bcrypt
 
 from datetime import datetime
 from typing import Optional, Union
+import calendar
 
 from backend import models, schemas
 
@@ -53,6 +54,17 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.commit()
     await db.refresh(db_user)
     return db_user
+
+
+async def update_notification_token(db: AsyncSession, user: models.User, token: str):
+    try:
+        user.notifications_token = token
+        await db.commit()
+        await db.refresh(user)
+    except Exception as e:
+        print(e)
+        return False
+    return user
 
 # CATEGORIES
 async def get_category(db: AsyncSession, category_id: int):
@@ -525,6 +537,48 @@ async def categories_grouped(db: AsyncSession, start_date: datetime, end_date: d
         ).having(
             func.sum(models.Payment.cost) > 0
         )
+
+    results = await db.execute(q)
+
+    return results.all()
+
+# TRIGGERS (kinda but not really XD)
+
+async def check_limit(db: AsyncSession, category_id: int, user_id: Union[int, None], group_id: Union[int, None]):
+    if group_id:
+        query_filter = (models.Limit.group_id == group_id)
+    elif user_id:
+        query_filter = (models.Limit.user_id == user_id)
+    else: 
+        raise Exception("No user ID or group ID provided!")
+    
+    start_date = datetime.utcnow().replace(day=1)
+    end_date = datetime.utcnow().replace(day=calendar.monthrange(year=start_date.year, month=start_date.month)[1])
+
+    q = select(models.Limit).add_columns(
+        func.sum(models.Payment.cost).label("payments_sum"),
+        (func.sum(models.Payment.cost)/models.Limit.value).label("percentage"),
+        models.Category.category
+    ).join(
+        models.Payment, 
+        and_(
+            models.Payment.category_id == models.Limit.category_id,
+            (models.Payment.user_id == models.Limit.user_id) if user_id else True,
+            (models.Payment.group_id == models.Limit.group_id) if group_id else True,
+            models.Payment.payment_date >= start_date,
+            models.Payment.payment_date <= end_date
+        )
+    ).join(
+        models.Category, models.Category.id == models.Limit.category_id
+    ).filter(
+        models.Limit.category_id == category_id,
+        query_filter
+    ).group_by(
+        models.Limit,
+        models.Category.category
+    ).having(
+        (func.sum(models.Payment.cost)/models.Limit.value) > 0.8
+    )
 
     results = await db.execute(q)
 

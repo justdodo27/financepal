@@ -21,3 +21,14 @@ async def read_users_me(
     current_user: schemas.User = Depends(dependencies.get_current_user)
 ):
     return current_user
+
+
+@router.put("/users/", tags=["users"])
+async def update_token(
+    token: str,
+    current_user: schemas.User = Depends(dependencies.get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if await crud.update_notification_token(db, current_user, token):
+        return True
+    return HTTPException(status_code=400, detail="Cannot update the token")

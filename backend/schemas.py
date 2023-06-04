@@ -41,6 +41,7 @@ class PaymentBase(BaseModel):
     type: PaymentType
     category_id: Union[int, None]
     user_id: Union[int, None]
+    group_id: Union[int, None]
     cost: float
     payment_date: datetime
     payment_proof_id: Union[int, None]

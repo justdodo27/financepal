@@ -14,6 +14,7 @@ class User(Base):
     email = sa.Column(sa.String, unique=True, nullable=False, index=True)
     password_hash = sa.Column(sa.String, nullable=False)
     username = sa.Column(sa.String, unique=True, nullable=False, index=True)
+    notifications_token = sa.Column(sa.String, nullable=True)
 
     categories = relationship("Category", back_populates="user", lazy='selectin')
     groups = relationship("Group", secondary='group_members', lazy='selectin')
@@ -119,5 +120,8 @@ class Limit(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
     group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
     category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
+    n20_sent_at = sa.Column(sa.DateTime, nullable=True)
+    n05_sent_at = sa.Column(sa.DateTime, nullable=True)
+    nX_sent_at = sa.Column(sa.DateTime, nullable=True)
 
     category = relationship("Category", back_populates=None, lazy='selectin')

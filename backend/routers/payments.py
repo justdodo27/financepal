@@ -9,6 +9,7 @@ import aiofiles
 
 from backend import crud, schemas, dependencies
 from backend.database import get_db
+from backend.notifications import check_notifications
 
 router = APIRouter(dependencies=[])
 
@@ -33,6 +34,8 @@ async def create_payment(payment: schemas.PaymentBase,
         raise HTTPException(status_code=409, detail=f"Category ID {payment.category_id} doesn't exist")    
 
     new_payment = await crud.create_payment(db=db, payment=payment)
+    if payment.category_id:
+        await check_notifications(db=db, category_id=payment.category_id, user_id=payment.user_id, group_id=payment.group_id)
     
     return new_payment
 
@@ -87,6 +90,10 @@ async def update_payments(payment_update: schemas.PaymentBase,
 
     if not (updated  := await crud.update_payment(db=db, payment=payment, update_data=payment_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")
+
+    if updated.category_id:
+        await check_notifications(db, category_id=updated.category_id, user_id=current_user.id, group_id=updated.group_id)
+    
     return updated
 
 
