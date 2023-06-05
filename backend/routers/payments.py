@@ -161,6 +161,7 @@ async def get_payment_proofs(request: Request,
             url=f'{request.base_url}static/{proof.filename}',
             user_id=proof.user_id,
             id=proof.id,
+            name=proof.name,
             payments=[
                 schemas.Payment(
                     id=payment.id,
