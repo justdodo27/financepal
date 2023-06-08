@@ -23,7 +23,7 @@ def return_date_range_type(start_date: datetime, end_date: datetime):
         return 'DAYS'
     return 'HOURS'
 
-@router.post("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
+@router.get("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
 async def get_statistics(start_date: datetime = None,
                          end_date: datetime = None,
                          current_user: schemas.User = Depends(dependencies.get_current_user),

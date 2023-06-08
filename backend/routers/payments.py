@@ -69,6 +69,7 @@ async def get_payments(request: Request,
                 url=f'{request.base_url}static/{payment.payment_proof.filename}',
                 user_id=payment.payment_proof.user_id,
                 id=payment.payment_proof.id,
+                name=payment.payment_proof.name
             ) if payment.payment_proof else None
         ) for payment in await crud.get_user_payments(db=db, user_id=current_user.id, start_date=start_date, end_date=end_date)
     ]
