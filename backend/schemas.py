@@ -28,10 +28,12 @@ class CategoryBase(BaseModel):
 
 class CategoryCreate(CategoryBase):
     user_id: Union[int, None]
+    group_id: Union[int, None]
 
 class Category(CategoryBase):
     id: int
     user_id: Union[int, None]
+    group_id: Union[int, None]
 
     class Config:
         orm_mode = True
@@ -65,6 +67,7 @@ class PaymentProofBase(BaseModel):
     name: str
     url: str
     user_id: Union[int, None]
+    group_id: Union[int, None]
 
 class PaymentProof(PaymentProofBase):
     id: int
@@ -83,6 +86,7 @@ class RenewableBase(BaseModel):
     type: PaymentType
     category_id: Union[int, None]
     user_id: Union[int, None]
+    group_id: Union[int, None]
     cost: float
     period: PeriodType
     payment_date: datetime

@@ -67,6 +67,7 @@ class PaymentProof(Base):
     filename = sa.Column(sa.String, nullable=False, index=True)
     url = sa.Column(sa.String, nullable=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
 
     payments = relationship("Payment", back_populates='payment_proof', cascade='all,delete', lazy='selectin')
 
@@ -75,7 +76,6 @@ class PeriodType(enum.Enum):
     YEARLY = "YEARLY"
     MONTHLY = "MONTHLY"
     WEEKLY = "WEEKLY"
-    DAILY = "DAILY" # may be deleted later?
 
 
 class Renewable(Base):
@@ -85,6 +85,7 @@ class Renewable(Base):
     type = sa.Column(sa.Enum(PaymentType), nullable=False)
     category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
     cost = sa.Column(sa.Double, nullable=False)
     period = sa.Column(sa.Enum(PeriodType), nullable=False)
     payment_date = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow(), server_default=sa.sql.func.now())
@@ -111,6 +112,13 @@ class Group(Base):
     categories = relationship("Category", back_populates="group", lazy='selectin')
     payments = relationship("Payment", back_populates=None, lazy='selectin')
     members = relationship("User", secondary='group_members', lazy='selectin')
+
+    def is_member(self, user: User):
+        if user in self.members:
+            return True
+        elif user.id == self.user_id:
+            return True
+        return False
 
 
 class Limit(Base):

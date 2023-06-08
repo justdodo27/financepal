@@ -18,6 +18,12 @@ async def create_limit(limit: schemas.LimitBase,
                        db: AsyncSession = Depends(get_db)):
     limit.user_id = current_user.id
 
+    if limit.group_id:
+        if not (group := await crud.get_group(db, group_id=limit.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+
     if not limit.value or limit.value <= 0:
         raise HTTPException(status_code=409, detail="Limit value must be greater than 0")
     limit_db = await crud.create_limit(db, limit)
@@ -33,9 +39,17 @@ async def create_limit(limit: schemas.LimitBase,
 
 
 @router.get("/limits/", tags=["limits"], response_model=list[schemas.Limit])
-async def get_limits(current_user: schemas.User = Depends(dependencies.get_current_user),
+async def get_limits(group_id: Optional[int] = None,
+                     current_user: schemas.User = Depends(dependencies.get_current_user),
                      db: AsyncSession = Depends(get_db)):
-    limits = await crud.get_user_limits(db, current_user.id)
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+        limits = await crud.get_group_limits(db, group_id)
+    else:
+        limits = await crud.get_user_limits(db, current_user.id)
 
     return [schemas.Limit(
         value=limit.value,
@@ -54,21 +68,19 @@ async def update_limit(limit_data: schemas.LimitBase,
                        db: AsyncSession = Depends(get_db)):
     if not (limit := await crud.get_limit(db, limit_id)):
         raise HTTPException(status_code=404, detail=f"Limit doesn't exist")
-    
-    if limit.group_id:
-        group = await crud.get_group(db, limit.group_id)
-        group_members = group.members
-        group_owner_id = group.user_id
-    else:
-        group_members = [current_user]
 
-    # check whether user "own" the limit or user belongs to group where the limit is joined
-    if limit.user_id != current_user.id and (current_user not in group_members or current_user.id != group_owner_id):
+    if limit.group_id:
+        if not (group := await crud.get_group(db, group_id=limit.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+
+    if limit.user_id != current_user.id:
         raise HTTPException(status_code=403, detail=f"Forbidden")
     
     updated_limit = await crud.update_limit(db, limit, limit_data)
 
-    return update_limit
+    return updated_limit
     
 
 @router.delete("/limits/{limit_id}/", tags=["limits"])
@@ -79,14 +91,12 @@ async def delete_limit(current_user: schemas.User = Depends(dependencies.get_cur
         raise HTTPException(status_code=404, detail=f"Limit doesn't exist")
     
     if limit.group_id:
-        group = await crud.get_group(db, limit.group_id)
-        group_members = group.members
-        group_owner_id = group.user_id
-    else:
-        group_members = [current_user]
+        if not (group := await crud.get_group(db, group_id=limit.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
 
-    # check whether user "own" the limit or user belongs to group where the limit is joined
-    if limit.user_id != current_user.id and (current_user not in group_members or current_user.id != group_owner_id):
+    if limit.user_id != current_user.id:
         raise HTTPException(status_code=403, detail=f"Forbidden")
     
     if await crud.remove_limit(db, limit):

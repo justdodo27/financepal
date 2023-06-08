@@ -1,12 +1,9 @@
 from typing import Union, Optional
 from datetime import datetime
-import uuid
-import os
 from itertools import groupby
 
-from fastapi import APIRouter, Depends, HTTPException, Path, UploadFile, Request
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-import aiofiles
 
 from backend import crud, schemas, dependencies
 from backend.database import get_db
@@ -23,14 +20,22 @@ def return_date_range_type(start_date: datetime, end_date: datetime):
         return 'DAYS'
     return 'HOURS'
 
-@router.post("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
-async def get_statistics(start_date: datetime = None,
-                         end_date: datetime = None,
+@router.get("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
+async def get_statistics(start_date: datetime,
+                         end_date: datetime,
+                         group_id: Union[int, None] = None,
                          current_user: schemas.User = Depends(dependencies.get_current_user),
                          db: AsyncSession = Depends(get_db)):
     range_type = return_date_range_type(start_date, end_date)
-    payments = await crud.get_user_payments(db, current_user.id, start_date, end_date)
-    categories = await crud.categories_grouped(db, start_date, end_date, current_user.id, group_id=None)
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+        payments = await crud.get_group_payments(db, group_id, start_date, end_date)
+    else:
+        payments = await crud.get_user_payments(db, current_user.id, start_date, end_date)
+    categories = await crud.categories_grouped(db, start_date, end_date, current_user.id, group_id=group_id)
     categories_sum = sum([category.category_sum for category in categories])
     if range_type == 'HOURS':
         payments_data = [(f"{payment.payment_date.hour}:{payment.payment_date.minute}",
