@@ -344,4 +344,54 @@ class ApiService {
     final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<Group>.from(data.map((json) => Group.fromJson(json)));
   }
+
+  /// Creates new group.
+  Future<Group> createGroup(String token, {required String groupName}) async {
+    final response = await http.post(
+      buildUri('groups/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': groupName,
+        'user_id': 0,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create group.');
+    }
+
+    return Group.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
+
+  /// Joins the group with the specified code.
+  Future<void> joinGroup(String token, {required String groupCode}) async {
+    final response = await http.put(
+      buildUri('groups/join/$groupCode'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to join the group.');
+    }
+  }
+
+  /// Deletes the specified group.
+  Future<void> deleteGroup(String token, {required int groupId}) async {
+    final response = await http.delete(
+      buildUri('groups/$groupId/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete the group.');
+    }
+  }
 }
