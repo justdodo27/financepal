@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/groups_page/components/add_group_sheet.dart';
+import 'package:frontend/pages/groups_page/components/create_group_sheet.dart';
 import 'package:frontend/pages/home_page/components/no_data_widget.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/loading_card.dart';
 import '../../providers/group_provider.dart';
 import 'components/group_tile.dart';
 
@@ -45,6 +47,10 @@ class _GroupsPageState extends State<GroupsPage> {
             color: Theme.of(context).colorScheme.onPrimary,
             child: Consumer<GroupProvider>(
               builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const LoadingCard();
+                }
+
                 final groups = provider.groups ?? [];
 
                 if (groups.isEmpty) {
@@ -67,25 +73,51 @@ class _GroupsPageState extends State<GroupsPage> {
       ),
       floatingActionButton: Opacity(
         opacity: 0.85,
-        child: FloatingActionButton(
-          heroTag: null,
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            backgroundColor: Theme.of(context).colorScheme.onPrimary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(30),
-                topLeft: Radius.circular(30),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(30),
+                  ),
+                ),
+                useSafeArea: true,
+                isScrollControlled: true,
+                builder: (context) => const CreateGroupSheet(),
+              ),
+              child: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             ),
-            useSafeArea: true,
-            isScrollControlled: true,
-            builder: (context) => const AddGroupSheet(),
-          ),
-          child: Icon(
-            Icons.group_add,
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
+            const SizedBox(height: 12),
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(30),
+                  ),
+                ),
+                useSafeArea: true,
+                isScrollControlled: true,
+                builder: (context) => const AddGroupSheet(),
+              ),
+              child: Icon(
+                Icons.group_add,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
+            ),
+          ],
         ),
       ),
     );

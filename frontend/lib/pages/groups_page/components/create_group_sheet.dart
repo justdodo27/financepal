@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 import '../../../providers/group_provider.dart';
+import '../../../utils/snackbars.dart';
 
-class AddGroupSheet extends StatefulWidget {
-  const AddGroupSheet({
+class CreateGroupSheet extends StatefulWidget {
+  const CreateGroupSheet({
     super.key,
   });
 
   @override
-  State<AddGroupSheet> createState() => _AddGroupSheetState();
+  State<CreateGroupSheet> createState() => _CreateGroupSheetState();
 }
 
-class _AddGroupSheetState extends State<AddGroupSheet> {
-  final _code = TextEditingController();
+class _CreateGroupSheetState extends State<CreateGroupSheet> {
+  final _name = TextEditingController();
 
-  Future<void> joinGroup() async {
-    final code = _code.text;
-    if (code.isEmpty) return;
+  Future<void> createGroup() async {
+    final name = _name.text;
+    if (name.isEmpty) return;
 
     final provider = Provider.of<GroupProvider>(context, listen: false);
     try {
-      await provider.joinGroup(code);
+      await provider.createGroup(name);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
     }
@@ -35,7 +35,7 @@ class _AddGroupSheetState extends State<AddGroupSheet> {
 
   @override
   void dispose() {
-    _code.dispose();
+    _name.dispose();
     super.dispose();
   }
 
@@ -48,7 +48,7 @@ class _AddGroupSheetState extends State<AddGroupSheet> {
         child: Column(
           children: [
             Text(
-              'Join the group',
+              'Create a new group',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
@@ -66,9 +66,9 @@ class _AddGroupSheetState extends State<AddGroupSheet> {
                 child: Column(
                   children: [
                     CustomTextField(
-                      controller: _code,
-                      hintText: 'e.g. A972DXSPS',
-                      labelText: 'Code',
+                      controller: _name,
+                      hintText: 'e.g. Power Rangers',
+                      labelText: 'Name',
                     ),
                     const SizedBox(height: 16),
                     RoundedOutlinedButton(
@@ -85,7 +85,7 @@ class _AddGroupSheetState extends State<AddGroupSheet> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      onPressed: () async => await joinGroup(),
+                      onPressed: () async => await createGroup(),
                     )
                   ],
                 ),
