@@ -45,7 +45,7 @@ async def get_group_limits_list(current_user: schemas.User = Depends(dependencie
     return limits
 
 
-@router.put("/groups/join/{group_code}", tags=["groups"])
+@router.put("/groups/join/{group_code}/", tags=["groups"])
 async def join_group(current_user: schemas.User = Depends(dependencies.get_current_user),
                      group_code: str = Path(title="Group code to join"),
                      db: AsyncSession = Depends(get_db)):
@@ -63,25 +63,7 @@ async def join_group(current_user: schemas.User = Depends(dependencies.get_curre
     raise HTTPException(status_code=500, detail="Error while joining group")
 
 
-@router.delete("/groups/leave/{group_id}", tags=["groups"])
-async def leave_group(current_user: schemas.User = Depends(dependencies.get_current_user),
-                      group_id: int = Path(title="The ID of the group to get"),
-                      db: AsyncSession = Depends(get_db)):
-    if not (group := await crud.get_group(db, group_id)):
-        raise HTTPException(status_code=404, detail=f"Group doesn't exist")
-    
-    if group.user_id == current_user.id:
-        raise HTTPException(status_code=403, detail=f"You cannot leave the group you own")
-    
-    if current_user not in group.members:
-        raise HTTPException(status_code=403, detail=f"You are already left this group")
-    
-    if await crud.remove_from_group(db, group, current_user):
-        return True
-    raise HTTPException(status_code=500, detail="Error while leaving group")
-
-
-@router.put("/groups/{group_id}", tags=["groups"])
+@router.put("/groups/{group_id}/", tags=["groups"])
 async def update_group(group_data: schemas.GroupUpdate,
                        current_user: schemas.User = Depends(dependencies.get_current_user),
                        group_id: int = Path(title="The ID of the group to get"),
@@ -158,7 +140,12 @@ async def delete_group(current_user: schemas.User = Depends(dependencies.get_cur
         raise HTTPException(status_code=404, detail=f"Group doesn't exist")
     
     if group.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail=f"You don't own this group")
+        if current_user not in group.members:
+            raise HTTPException(status_code=403, detail=f"You are already left this group")
+        
+        if await crud.remove_from_group(db, group, current_user):
+            return True
+        raise HTTPException(status_code=500, detail="Error while leaving group")
     
     if await crud.delete_group(db, group):
         return True

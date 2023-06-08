@@ -33,12 +33,17 @@ async def create_renewable(renewable: schemas.RenewableBase,
         raise HTTPException(status_code=409, detail=f"Category ID {renewable.category_id} doesn't exist")    
     if renewable.period.value not in ('YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY'):
         raise HTTPException(status_code=409, detail="renewable period allowed values are YEARLY, MONTHLY, WEEKLY, DAILY")
+    if renewable.group_id:
+        if not (group := await crud.get_group(db, group_id=renewable.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
 
     new_renewable = await crud.create_renewable(db, renewable)
 
     return new_renewable
 
-@router.put("/renewables/{renewable_id}", tags=["renewables"], response_model=schemas.Renewable)
+@router.put("/renewables/{renewable_id}/", tags=["renewables"], response_model=schemas.Renewable)
 async def update_renewable(renewable_update: schemas.RenewableBase,
                            current_user: schemas.User = Depends(dependencies.get_current_user),
                            renewable_id: int = Path(title="The ID of the renewable to get"),
@@ -49,32 +54,48 @@ async def update_renewable(renewable_update: schemas.RenewableBase,
     if renewable.user_id != current_user.id:
         raise HTTPException(status_code=403, detail=f"Forbidden")
     
+    if renewable.group_id:
+        if not (group := await crud.get_group(db, group_id=renewable.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+    
     renewable_update.user_id = current_user.id
 
     if not (updated := await crud.update_renewable(db, renewable, renewable_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")
     return updated
 
-@router.delete("/renewables/{renewable_id}", tags=["renewables"])
+@router.delete("/renewables/{renewable_id}/", tags=["renewables"])
 async def delete_renewable(current_user: schemas.User = Depends(dependencies.get_current_user),
                            renewable_id: int = Path(title="The ID of the renewable to get"),
                            db: AsyncSession = Depends(get_db)):
     if (renewable := await crud.get_renewable(db, renewable_id)):
-        if renewable.user_id != current_user.id: # also check for gorup
+        if renewable.user_id != current_user.id:
             raise HTTPException(status_code=403, detail=f"Forbidden")
+        if renewable.group_id:
+            if not (group := await crud.get_group(db, group_id=renewable.group_id)):
+                raise HTTPException(status_code=404, detail="Group not found")
+            if not group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="You don't belong to this group")
         if await crud.delete_renewable(db, renewable):
             return True
         raise HTTPException(status_code=500, detail="Error while deleting renewable")
     raise HTTPException(status_code=404, detail="Renewable with given ID don't exist")
 
-@router.post("/renewables/payment/{renewable_id}", tags=["renewables", "payments"], response_model=schemas.Payment)
+@router.post("/renewables/payment/{renewable_id}/", tags=["renewables"], response_model=schemas.Payment)
 async def create_payment(payment_data: schemas.RenewablePayment,
                          current_user: schemas.User = Depends(dependencies.get_current_user),
                          renewable_id: int = Path(title="The ID of the renewable to get"),
                          db: AsyncSession = Depends(get_db)):
     if (renewable := await crud.get_renewable(db, renewable_id)):
-        if renewable.user_id != current_user.id: # also check for gorup
+        if renewable.user_id != current_user.id:
             raise HTTPException(status_code=403, detail=f"Forbidden")
+        if renewable.group_id:
+            if not (group := await crud.get_group(db, group_id=renewable.group_id)):
+                raise HTTPException(status_code=404, detail="Group not found")
+            if not group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="You don't belong to this group")
         payment = schemas.PaymentBase(
             name=f"{renewable.name} - payment {payment_data.payment_date}",
             type=renewable.type,
@@ -96,7 +117,14 @@ async def get_user_awaiting_renewables(request: Request,
                                        group_id: Optional[int] = None,
                                        current_user: schemas.User = Depends(dependencies.get_current_user), 
                                        db: AsyncSession = Depends(get_db)):
-    renewables = await crud.get_user_renewables(db, current_user.id)
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+        renewables = await crud.get_group_renewables(db, group_id=group_id)
+    else:
+        renewables = await crud.get_user_renewables(db, current_user.id)
 
     results = []
     for renewable in renewables:

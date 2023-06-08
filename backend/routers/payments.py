@@ -31,7 +31,12 @@ async def create_payment(payment: schemas.PaymentBase,
     if payment.type.value not in ('BILL', 'INVOICE', 'SUBSCRIPTION'):
         raise HTTPException(status_code=409, detail="Payment type must allowed values are BILL, INVOICE or SUBSCRIPTION")
     if payment.category_id and not await crud.get_category(db=db, category_id=payment.category_id):
-        raise HTTPException(status_code=409, detail=f"Category ID {payment.category_id} doesn't exist")    
+        raise HTTPException(status_code=409, detail=f"Category ID {payment.category_id} doesn't exist")
+    if payment.group_id:
+        if not (group := await crud.get_group(db, group_id=payment.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
 
     new_payment = await crud.create_payment(db=db, payment=payment)
     if payment.category_id:
@@ -47,8 +52,34 @@ async def get_payments(request: Request,
                        group_id: Optional[int] = None,
                        current_user: schemas.User = Depends(dependencies.get_current_user), 
                        db: AsyncSession = Depends(get_db)):
-    if group_id: # TODO - check if user is in group and if group exist
-        return []
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+        return [
+            schemas.PaymentWithProof(
+                id=payment.id,
+                name=payment.name,
+                type=payment.type,
+                category_id=payment.category_id,
+                cost=payment.cost,
+                payment_date=payment.payment_date,
+                category=schemas.Category(
+                    id=payment.category.id,
+                    category=payment.category.category,
+                    user_id=payment.category.user_id
+                ) if payment.category else None,
+                payment_proof_id=payment.payment_proof_id,
+                payment_proof=schemas.PaymentProof(
+                    filename=payment.payment_proof.filename,
+                    url=f'{request.base_url}static/{payment.payment_proof.filename}',
+                    user_id=payment.payment_proof.user_id,
+                    id=payment.payment_proof.id,
+                    name=payment.payment_proof.name
+                ) if payment.payment_proof else None
+            ) for payment in await crud.get_group_payments(db=db, group_id=group_id, start_date=start_date, end_date=end_date)
+        ]
     
     return [
         schemas.PaymentWithProof(
@@ -75,7 +106,7 @@ async def get_payments(request: Request,
     ]
 
 
-@router.put("/payments/{payment_id}", tags=["payments"], response_model=schemas.Payment)
+@router.put("/payments/{payment_id}/", tags=["payments"], response_model=schemas.Payment)
 async def update_payments(payment_update: schemas.PaymentBase,
                           current_user: schemas.User = Depends(dependencies.get_current_user), 
                           payment_id: int = Path(title="The ID of the payment to get"),
@@ -83,11 +114,16 @@ async def update_payments(payment_update: schemas.PaymentBase,
     if not (payment := await crud.get_payment(db=db, payment_id=payment_id)):
         raise HTTPException(status_code=404, detail=f"Payment doesn't exist")
 
-    if payment.user_id != current_user.id: # also check for gorup
+    if payment.user_id != current_user.id:
         raise HTTPException(status_code=403, detail=f"Forbidden")
+    
+    if payment.group_id:
+        if not (group := await crud.get_group(db, group_id=payment.group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
 
     payment_update.user_id = current_user.id
-    # there should be data validation... xd
 
     if not (updated  := await crud.update_payment(db=db, payment=payment, update_data=payment_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")
@@ -98,13 +134,18 @@ async def update_payments(payment_update: schemas.PaymentBase,
     return updated
 
 
-@router.delete("/payments/{payment_id}", tags=["payments"])
+@router.delete("/payments/{payment_id}/", tags=["payments"])
 async def delete_payment(current_user: schemas.User = Depends(dependencies.get_current_user), 
                          payment_id: int = Path(title="The ID of the payment to get"),
                          db: AsyncSession = Depends(get_db)):
     if (payment := await crud.get_payment(db, payment_id)):
-        if payment.user_id != current_user.id: # also check for gorup
+        if payment.user_id != current_user.id:
             raise HTTPException(status_code=403, detail=f"Forbidden")
+        if payment.group_id:
+            if not (group := await crud.get_group(db, group_id=payment.group_id)):
+                raise HTTPException(status_code=404, detail="Group not found")
+            if not group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="You don't belong to this group")
         if await crud.delete_payment(db, payment):
             return True
         raise HTTPException(status_code=500, detail="Error while deleting payment")
@@ -114,12 +155,19 @@ async def delete_payment(current_user: schemas.User = Depends(dependencies.get_c
 @router.post("/payment_proofs/", tags=["payment_proofs"])
 async def upload_payment_proof(request: Request,
                                payment_proof_name: str,
+                               group_id: Union[int, None] = None,
                                current_user: schemas.User = Depends(dependencies.get_current_user),
                                file: Union[UploadFile, None] = None,
                                db: AsyncSession = Depends(get_db)):
     if not file:
         return {"message": "No upload file sent"}
     
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+
     generated_filename = f'{current_user.username}-{uuid.uuid4()}-{file.filename}'
     async with aiofiles.open(f'/app/backend/static/{generated_filename}', 'wb') as out_file:
         while content := await file.read(1024):  # async read chunk
@@ -129,7 +177,8 @@ async def upload_payment_proof(request: Request,
         filename=generated_filename,
         name=payment_proof_name,
         url=f'/app/backend/static/{generated_filename}',
-        user_id=current_user.id
+        user_id=current_user.id,
+        group_id=group_id if group_id else None
         )
     db_payment_proof = await crud.create_payment_proof(db, payment_proof)
     
@@ -141,6 +190,7 @@ async def upload_payment_proof(request: Request,
         name=db_payment_proof.name,
         url=f"{request.base_url}static/{db_payment_proof.filename}",
         user_id=db_payment_proof.user_id,
+        group_id=db_payment_proof.group_id,
         id=db_payment_proof.id
     )
 
@@ -152,9 +202,14 @@ async def get_payment_proofs(request: Request,
                              group_id: Optional[int] = None,
                              current_user: schemas.User = Depends(dependencies.get_current_user), 
                              db: AsyncSession = Depends(get_db)):
-    if group_id: # TODO - check if user is in group and if group exist
-        return []
-    proofs = await crud.get_user_payment_proofs(db=db, user_id=current_user.id, start_date=start_date, end_date=end_date)
+    if group_id:
+        if not (group := await crud.get_group(db, group_id=group_id)):
+            raise HTTPException(status_code=404, detail="Group not found")
+        if not group.is_member(current_user):
+            raise HTTPException(status_code=403, detail="You don't belong to this group")
+        proofs = await crud.get_group_payment_proofs(db=db, group_id=group_id, start_date=start_date, end_date=end_date)
+    else:
+        proofs = await crud.get_user_payment_proofs(db=db, user_id=current_user.id, start_date=start_date, end_date=end_date)
     p = []
     for proof in proofs:
         p.append(schemas.PaymentProofPayments(
@@ -182,7 +237,7 @@ async def get_payment_proofs(request: Request,
     return p
 
 
-@router.put("/payment_proofs/{payment_proof_id}", tags=["payment_proofs"])
+@router.put("/payment_proofs/{payment_proof_id}/", tags=["payment_proofs"])
 async def add_payments_to_payment_proof(payments: list[int],
                                         current_user: schemas.User = Depends(dependencies.get_current_user),
                                         payment_proof_id: int = Path(title="The ID of the payment to get"),
@@ -190,19 +245,29 @@ async def add_payments_to_payment_proof(payments: list[int],
     if (payment_proof := await crud.get_payment_proof(db, payment_proof_id)):
         if payment_proof.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Forbidden")
+        if payment_proof.group_id:
+            if not (group := await crud.get_group(db, group_id=payment_proof.group_id)):
+                raise HTTPException(status_code=404, detail="Group not found")
+            if not group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="You don't belong to this group")
         if await crud.add_payment_to_payment_proof(db, payment_proof, payments):
             return True
         raise HTTPException(status_code=500, detail="Error while adding payment to payment proof")
     raise HTTPException(status_code=404, detail="Payment proof with given ID don't exist")
 
 
-@router.delete("/payment_proofs/{payment_proof_id}", tags=["payment_proofs"])
+@router.delete("/payment_proofs/{payment_proof_id}/", tags=["payment_proofs"])
 async def delete_payment_proof(current_user: schemas.User = Depends(dependencies.get_current_user),
                                payment_proof_id: int = Path(title="The ID of the payment to get"),
                                db: AsyncSession = Depends(get_db)):
     if (payment_proof := await crud.get_payment_proof(db, payment_proof_id)):
         if payment_proof.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Forbidden")
+        if payment_proof.group_id:
+            if not (group := await crud.get_group(db, group_id=payment_proof.group_id)):
+                raise HTTPException(status_code=404, detail="Group not found")
+            if not group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="You don't belong to this group")
         file_path = payment_proof.url
         if await crud.delete_payment(db, payment_proof):
             os.remove(file_path)

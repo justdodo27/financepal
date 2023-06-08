@@ -89,18 +89,19 @@ async def get_categories_by_user_id(db: AsyncSession, user_id: int):
     return result.scalars().all()
 
 
-# async def get_categories_by_group_id(db: AsyncSession, group_id: int):
-#     q = select(models.Category).limit(
-#         models.Category.group_id == group_id
-#     )
-#     result = await db.execute(q)
-#     return result.scalars().all()
+async def get_categories_by_group_id(db: AsyncSession, group_id: int):
+    q = select(models.Category).filter(
+        models.Category.group_id == group_id
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
 
 
 async def create_category(db: AsyncSession, category: schemas.CategoryCreate):
     db_category = models.Category(
         category=category.category,
-        user_id=category.user_id
+        user_id=category.user_id,
+        group_id=category.group_id,
     )
     db.add(db_category)
     await db.commit()
@@ -143,12 +144,14 @@ async def get_user_payments(db: AsyncSession, user_id: int, start_date: Optional
     return result.scalars().all()
 
 
-# async def get_group_payments(db: AsyncSession, group_id: int):
-#     q = select(models.Payment).filter(
-#         models.Payment.group_id == group_id
-#     )
-#     result = await db.execute(q)
-#     return result.scalars().all()
+async def get_group_payments(db: AsyncSession, group_id: int, start_date: Optional[datetime], end_date: Optional[datetime]):
+    q = select(models.Payment).filter(
+        models.Payment.group_id == group_id,
+        (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+        (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
 
 
 async def create_payment(db: AsyncSession, payment: schemas.PaymentBase):
@@ -163,7 +166,7 @@ async def create_payment(db: AsyncSession, payment: schemas.PaymentBase):
         payment_date=payment_date,
         payment_proof_id=payment.payment_proof_id,
         renewable_id=payment.renewable_id,
-        # group_id
+        group_id=payment.group_id
     )
     
     db.add(db_payment)
@@ -214,11 +217,13 @@ async def create_payment_proof(db: AsyncSession, payment_proof: schemas.PaymentP
     except Exception as e:
         print(e)
         return False
-    
+
+
 async def get_payment_proof(db: AsyncSession, payment_proof_id: int):
     q = select(models.PaymentProof).filter(models.PaymentProof.id == payment_proof_id)
     result = await db.execute(q)
     return result.scalars().first()
+
 
 async def get_user_payment_proofs(db: AsyncSession, user_id: int, start_date: Optional[datetime], end_date: Optional[datetime]):
     q = select(models.PaymentProof).filter(
@@ -228,6 +233,17 @@ async def get_user_payment_proofs(db: AsyncSession, user_id: int, start_date: Op
     )
     result = await db.execute(q)
     return result.scalars().all()
+
+
+async def get_group_payment_proofs(db: AsyncSession, group_id: int, start_date: Optional[datetime], end_date: Optional[datetime]):
+    q = select(models.PaymentProof).filter(
+        models.PaymentProof.group_id == group_id,
+        (models.PaymentProof.payments.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+        (models.PaymentProof.payments.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+    )
+    result = await db.execute(q)
+    return result.scalars().all()
+
 
 async def add_payment_to_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof, payments_ids: list[int]):
     q = select(models.Payment).filter(models.Payment.id.in_(payments_ids))
@@ -243,6 +259,7 @@ async def add_payment_to_payment_proof(db: AsyncSession, payment_proof: models.P
         return False
     return True
 
+
 async def delete_payment_proof(db: AsyncSession, payment_proof: models.PaymentProof):
     try:
         await db.delete(payment_proof)
@@ -251,6 +268,7 @@ async def delete_payment_proof(db: AsyncSession, payment_proof: models.PaymentPr
         print(e)
         return False
     return True
+
 
 async def create_renewable(db: AsyncSession, renewable: schemas.RenewableBase):
     payment_date = renewable.payment_date.replace(tzinfo=None)
@@ -281,14 +299,23 @@ async def get_user_renewables(db: AsyncSession, user_id: int):
     return result.scalars().all()
 
 
-async def get_user_awaiting_renewables(db: AsyncSession, start_date: Optional[datetime], end_date: Optional[datetime], renewable_id: int):
-    q = select(models.Payment).filter(
-        models.Payment.renewable_id == renewable_id,
-        (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
-        (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+async def get_group_renewables(db: AsyncSession, group_id: int):
+    q = select(models.Renewable).filter(
+        models.Renewable.group_id == group_id,
+        models.Renewable.deleted_at.is_(None)
     )
     result = await db.execute(q)
     return result.scalars().all()
+
+
+# async def get_user_awaiting_renewables(db: AsyncSession, start_date: Optional[datetime], end_date: Optional[datetime], renewable_id: int):
+#     q = select(models.Payment).filter(
+#         models.Payment.renewable_id == renewable_id,
+#         (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
+#         (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
+#     )
+#     result = await db.execute(q)
+#     return result.scalars().all()
 
 
 async def get_last_payment_for_renewable(db: AsyncSession, renewable_id: int):
@@ -497,7 +524,7 @@ async def remove_limit(db: AsyncSession, limit: models.Limit):
 # STATISTICS
 
 async def categories_grouped(db: AsyncSession, start_date: datetime, end_date: datetime, user_id: Union[int, None], group_id: Union[int, None]):
-    if group_id: # do it for group
+    if group_id:
         q = select(
             models.Category.id,
             models.Category.category,
@@ -542,7 +569,7 @@ async def categories_grouped(db: AsyncSession, start_date: datetime, end_date: d
 
     return results.all()
 
-# TRIGGERS (kinda but not really XD)
+# "TRIGGERS"
 
 async def check_limit(db: AsyncSession, category_id: int, user_id: Union[int, None], group_id: Union[int, None]):
     if group_id:
