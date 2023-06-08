@@ -1,13 +1,13 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/models/payment_proof.dart';
-import 'package:frontend/utils/api/models/recurring_payment.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
 import 'models/group.dart';
 import 'models/payment.dart';
+import 'models/payment_proof.dart';
+import 'models/recurring_payment.dart';
 
 class ApiService {
   /// Server address.
@@ -31,7 +31,8 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      final Map<String, dynamic> data =
+          jsonDecode(utf8.decode(response.bodyBytes));
       if (data.containsKey('detail')) {
         throw Exception(data['detail']);
       }
@@ -201,7 +202,7 @@ class ApiService {
   /// Obtains the user's recurring payments from backend API.
   Future<List<RecurringPayment>> getRecurringPayments(String token) async {
     final response = await http.get(
-      buildUri('renewables/awaiting/'),
+      buildUri('renewables/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -238,7 +239,8 @@ class ApiService {
       throw Exception('Failed to create payment.');
     }
 
-    return RecurringPayment.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    return RecurringPayment.fromJson(
+        jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   /// Updates the specified recurring payment.
