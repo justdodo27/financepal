@@ -1,7 +1,7 @@
-import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.ext.asyncio import AsyncSession
+import strgen
 
 from backend import crud, schemas, dependencies
 from backend.database import get_db
@@ -17,7 +17,7 @@ async def create_group(group: schemas.GroupBase,
 
     if not group.name or len(group.name) == 0:
         raise HTTPException(status_code=409, detail="Group name is required")
-    group_code = str(uuid.uuid4())
+    group_code = strgen.StringGenerator("[\w\d]{6}").render()
 
     group_db = await crud.create_group(db, group, group_code)
 
@@ -76,7 +76,7 @@ async def update_group(group_data: schemas.GroupUpdate,
     
     group_code = None
     if group_data.refresh_code:
-        group_code = str(uuid.uuid4())
+        group_code = strgen.StringGenerator("[\w\d]{6}").render()
         
     users = []
     if group_data.kick_users:
