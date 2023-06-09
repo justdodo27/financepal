@@ -95,7 +95,7 @@ class ApiService {
   /// Updates the specified category.
   Future<void> updateCategory(String token, Category category) async {
     final response = await http.put(
-      buildUri('categories/${category.id}'),
+      buildUri('categories/${category.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -113,7 +113,7 @@ class ApiService {
   /// Deletes the specified category.
   Future<void> deleteCategory(String token, int id) async {
     final response = await http.delete(
-      buildUri('categories/$id'),
+      buildUri('categories/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -165,7 +165,7 @@ class ApiService {
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
     final response = await http.put(
-      buildUri('payments/${payment.id}'),
+      buildUri('payments/${payment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -190,7 +190,7 @@ class ApiService {
   /// Deltes the specified payment.
   Future<void> deletePayment(String token, int id) async {
     final response = await http.delete(
-      buildUri('payments/$id'),
+      buildUri('payments/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -247,7 +247,7 @@ class ApiService {
   Future<void> updateRecurringPayment(
       String token, RecurringPayment recurringPayment) async {
     final response = await http.put(
-      buildUri('renewables/${recurringPayment.id}'),
+      buildUri('renewables/${recurringPayment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -273,7 +273,7 @@ class ApiService {
   /// Deltes the specified recurring payment.
   Future<void> deleteRecurringPayment(String token, int id) async {
     final response = await http.delete(
-      buildUri('renewables/$id'),
+      buildUri('renewables/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -321,7 +321,7 @@ class ApiService {
   /// Deletes the specified payment proof.
   Future<void> deletePaymentProof(String token, int id) async {
     final response = await http.delete(
-      buildUri('payment_proofs/$id'),
+      buildUri('payment_proofs/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -369,7 +369,7 @@ class ApiService {
   /// Joins the group with the specified code.
   Future<void> joinGroup(String token, {required String groupCode}) async {
     final response = await http.put(
-      buildUri('groups/join/$groupCode'),
+      buildUri('groups/join/$groupCode/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
