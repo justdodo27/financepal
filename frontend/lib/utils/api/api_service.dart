@@ -299,13 +299,17 @@ class ApiService {
   }
 
   /// Creates new payment proof.
-  Future<PaymentProof> createPaymentProof(String token, String path) async {
+  Future<PaymentProof> createPaymentProof(
+    String token, {
+    required String proofName,
+    required String filePath,
+  }) async {
     final request = http.MultipartRequest(
       'POST',
-      buildUri('payment_proofs/'),
+      buildUri('payment_proofs/?payment_proof_name=$proofName'),
     );
     request.headers['Authorization'] = 'Bearer $token';
-    request.files.add(await http.MultipartFile.fromPath('file', path));
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
     final response = await request.send();
 

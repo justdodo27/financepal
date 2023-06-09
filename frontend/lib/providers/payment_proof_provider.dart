@@ -33,7 +33,8 @@ class PaymentProofProvider extends ChangeNotifier {
     final token = auth!.token;
     if (token == null) return;
     try {
-      final created = await auth!.apiService.createPaymentProof(token, path);
+      final created = await auth!.apiService
+          .createPaymentProof(token, proofName: name, filePath: path);
       _paymentProofs?.add(created);
     } catch (_) {
       throw Exception('Failed to add the proof of payment.');
