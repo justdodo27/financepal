@@ -87,6 +87,7 @@ class RecurringPaymentProvider extends ChangeNotifier {
         date: DateTime.now(),
         cost: recurringPayment.cost,
         category: recurringPayment.category,
+        recurringPaymentId: recurringPayment.id,
       );
       await auth!.apiService.createPayment(auth!.token!, payment);
       recurringPayment.lastPaymentDate = DateTime.now();

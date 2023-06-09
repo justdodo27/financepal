@@ -152,6 +152,7 @@ class ApiService {
         'category_id': payment.category.id,
         'cost': payment.cost,
         'payment_date': payment.date.toIso8601String(),
+        'renewable_id': payment.recurringPaymentId,
       }),
     );
 
