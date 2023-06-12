@@ -3,6 +3,7 @@ import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/date_range_picker.dart';
+import '../../components/loading_card.dart';
 import '../../providers/payment_provider.dart';
 import '../home_page/components/no_data_widget.dart';
 import '../home_page/components/payment_tile.dart';
@@ -68,13 +69,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
               final payments = provider.payments;
 
               if (payments == null) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.85,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                        color: Theme.of(context).colorScheme.tertiary),
-                  ),
-                );
+                return const LoadingCard();
               }
 
               if (payments.isEmpty) {

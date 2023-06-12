@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/home_page/components/no_data_widget.dart';
 import 'package:frontend/pages/proofs_of_payments_page/components/add_payment_proof_sheet.dart';
 import 'package:frontend/providers/payment_proof_provider.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,12 @@ class _ProofsOfPaymentsPageState extends State<ProofsOfPaymentsPage> {
             child: Consumer<PaymentProofProvider>(
               builder: (context, provider, child) {
                 final paymentProofs = provider.paymentProofs ?? [];
+
+                if (paymentProofs.isEmpty) {
+                  return const NoDataWidget(
+                      text: 'No proofs of payment to display');
+                }
+
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

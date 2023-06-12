@@ -31,6 +31,7 @@ class RecurringPayment {
     required this.cost,
     required this.frequency,
     required this.paymentDate,
+    this.lastPaymentDate,
   });
 
   factory RecurringPayment.fromJson(Map<String, dynamic> json) =>
@@ -44,8 +45,8 @@ class RecurringPayment {
         cost: json['cost'],
         frequency: json['period'],
         paymentDate: DateTime.parse(json['payment_date']),
-        // lastPaymentDate: json['last_payment_date'] != null
-        //     ? DateTime.parse(json['last_payment_date'])
-        //     : null,
+        lastPaymentDate: json['last_payment'] != null
+            ? DateTime.parse(json['last_payment']['payment_date'])
+            : null,
       );
 }

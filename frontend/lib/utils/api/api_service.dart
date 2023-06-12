@@ -1,13 +1,14 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/models/payment_proof.dart';
-import 'package:frontend/utils/api/models/recurring_payment.dart';
+import 'package:frontend/utils/api/models/statistics.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
 import 'models/group.dart';
 import 'models/payment.dart';
+import 'models/payment_proof.dart';
+import 'models/recurring_payment.dart';
 
 class ApiService {
   /// Server address.
@@ -31,7 +32,8 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      final Map<String, dynamic> data =
+          jsonDecode(utf8.decode(response.bodyBytes));
       if (data.containsKey('detail')) {
         throw Exception(data['detail']);
       }
@@ -94,7 +96,7 @@ class ApiService {
   /// Updates the specified category.
   Future<void> updateCategory(String token, Category category) async {
     final response = await http.put(
-      buildUri('categories/${category.id}'),
+      buildUri('categories/${category.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -112,7 +114,7 @@ class ApiService {
   /// Deletes the specified category.
   Future<void> deleteCategory(String token, int id) async {
     final response = await http.delete(
-      buildUri('categories/$id'),
+      buildUri('categories/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -151,6 +153,7 @@ class ApiService {
         'category_id': payment.category.id,
         'cost': payment.cost,
         'payment_date': payment.date.toIso8601String(),
+        'renewable_id': payment.recurringPaymentId,
       }),
     );
 
@@ -164,7 +167,7 @@ class ApiService {
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
     final response = await http.put(
-      buildUri('payments/${payment.id}'),
+      buildUri('payments/${payment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -189,7 +192,7 @@ class ApiService {
   /// Deltes the specified payment.
   Future<void> deletePayment(String token, int id) async {
     final response = await http.delete(
-      buildUri('payments/$id'),
+      buildUri('payments/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -201,7 +204,7 @@ class ApiService {
   /// Obtains the user's recurring payments from backend API.
   Future<List<RecurringPayment>> getRecurringPayments(String token) async {
     final response = await http.get(
-      buildUri('renewables/awaiting/'),
+      buildUri('renewables/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -238,14 +241,15 @@ class ApiService {
       throw Exception('Failed to create payment.');
     }
 
-    return RecurringPayment.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    return RecurringPayment.fromJson(
+        jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   /// Updates the specified recurring payment.
   Future<void> updateRecurringPayment(
       String token, RecurringPayment recurringPayment) async {
     final response = await http.put(
-      buildUri('renewables/${recurringPayment.id}'),
+      buildUri('renewables/${recurringPayment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -271,7 +275,7 @@ class ApiService {
   /// Deltes the specified recurring payment.
   Future<void> deleteRecurringPayment(String token, int id) async {
     final response = await http.delete(
-      buildUri('renewables/$id'),
+      buildUri('renewables/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -297,13 +301,17 @@ class ApiService {
   }
 
   /// Creates new payment proof.
-  Future<PaymentProof> createPaymentProof(String token, String path) async {
+  Future<PaymentProof> createPaymentProof(
+    String token, {
+    required String proofName,
+    required String filePath,
+  }) async {
     final request = http.MultipartRequest(
       'POST',
-      buildUri('payment_proofs/'),
+      buildUri('payment_proofs/?payment_proof_name=$proofName'),
     );
     request.headers['Authorization'] = 'Bearer $token';
-    request.files.add(await http.MultipartFile.fromPath('file', path));
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
     final response = await request.send();
 
@@ -319,7 +327,7 @@ class ApiService {
   /// Deletes the specified payment proof.
   Future<void> deletePaymentProof(String token, int id) async {
     final response = await http.delete(
-      buildUri('payment_proofs/$id'),
+      buildUri('payment_proofs/$id/'),
       headers: <String, String>{'Authorization': 'Bearer $token'},
     );
 
@@ -341,5 +349,77 @@ class ApiService {
 
     final data = jsonDecode(utf8.decode(response.bodyBytes));
     return List<Group>.from(data.map((json) => Group.fromJson(json)));
+  }
+
+  /// Creates new group.
+  Future<Group> createGroup(String token, {required String groupName}) async {
+    final response = await http.post(
+      buildUri('groups/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': groupName,
+        'user_id': 0,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create group.');
+    }
+
+    return Group.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
+
+  /// Joins the group with the specified code.
+  Future<void> joinGroup(String token, {required String groupCode}) async {
+    final response = await http.put(
+      buildUri('groups/join/$groupCode/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to join the group.');
+    }
+  }
+
+  /// Deletes the specified group.
+  Future<void> deleteGroup(String token, {required int groupId}) async {
+    final response = await http.delete(
+      buildUri('groups/$groupId/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete the group.');
+    }
+  }
+
+  /// Get statistics for the specified period.
+  Future<Statistics> getStatistics(
+    String token, {
+    required DateTimeRange dateTimeRange,
+  }) async {
+    final response = await http.get(
+      buildUri(
+        'statistics/?'
+        'start_date=${dateTimeRange.start.toIso8601String()}&'
+        'end_date=${dateTimeRange.end.toIso8601String()}',
+      ),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load statistics.');
+    }
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    return Statistics.fromJson(data);
   }
 }

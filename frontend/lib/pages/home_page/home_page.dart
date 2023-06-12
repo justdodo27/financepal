@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/statistics_provider.dart';
 import 'package:frontend/utils/api/models/category.dart';
 import 'package:frontend/utils/api/models/payment.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
 import 'components/home_appbar_bottom.dart';
 import 'components/pie_chart_section.dart';
@@ -19,30 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   String optionSelected = 'TODAY';
 
-  final todayPieData = [
-    PieData(name: 'Grocery shopping', percent: 25, color: Colors.redAccent),
-    PieData(name: 'Chemical articles', percent: 20, color: Colors.purpleAccent),
-    PieData(name: 'Electronics', percent: 15, color: Colors.blue),
-    PieData(name: 'Sport', percent: 10, color: Colors.greenAccent),
-    PieData(name: 'Internet', percent: 10, color: Colors.blueGrey),
-    PieData(name: 'Other', percent: 5, color: Colors.grey),
-  ];
-
-  final monthPieData = [
-    PieData(name: 'Grocery shopping', percent: 47.3, color: Colors.redAccent),
-    PieData(
-        name: 'Chemical articles', percent: 26.1, color: Colors.purpleAccent),
-    PieData(name: 'Electronics', percent: 21.6, color: Colors.blue),
-    PieData(name: 'Other', percent: 5, color: Colors.grey),
-  ];
-
-  final yearPieData = [
-    PieData(name: 'Grocery shopping', percent: 48.0, color: Colors.redAccent),
-    PieData(
-        name: 'Chemical articles', percent: 25.0, color: Colors.purpleAccent),
-    PieData(name: 'Electronics', percent: 12.0, color: Colors.blue),
-    PieData(name: 'Other', percent: 5, color: Colors.grey),
-  ];
+  late StatisticsProvider statisticsProvider;
 
   final todayBarData = [
     BarData(id: 0, name: '1:00 AM', value: 16.33, color: Colors.redAccent),
@@ -236,17 +216,6 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  List<PieData> get pieData {
-    switch (optionSelected) {
-      case 'MONTH':
-        return monthPieData;
-      case 'YEAR':
-        return yearPieData;
-      default:
-        return todayPieData;
-    }
-  }
-
   List<BarData> get barData {
     switch (optionSelected) {
       case 'MONTH':
@@ -269,30 +238,98 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getTodayStats() async {
+    try {
+      await statisticsProvider.getTodayStatistics();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  Future<void> getMonthStats() async {
+    try {
+      await statisticsProvider.getMonthStatistics();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  Future<void> getYearStats() async {
+    try {
+      await statisticsProvider.getYearStatistics();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  Future<void> _changeDateTimeRange(String value) async {
+    switch (value) {
+      case 'MONTH':
+        await getMonthStats();
+        break;
+      case 'YEAR':
+        await getYearStats();
+        break;
+      default:
+        await getTodayStats();
+        break;
+    }
+    setState(() => optionSelected = value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    statisticsProvider =
+        Provider.of<StatisticsProvider>(context, listen: false);
+    getTodayStats();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              SizedBox(height: appBarBottomHeight + 5), // AppBarBottom height
-              PieChartSection(data: pieData),
-              BarChartSection(data: barData),
-              LastPaymentsSection(data: paymentData),
-              const SizedBox(height: 80),
-            ],
+          child: Consumer<StatisticsProvider>(
+            builder: (_, provider, __) {
+              if (provider.isLoading) {
+                return Column(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height / 2),
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              final stats = provider.lastFetchedStatistics!;
+              final pieData = stats.pieChartDetails;
+
+              return Column(
+                children: [
+                  SizedBox(height: appBarBottomHeight + 5),
+                  PieChartSection(data: pieData),
+                  BarChartSection(data: barData),
+                  LastPaymentsSection(data: paymentData),
+                  const SizedBox(height: 80),
+                ],
+              );
+            },
           ),
         ),
-        HomeAppBarBottom(
-          height: appBarBottomHeight,
-          todaySpendings: 95.97,
-          thisMonthSpendings: 534.81,
-          thisYearSpendings: 2548.08,
-          onSelectionChanged: (selected) =>
-              setState(() => optionSelected = selected),
-        ),
+        Consumer<StatisticsProvider>(builder: (_, provider, __) {
+          return HomeAppBarBottom(
+            height: appBarBottomHeight,
+            todaySpendings: provider.todayStatistics?.totalCost,
+            thisMonthSpendings: provider.monthStatistics?.totalCost,
+            thisYearSpendings: provider.yearStatistics?.totalCost,
+            onSelectionChanged: _changeDateTimeRange,
+          );
+        }),
       ],
     );
   }
