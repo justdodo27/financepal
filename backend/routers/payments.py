@@ -65,6 +65,7 @@ async def get_payments(request: Request,
                 category_id=payment.category_id,
                 cost=payment.cost,
                 payment_date=payment.payment_date,
+                renewable_id=payment.renewable_id,
                 category=schemas.Category(
                     id=payment.category.id,
                     category=payment.category.category,
@@ -89,6 +90,7 @@ async def get_payments(request: Request,
             category_id=payment.category_id,
             cost=payment.cost,
             payment_date=payment.payment_date,
+            renewable_id=payment.renewable_id,
             category=schemas.Category(
                 id=payment.category.id,
                 category=payment.category.category,
@@ -129,7 +131,7 @@ async def update_payments(payment_update: schemas.PaymentBase,
         raise HTTPException(status_code=500, detail="Error while updating payment")
 
     if updated.category_id:
-        await check_notifications(db, category_id=updated.category_id, user_id=current_user.id, group_id=updated.group_id)
+        await check_notifications(db, category_id=updated.category_id, user_id=payment_update.user_id, group_id=updated.group_id)
     
     return updated
 

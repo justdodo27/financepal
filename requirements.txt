@@ -59,6 +59,7 @@ six==1.16.0
 sniffio==1.3.0
 SQLAlchemy==2.0.7
 starlette==0.26.1
+StringGenerator==0.4.4
 typing_extensions==4.5.0
 ujson==5.7.0
 uritemplate==4.1.1

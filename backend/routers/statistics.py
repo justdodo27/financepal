@@ -47,7 +47,7 @@ async def get_statistics(start_date: datetime,
             pie_chart_data=[schemas.PieChartRecord(
                 category_id=category.id,
                 category=category.category,
-                percentage=category.category_sum/categories_sum,
+                percentage=round((category.category_sum/categories_sum)*100, 2),
                 value=category.category_sum
             ) for category in categories],
             plot_data=[schemas.LineChartRecord(
@@ -66,7 +66,7 @@ async def get_statistics(start_date: datetime,
             pie_chart_data=[schemas.PieChartRecord(
                 category_id=category.id,
                 category=category.category,
-                percentage=category.category_sum/categories_sum,
+                percentage=round((category.category_sum/categories_sum)*100, 2),
                 value=category.category_sum
             ) for category in categories],
             plot_data=[schemas.LineChartRecord(
@@ -90,7 +90,7 @@ async def get_statistics(start_date: datetime,
             pie_chart_data=[schemas.PieChartRecord(
                 category_id=category.id,
                 category=category.category,
-                percentage=category.category_sum/categories_sum,
+                percentage=round((category.category_sum/categories_sum)*100, 2),
                 value=category.category_sum
             ) for category in categories],
             plot_data=[schemas.LineChartRecord(

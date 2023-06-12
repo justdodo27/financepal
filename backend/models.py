@@ -56,7 +56,7 @@ class Payment(Base):
 
     category = relationship("Category", back_populates="payments", lazy='selectin')
     payment_proof = relationship("PaymentProof", back_populates='payments', cascade='all,delete', lazy='selectin')
-    renewable = relationship("Renewable", back_populates='payments', cascade='all,delete', lazy='selectin')
+    renewable = relationship("Renewable", back_populates='payments', lazy='selectin')
 
 
 class PaymentProof(Base):
@@ -92,7 +92,7 @@ class Renewable(Base):
     deleted_at = sa.Column(sa.DateTime, nullable=True)
 
     category = relationship("Category", back_populates=None, lazy='selectin')
-    payments = relationship("Payment", back_populates='renewable', cascade='all,delete', lazy='selectin')
+    payments = relationship("Payment", back_populates='renewable', lazy='selectin')
 
 
 class GroupMember(Base):
