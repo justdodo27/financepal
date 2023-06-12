@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/models/pie_chart_data.dart';
 
 class PieData {
   final String name;
@@ -10,7 +11,7 @@ class PieData {
 }
 
 class ChartLegend extends StatelessWidget {
-  final List<PieData> data;
+  final List<PieChartDetail> data;
 
   const ChartLegend({super.key, required this.data});
 
@@ -45,7 +46,11 @@ class ChartLegend extends StatelessWidget {
         children: data
             .map((entry) => Container(
                   padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: _buildIndicator(context, entry.color, entry.name),
+                  child: _buildIndicator(
+                    context,
+                    entry.color,
+                    entry.categoryName,
+                  ),
                 ))
             .toList(),
       ),
@@ -54,10 +59,11 @@ class ChartLegend extends StatelessWidget {
 }
 
 class PieChartSection extends StatelessWidget {
-  final List<PieData> data;
+  final List<PieChartDetail> data;
 
   const PieChartSection({
-    super.key, required this.data,
+    super.key,
+    required this.data,
   });
 
   List<PieChartSectionData> _getSections(BuildContext context) {
@@ -66,8 +72,8 @@ class PieChartSection extends StatelessWidget {
         .map<int, PieChartSectionData>((key, data) {
           final value = PieChartSectionData(
             color: data.color,
-            value: data.percent,
-            title: '${data.percent}%',
+            value: data.percentage,
+            title: '${data.percentage}%',
             titleStyle: const TextStyle(
               color: Colors.white,
               fontSize: 12,

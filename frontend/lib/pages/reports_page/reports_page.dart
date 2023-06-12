@@ -94,7 +94,7 @@ class _ReportsPageState extends State<ReportsPage> {
           child: Column(
             children: [
               SizedBox(height: appBarBottomHeight + 5), // AppBarBottom height
-              PieChartSection(data: todayPieData),
+              const PieChartSection(data: []),
               BarChartSection(data: todayBarData),
               LastPaymentsSection(data: todayPayments),
               const SizedBox(height: 80),

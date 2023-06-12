@@ -8,9 +8,9 @@ import '../../../themes/theme_manager.dart';
 class HomeAppBarBottom extends StatefulWidget {
   final double height;
   final Function(String selected) onSelectionChanged;
-  final double todaySpendings;
-  final double thisMonthSpendings;
-  final double thisYearSpendings;
+  final double? todaySpendings;
+  final double? thisMonthSpendings;
+  final double? thisYearSpendings;
 
   const HomeAppBarBottom({
     super.key,
@@ -28,14 +28,14 @@ class HomeAppBarBottom extends StatefulWidget {
 class _AppBarBottomState extends State<HomeAppBarBottom> {
   late String optionSelected;
 
-  double get spendings {
+  String? get spendings {
     switch (optionSelected) {
       case 'MONTH':
-        return widget.thisMonthSpendings;
+        return widget.thisMonthSpendings?.toStringAsFixed(2);
       case 'YEAR':
-        return widget.thisYearSpendings;
+        return widget.thisYearSpendings?.toStringAsFixed(2);
       default:
-        return widget.todaySpendings;
+        return widget.todaySpendings?.toStringAsFixed(2);
     }
   }
 
@@ -65,16 +65,28 @@ class _AppBarBottomState extends State<HomeAppBarBottom> {
                       )
                       .bodyLarge,
                 ),
-                Text(
-                  '$spendings',
-                  style: Theme.of(context)
-                      .textTheme
-                      .apply(
-                        displayColor:
-                            theme.isDark ? Colors.white : Colors.black,
-                      )
-                      .displayLarge,
-                ),
+                if (spendings != null)
+                  Text(
+                    '$spendings',
+                    style: Theme.of(context)
+                        .textTheme
+                        .apply(
+                          displayColor:
+                              theme.isDark ? Colors.white : Colors.black,
+                        )
+                        .displayLarge,
+                  ),
+                if (spendings == null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -90,7 +102,7 @@ class _AppBarBottomState extends State<HomeAppBarBottom> {
                           : null,
                     ),
                     SmallRoundedOutlinedTextButton(
-                      label: 'This month',
+                      label: 'Last month',
                       onPressed: () {
                         setState(() => optionSelected = 'MONTH');
                         widget.onSelectionChanged('MONTH');
@@ -100,7 +112,7 @@ class _AppBarBottomState extends State<HomeAppBarBottom> {
                           : null,
                     ),
                     SmallRoundedOutlinedTextButton(
-                      label: 'This year',
+                      label: 'Last year',
                       onPressed: () {
                         setState(() => optionSelected = 'YEAR');
                         widget.onSelectionChanged('YEAR');
