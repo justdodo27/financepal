@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/providers/group_provider.dart';
 import 'package:frontend/providers/payment_proof_provider.dart';
 import 'package:frontend/providers/recurring_payment_provider.dart';
+import 'package:frontend/providers/statistics_provider.dart';
 import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,10 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Auth(apiService)),
+        ChangeNotifierProxyProvider<Auth, StatisticsProvider>(
+          update: (context, auth, _) => StatisticsProvider(auth),
+          create: (context) => StatisticsProvider(null),
+        ),
         ChangeNotifierProxyProvider<Auth, CategoryProvider>(
           update: (context, auth, _) => CategoryProvider(auth),
           create: (context) => CategoryProvider(null),

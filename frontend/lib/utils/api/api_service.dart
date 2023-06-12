@@ -1,6 +1,7 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/api/models/statistics.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
@@ -398,5 +399,27 @@ class ApiService {
     if (response.statusCode != 200) {
       throw Exception('Failed to delete the group.');
     }
+  }
+
+  /// Get statistics for the specified period.
+  Future<Statistics> getStatistics(
+    String token, {
+    required DateTimeRange dateTimeRange,
+  }) async {
+    final response = await http.get(
+      buildUri(
+        'statistics/?'
+        'start_date=${dateTimeRange.start.toIso8601String()}&'
+        'end_date=${dateTimeRange.end.toIso8601String()}',
+      ),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load statistics.');
+    }
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    return Statistics.fromJson(data);
   }
 }
