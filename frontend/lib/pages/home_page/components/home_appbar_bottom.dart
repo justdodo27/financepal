@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/appbar_bottom.dart';
 import 'package:provider/provider.dart';
 
+import '../../../components/appbar_bottom.dart';
 import '../../../components/rounded_outlined_button.dart';
 import '../../../themes/theme_manager.dart';
 

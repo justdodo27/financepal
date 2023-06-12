@@ -1,7 +1,6 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/models/statistics.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
@@ -9,6 +8,7 @@ import 'models/group.dart';
 import 'models/payment.dart';
 import 'models/payment_proof.dart';
 import 'models/recurring_payment.dart';
+import 'models/statistics.dart';
 
 class ApiService {
   /// Server address.

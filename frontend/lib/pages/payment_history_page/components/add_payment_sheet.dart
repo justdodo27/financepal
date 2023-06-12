@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/category_provider.dart';
-import 'package:frontend/utils/api/models/payment.dart';
-import 'package:frontend/utils/snackbars.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -9,8 +6,11 @@ import '../../../components/category_drop_down_button.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 import '../../../components/text_field_placeholder.dart';
+import '../../../providers/category_provider.dart';
 import '../../../providers/payment_provider.dart';
 import '../../../utils/api/models/category.dart';
+import '../../../utils/api/models/payment.dart';
+import '../../../utils/snackbars.dart';
 
 class AddPaymentSheet extends StatefulWidget {
   final Payment? payment;
@@ -64,7 +64,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
       cost: double.parse(_amount.text),
       category: category,
     );
-    
+
     try {
       await Provider.of<PaymentProvider>(context, listen: false)
           .updatePayment(payment);

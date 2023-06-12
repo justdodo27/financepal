@@ -15,6 +15,28 @@ class StatisticsProvider extends ChangeNotifier {
 
   Statistics? lastFetchedStatistics;
 
+  double? getTotalCost(String option) {
+    late Statistics? stats;
+    switch (option) {
+      case 'TODAY':
+        stats = todayStatistics;
+        break;
+      case 'MONTH':
+        stats = monthStatistics;
+        break;
+      case 'YEAR':
+        stats = yearStatistics;
+        break;
+      default:
+        stats = lastFetchedStatistics;
+        break;
+    }
+
+    if (stats == null) return null;
+    
+    return stats.pieChartDetails.fold(0, (sum, item) => sum! + item.value);
+  }
+
   bool get isLoading => lastFetchedStatistics == null;
 
   /// Obtains the user's statistics from backend API.
@@ -38,7 +60,7 @@ class StatisticsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTodayStatistics([bool force = false]) async {
+  Future<void> getTodayStatistics({bool force = false}) async {
     handleIfNotLoggedIn(auth);
     if (!force && todayStatistics != null) {
       lastFetchedStatistics = todayStatistics;
@@ -65,7 +87,7 @@ class StatisticsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMonthStatistics([bool force = false]) async {
+  Future<void> getMonthStatistics({bool force = false}) async {
     handleIfNotLoggedIn(auth);
     if (!force && monthStatistics != null) {
       lastFetchedStatistics = monthStatistics;
@@ -94,7 +116,7 @@ class StatisticsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getYearStatistics([bool force = false]) async {
+  Future<void> getYearStatistics({bool force = false}) async {
     handleIfNotLoggedIn(auth);
     if (!force && yearStatistics != null) {
       lastFetchedStatistics = yearStatistics;
@@ -120,6 +142,30 @@ class StatisticsProvider extends ChangeNotifier {
       throw Exception('Failed to load the statistics.');
     }
     lastFetchedStatistics = yearStatistics;
+    notifyListeners();
+  }
+
+  void _clear() {
+    todayStatistics = null;
+    monthStatistics = null;
+    yearStatistics = null;
+    lastFetchedStatistics = null;
+    notifyListeners();
+  }
+
+  Future<void> reloadStats({String option = 'LAST'}) async {
+    _clear();
+    switch (option) {
+      case 'MONTH':
+        await getMonthStatistics();
+        break;
+      case 'YEAR':
+        await getYearStatistics();
+        break;
+      default:
+        await getTodayStatistics();
+        break;
+    }
     notifyListeners();
   }
 
