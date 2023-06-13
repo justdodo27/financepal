@@ -50,7 +50,7 @@ async def generate_dataset(db: AsyncSession):
     await db.refresh(c4)
     await db.refresh(c5)
 
-    for i in range(1,4):
+    for i in range(3):
         for user in [u1, u2, u3]:
             await db.refresh(user)
             for category in [c1, c2, c3, c4, c5]:
@@ -65,6 +65,15 @@ async def generate_dataset(db: AsyncSession):
                         payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i)
                     ))
                     await db.refresh(user)
+                await crud.create_payment(db, schemas.PaymentBase(
+                        name=f"{generate_payment_name(category.category)} - TODAY",
+                        type=schemas.PaymentType.BILL,
+                        category_id=category.id,
+                        user_id=user.id,
+                        cost=randint(10, 2137) / randint(1, 10),
+                        payment_date=datetime.utcnow()
+                    ))
+                await db.refresh(user)
                 
             if user.username == "endrju":
                 await db.refresh(c1u1)
