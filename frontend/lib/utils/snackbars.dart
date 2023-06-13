@@ -46,7 +46,7 @@ void showForegroundMessageSnackBar(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       duration: const Duration(seconds: 5),
-      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+      backgroundColor: Colors.deepPurple,
       content: Row(
         children: [
           const Icon(Icons.notifications, color: Colors.amber),
