@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import firebase_admin
 from firebase_admin import credentials
 
-from backend import schemas
+from backend import schemas, crud
 from backend.dependencies import authenticate_user, create_access_token
 from backend.routers import users, categories, payments, renewables, groups, statistics, limits
 from backend.database import engine, Base, get_db
@@ -57,7 +57,7 @@ async def reset(db: AsyncSession = Depends(get_db)):
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    form_data: Annotated[schemas.AuthorizationModel, Depends()],
     db: AsyncSession = Depends(get_db)
 ):
     user = await authenticate_user(db, form_data.username, form_data.password)
@@ -67,6 +67,8 @@ async def login_for_access_token(
             detail="Incorrect login or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if form_data.token:
+        await crud.update_notification_token(db, user, token=form_data.token)
     access_token = create_access_token(
         data={"sub": str(user.id)}
     )
