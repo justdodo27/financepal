@@ -9,7 +9,7 @@ import aiofiles
 
 from backend import crud, schemas, dependencies
 from backend.database import get_db
-from backend.notifications import check_notifications
+from backend.notifications import check_notifications, test_notification
 
 router = APIRouter(dependencies=[])
 
@@ -82,6 +82,8 @@ async def get_payments(request: Request,
             ) for payment in await crud.get_group_payments(db=db, group_id=group_id, start_date=start_date, end_date=end_date)
         ]
     
+    await test_notification(db, current_user.id)
+
     return [
         schemas.PaymentWithProof(
             id=payment.id,
