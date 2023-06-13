@@ -182,6 +182,8 @@ async def update_payment(db: AsyncSession, payment: models.Payment, update_data:
         payment.category_id = update_data.category_id
         payment.cost = update_data.cost
         payment.payment_date = update_data.payment_date.replace(tzinfo=None)
+        payment.payment_proof_id = update_data.payment_proof_id
+        payment.renewable_id = update_data.renewable_id
 
         await db.commit()
         await db.refresh(payment)
@@ -207,7 +209,8 @@ async def create_payment_proof(db: AsyncSession, payment_proof: schemas.PaymentP
             filename=payment_proof.filename,
             url=payment_proof.url,
             name=payment_proof.name,
-            user_id=payment_proof.user_id
+            user_id=payment_proof.user_id,
+            group_id=payment_proof.group_id,
         )
 
         db.add(db_payment_proof)

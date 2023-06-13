@@ -127,6 +127,17 @@ async def update_payments(payment_update: schemas.PaymentBase,
 
     payment_update.user_id = current_user.id
 
+    if payment_update.payment_proof_id:
+        if not (proof := await crud.get_payment_proof(db, payment_proof_id=payment_update.payment_proof_id)):
+            raise HTTPException(status_code=404, detail="Payment proof not found")
+        if proof.group_id:
+            proof_group = await crud.get_group(db, proof.group_id)
+            if not proof_group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="This payment proof don't belongs to your group")    
+        elif proof.user_id != current_user.id:
+            print(proof.user_id, current_user.id)
+            raise HTTPException(status_code=403, detail="This payment proof don't belongs to you")
+
     if not (updated  := await crud.update_payment(db=db, payment=payment, update_data=payment_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")
 

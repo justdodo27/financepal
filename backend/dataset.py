@@ -50,43 +50,44 @@ async def generate_dataset(db: AsyncSession):
     await db.refresh(c4)
     await db.refresh(c5)
 
-    for user in [u1, u2, u3]:
-        await db.refresh(user)
-        for category in [c1, c2, c3, c4, c5]:
-            await db.refresh(category)
-            for payment_count in range(5):
-                await crud.create_payment(db, schemas.PaymentBase(
-                    name=f"{generate_payment_name(category.category)} - {payment_count}",
-                    type=schemas.PaymentType.BILL,
-                    category_id=category.id,
-                    user_id=user.id,
-                    cost=randint(10, 2137) / randint(1, 10),
-                    payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20))
-                ))
-                await db.refresh(user)
-            
-        if user.username == "endrju":
-            await db.refresh(c1u1)
-            await db.refresh(c2u1)
-            await db.refresh(c3u1)
-            pp = await crud.create_payment_proof(db, schemas.PaymentProofBase(
-                filename='paragon.png',
-                name="Paragon ;-)",
-                url='/app/backend/static/paragon.png',
-                user_id=user.id
-            ))
-            for category in [c1u1, c2u1, c3u1]:
+    for i in range(1,4):
+        for user in [u1, u2, u3]:
+            await db.refresh(user)
+            for category in [c1, c2, c3, c4, c5]:
                 await db.refresh(category)
-                for payment_count in range(10):
+                for payment_count in range(5):
                     await crud.create_payment(db, schemas.PaymentBase(
                         name=f"{generate_payment_name(category.category)} - {payment_count}",
                         type=schemas.PaymentType.BILL,
                         category_id=category.id,
                         user_id=user.id,
                         cost=randint(10, 2137) / randint(1, 10),
-                        payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20)),
-                        payment_proof_id=pp.id
+                        payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i)
                     ))
                     await db.refresh(user)
+                
+            if user.username == "endrju":
+                await db.refresh(c1u1)
+                await db.refresh(c2u1)
+                await db.refresh(c3u1)
+                pp = await crud.create_payment_proof(db, schemas.PaymentProofBase(
+                    filename='paragon.png',
+                    name="Paragon ;-)",
+                    url='/app/backend/static/paragon.png',
+                    user_id=user.id
+                ))
+                for category in [c1u1, c2u1, c3u1]:
+                    await db.refresh(category)
+                    for payment_count in range(10):
+                        await crud.create_payment(db, schemas.PaymentBase(
+                            name=f"{generate_payment_name(category.category)} - {payment_count}",
+                            type=schemas.PaymentType.BILL,
+                            category_id=category.id,
+                            user_id=user.id,
+                            cost=randint(10, 2137) / randint(1, 10),
+                            payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i),
+                            payment_proof_id=pp.id
+                        ))
+                        await db.refresh(user)
     
     return True

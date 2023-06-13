@@ -149,15 +149,15 @@ class LineChartRecord(BaseModel):
 
 class CategoryAggregated(BaseModel):
     category_id: int
-    category: str
-    payments_sum: float
-    payments_count: int
+    name: str
+    value: float
+    count: int
 
 
 class Statistic(BaseModel):
     pie_chart_data: Union[list[PieChartRecord], None]
     plot_data: Union[list[LineChartRecord], None]
-    payments_list: Union[list[Union[Payment, CategoryAggregated]], None]
+    payments_list: Union[list[CategoryAggregated], None]
 
     class Config:
         orm_mode = True
