@@ -1,11 +1,7 @@
-from typing import Annotated, Union, Optional
-from datetime import datetime
-import uuid
-import os
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Path, UploadFile, Request
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.ext.asyncio import AsyncSession
-import aiofiles
 
 from backend import crud, models, schemas, dependencies
 from backend.database import get_db
@@ -34,6 +30,7 @@ async def create_limit(limit: schemas.LimitBase,
         group_id=limit_db.group_id,
         category_id=limit_db.category_id,
         id=limit_db.id,
+        is_active=limit.is_active,
         category=limit_db.category
     )
 

@@ -126,6 +126,7 @@ class Group(GroupBase):
 class LimitBase(BaseModel):
     value: float
     user_id: int
+    is_active: bool
     group_id: Union[int, None]
     category_id: Union[int, None]
 
