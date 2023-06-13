@@ -50,7 +50,7 @@ async def generate_dataset(db: AsyncSession):
     await db.refresh(c4)
     await db.refresh(c5)
 
-    for i in range(1,4):
+    for i in range(3):
         for user in [u1, u2, u3]:
             await db.refresh(user)
             for category in [c1, c2, c3, c4, c5]:
