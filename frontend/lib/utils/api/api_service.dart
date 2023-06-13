@@ -42,10 +42,15 @@ class ApiService {
   }
 
   /// Returns the user's token if it exists.
-  Future<String> getToken(String username, String password) async {
+  Future<String> getToken(
+      String username, String password, String? fcmToken) async {
     final response = await http.post(
       buildUri('token'),
-      body: {'username': username, 'password': password},
+      body: {
+        'username': username,
+        'password': password,
+        'token': fcmToken,
+      },
     );
 
     if (response.statusCode != 200) {
@@ -169,7 +174,7 @@ class ApiService {
 
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
-      final response = await http.put(
+    final response = await http.put(
       buildUri('payments/${payment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',

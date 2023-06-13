@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,8 +42,9 @@ class Auth extends ChangeNotifier {
   /// Logs the user in.
   Future<void> logIn(String username, String password) async {
     late String token;
+    final fcmToken = await FirebaseMessaging.instance.getToken();
     try {
-      token = await apiService.getToken(username, password);
+      token = await apiService.getToken(username, password, fcmToken);
     } catch (_) {
       throw Exception('Failed to log in.');
     }
