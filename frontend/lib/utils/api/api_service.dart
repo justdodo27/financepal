@@ -147,14 +147,17 @@ class ApiService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, dynamic>{
-        'name': payment.name,
-        'type': payment.type,
-        'category_id': payment.category.id,
-        'cost': payment.cost,
-        'payment_date': payment.date.toIso8601String(),
-        'renewable_id': payment.recurringPaymentId,
-      }),
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': payment.name,
+          'type': payment.type,
+          'category_id': payment.category.id,
+          'cost': payment.cost,
+          'payment_date': payment.date.toIso8601String(),
+          'renewable_id': payment.recurringPaymentId,
+          'payment_proof_id': payment.proof?.id,
+        },
+      ),
     );
 
     if (response.statusCode != 200) {
@@ -166,6 +169,7 @@ class ApiService {
 
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
+    
     final response = await http.put(
       buildUri('payments/${payment.id}/'),
       headers: <String, String>{
@@ -180,6 +184,8 @@ class ApiService {
           'user_id': 1,
           'cost': payment.cost,
           'payment_date': payment.date.toIso8601String(),
+          'renewable_id': payment.recurringPaymentId,
+          'payment_proof_id': payment.proof?.id,
         },
       ),
     );
