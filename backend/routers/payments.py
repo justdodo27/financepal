@@ -9,7 +9,7 @@ import aiofiles
 
 from backend import crud, schemas, dependencies
 from backend.database import get_db
-from backend.notifications import check_notifications
+from backend.notifications import check_notifications, test_notification
 
 router = APIRouter(dependencies=[])
 
@@ -82,6 +82,8 @@ async def get_payments(request: Request,
             ) for payment in await crud.get_group_payments(db=db, group_id=group_id, start_date=start_date, end_date=end_date)
         ]
     
+    await test_notification(db, current_user.id)
+
     return [
         schemas.PaymentWithProof(
             id=payment.id,
@@ -126,6 +128,17 @@ async def update_payments(payment_update: schemas.PaymentBase,
             raise HTTPException(status_code=403, detail="You don't belong to this group")
 
     payment_update.user_id = current_user.id
+
+    if payment_update.payment_proof_id:
+        if not (proof := await crud.get_payment_proof(db, payment_proof_id=payment_update.payment_proof_id)):
+            raise HTTPException(status_code=404, detail="Payment proof not found")
+        if proof.group_id:
+            proof_group = await crud.get_group(db, proof.group_id)
+            if not proof_group.is_member(current_user):
+                raise HTTPException(status_code=403, detail="This payment proof don't belongs to your group")    
+        elif proof.user_id != current_user.id:
+            print(proof.user_id, current_user.id)
+            raise HTTPException(status_code=403, detail="This payment proof don't belongs to you")
 
     if not (updated  := await crud.update_payment(db=db, payment=payment, update_data=payment_update)):
         raise HTTPException(status_code=500, detail="Error while updating payment")

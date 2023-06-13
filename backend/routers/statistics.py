@@ -38,26 +38,7 @@ async def get_statistics(start_date: datetime,
     categories = await crud.categories_grouped(db, start_date, end_date, current_user.id, group_id=group_id)
     categories_sum = sum([category.category_sum for category in categories])
     if range_type == 'HOURS':
-        payments_data = [(f"{payment.payment_date.hour}:{payment.payment_date.minute}",
-                payment.cost)
-             for payment in sorted(payments, key=lambda p: p.payment_date)]
-        grouped_data = groupby(payments_data, lambda x: x[0])
-
-        return schemas.Statistic(
-            pie_chart_data=[schemas.PieChartRecord(
-                category_id=category.id,
-                category=category.category,
-                percentage=round((category.category_sum/categories_sum)*100, 2),
-                value=category.category_sum
-            ) for category in categories],
-            plot_data=[schemas.LineChartRecord(
-                x_data=label,
-                y_data=sum([item[1] for item in list(values)])
-            ) for label, values in grouped_data],
-            payments_list=payments
-        )
-    elif range_type == 'DAYS':
-        payments_data = [(f"{payment.payment_date.day}/{payment.payment_date.month}",
+        payments_data = [(payment.payment_date.strftime('%H:%M:%S'),
                 payment.cost)
              for payment in sorted(payments, key=lambda p: p.payment_date)]
         grouped_data = groupby(payments_data, lambda x: x[0])
@@ -75,13 +56,37 @@ async def get_statistics(start_date: datetime,
             ) for label, values in grouped_data],
             payments_list=[schemas.CategoryAggregated(
                 category_id=category.id,
+                name=category.category,
+                value=category.category_sum,
+                count=category.category_count
+            ) for category in categories]
+        )
+    elif range_type == 'DAYS':
+        payments_data = [(payment.payment_date.strftime('%d/%m'),
+                payment.cost)
+             for payment in sorted(payments, key=lambda p: p.payment_date)]
+        grouped_data = groupby(payments_data, lambda x: x[0])
+
+        return schemas.Statistic(
+            pie_chart_data=[schemas.PieChartRecord(
+                category_id=category.id,
                 category=category.category,
-                payments_sum=category.category_sum,
-                payments_count=category.category_count
+                percentage=round((category.category_sum/categories_sum)*100, 2),
+                value=category.category_sum
+            ) for category in categories],
+            plot_data=[schemas.LineChartRecord(
+                x_data=label,
+                y_data=sum([item[1] for item in list(values)])
+            ) for label, values in grouped_data],
+            payments_list=[schemas.CategoryAggregated(
+                category_id=category.id,
+                name=category.category,
+                value=category.category_sum,
+                count=category.category_count
             ) for category in categories]
         )
     elif range_type == 'MONTHS':
-        payments_data = [(f"{payment.payment_date.month}/{payment.payment_date.year}",
+        payments_data = [(payment.payment_date.strftime('%m/%y'),
                 payment.cost)
              for payment in sorted(payments, key=lambda p: p.payment_date)]
         grouped_data = groupby(payments_data, lambda x: x[0])
@@ -99,8 +104,8 @@ async def get_statistics(start_date: datetime,
             ) for label, values in grouped_data],
             payments_list=[schemas.CategoryAggregated(
                 category_id=category.id,
-                category=category.category,
-                payments_sum=category.category_sum,
-                payments_count=category.category_count
+                name=category.category,
+                value=category.category_sum,
+                count=category.category_count
             ) for category in categories]
         )

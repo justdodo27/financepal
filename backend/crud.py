@@ -56,7 +56,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     return db_user
 
 
-async def update_notification_token(db: AsyncSession, user: models.User, token: str):
+async def update_notification_token(db: AsyncSession, user: models.User, token: Union[str, None]):
     try:
         user.notifications_token = token
         await db.commit()
@@ -182,6 +182,8 @@ async def update_payment(db: AsyncSession, payment: models.Payment, update_data:
         payment.category_id = update_data.category_id
         payment.cost = update_data.cost
         payment.payment_date = update_data.payment_date.replace(tzinfo=None)
+        payment.payment_proof_id = update_data.payment_proof_id
+        payment.renewable_id = update_data.renewable_id
 
         await db.commit()
         await db.refresh(payment)
@@ -207,7 +209,8 @@ async def create_payment_proof(db: AsyncSession, payment_proof: schemas.PaymentP
             filename=payment_proof.filename,
             url=payment_proof.url,
             name=payment_proof.name,
-            user_id=payment_proof.user_id
+            user_id=payment_proof.user_id,
+            group_id=payment_proof.group_id,
         )
 
         db.add(db_payment_proof)
@@ -459,12 +462,15 @@ async def delete_group(db: AsyncSession, group: models.Group):
     return True
 
 
+# LIMITS
+
 async def create_limit(db: AsyncSession, limit: schemas.LimitBase):
     db_limit = models.Limit(
         value=limit.value,
         user_id=limit.user_id,
         group_id=limit.group_id,
-        category_id=limit.category_id
+        category_id=limit.category_id,
+        is_active=limit.is_active
     )
 
     db.add(db_limit)
@@ -505,6 +511,8 @@ async def update_limit(db: AsyncSession, limit: models.Limit, updated_data: sche
     try:
         limit.value = updated_data.value
         limit.category_id = updated_data.category_id
+        limit.is_active = updated_data.is_active
+        
         await db.commit()
         await db.refresh(limit)
     except Exception as e:
@@ -599,7 +607,8 @@ async def check_limit(db: AsyncSession, category_id: int, user_id: Union[int, No
         models.Category, models.Category.id == models.Limit.category_id
     ).filter(
         models.Limit.category_id == category_id,
-        query_filter
+        query_filter,
+        models.Limit.is_active == True
     ).group_by(
         models.Limit,
         models.Category.category

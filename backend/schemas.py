@@ -126,6 +126,7 @@ class Group(GroupBase):
 class LimitBase(BaseModel):
     value: float
     user_id: int
+    is_active: bool
     group_id: Union[int, None]
     category_id: Union[int, None]
 
@@ -149,15 +150,15 @@ class LineChartRecord(BaseModel):
 
 class CategoryAggregated(BaseModel):
     category_id: int
-    category: str
-    payments_sum: float
-    payments_count: int
+    name: str
+    value: float
+    count: int
 
 
 class Statistic(BaseModel):
     pie_chart_data: Union[list[PieChartRecord], None]
     plot_data: Union[list[LineChartRecord], None]
-    payments_list: Union[list[Union[Payment, CategoryAggregated]], None]
+    payments_list: Union[list[CategoryAggregated], None]
 
     class Config:
         orm_mode = True
