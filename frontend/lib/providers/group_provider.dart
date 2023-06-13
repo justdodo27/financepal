@@ -75,4 +75,8 @@ class GroupProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> reloadGroups() async {
+    await fetchGroups();
+  }
 }

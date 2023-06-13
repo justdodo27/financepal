@@ -4,6 +4,7 @@ import 'package:frontend/pages/proofs_of_payments_page/components/add_payment_pr
 import 'package:frontend/providers/payment_proof_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/snackbars.dart';
 import 'components/proof_of_payment_tile.dart';
 
 class ProofsOfPaymentsPage extends StatefulWidget {
@@ -14,38 +15,53 @@ class ProofsOfPaymentsPage extends StatefulWidget {
 }
 
 class _ProofsOfPaymentsPageState extends State<ProofsOfPaymentsPage> {
+  Future<void> reloadPaymentProofs() async {
+    try {
+      await Provider.of<PaymentProofProvider>(context, listen: false)
+          .reloadProofsOfPayments();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Consumer<PaymentProofProvider>(
-              builder: (context, provider, child) {
-                final paymentProofs = provider.paymentProofs ?? [];
-
-                if (paymentProofs.isEmpty) {
-                  return const NoDataWidget(
-                      text: 'No proofs of payment to display');
-                }
-
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: paymentProofs.length,
-                  itemBuilder: (context, index) =>
-                      PaymentProofTile(proof: paymentProofs[index]),
-                );
-              },
-            ),
+      body: RefreshIndicator(
+        color: Theme.of(context).colorScheme.tertiary,
+        onRefresh: reloadPaymentProofs,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-        ],
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 4,
+              color: Theme.of(context).colorScheme.onPrimary,
+              child: Consumer<PaymentProofProvider>(
+                builder: (context, provider, child) {
+                  final paymentProofs = provider.paymentProofs ?? [];
+
+                  if (paymentProofs.isEmpty) {
+                    return const NoDataWidget(
+                        text: 'No proofs of payment to display');
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: paymentProofs.length,
+                    itemBuilder: (context, index) =>
+                        PaymentProofTile(proof: paymentProofs[index]),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Opacity(
         opacity: 0.85,

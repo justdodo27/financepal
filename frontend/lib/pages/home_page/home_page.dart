@@ -61,6 +61,14 @@ class _HomePageState extends State<HomePage> {
     setState(() => optionSelected = value);
   }
 
+  Future<void> reloadStats() async {
+    try {
+      await statisticsProvider.reloadStats(option: optionSelected);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -73,8 +81,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.tertiary,
-      onRefresh: () async =>
-          await statisticsProvider.reloadStats(option: optionSelected),
+      onRefresh: reloadStats,
       child: Stack(
         children: [
           SingleChildScrollView(

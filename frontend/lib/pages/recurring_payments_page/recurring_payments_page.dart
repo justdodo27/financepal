@@ -37,6 +37,15 @@ class _RecurringPaymentsPageState extends State<RecurringPaymentsPage> {
     }
   }
 
+  Future<void> reloadRecurringPayments() async {
+    try {
+      await Provider.of<RecurringPaymentProvider>(context, listen: false)
+          .reloadRecurringPayments();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -52,46 +61,52 @@ class _RecurringPaymentsPageState extends State<RecurringPaymentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Consumer<RecurringPaymentProvider>(
-              builder: (context, provider, child) {
-                final recurringPayments = provider.recurringPayments;
+      body: RefreshIndicator(
+        color: Theme.of(context).colorScheme.tertiary,
+        onRefresh: reloadRecurringPayments,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 4,
+              color: Theme.of(context).colorScheme.onPrimary,
+              child: Consumer<RecurringPaymentProvider>(
+                builder: (context, provider, child) {
+                  final recurringPayments = provider.recurringPayments;
 
-                if (recurringPayments == null) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.85,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.tertiary),
+                  if (recurringPayments == null) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.85,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                    );
+                  }
+
+                  if (recurringPayments.isEmpty) {
+                    return const NoDataWidget(text: 'No payments to display.');
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: recurringPayments.length,
+                    itemBuilder: (context, index) => RecurringPaymentTile(
+                      recurringPayment: recurringPayments[index],
                     ),
                   );
-                }
-
-                if (recurringPayments.isEmpty) {
-                  return const NoDataWidget(text: 'No payments to display.');
-                }
-
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: recurringPayments.length,
-                  itemBuilder: (context, index) => RecurringPaymentTile(
-                    recurringPayment: recurringPayments[index],
-                  ),
-                );
-              },
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 80),
-        ],
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
       floatingActionButton: Opacity(
         opacity: 0.85,

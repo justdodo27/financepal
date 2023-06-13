@@ -66,4 +66,8 @@ class PaymentProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> reloadPayments(DateTimeRange dateTimeRange) async {
+    await getPayments(dateTimeRange);
+  }
 }

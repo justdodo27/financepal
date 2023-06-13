@@ -26,6 +26,15 @@ class _UserCategoriesPageState extends State<UserCategoriesPage> {
     }
   }
 
+  Future<void> reloadCategories() async {
+    try {
+      await Provider.of<CategoryProvider>(context, listen: false)
+          .reloadCategories();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,30 +43,36 @@ class _UserCategoriesPageState extends State<UserCategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          elevation: 4,
-          color: Theme.of(context).colorScheme.onPrimary,
-          child: Consumer<CategoryProvider>(
-            builder: (context, provider, child) {
-              final categories = provider.categories ?? <Category>[];
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: categories.length,
-                itemBuilder: (context, index) =>
-                    CategoryTile(category: categories[index]),
-              );
-            },
-          ),
+    return RefreshIndicator(
+      color: Theme.of(context).colorScheme.tertiary,
+      onRefresh: reloadCategories,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
         ),
-        const SizedBox(height: 220)
-      ],
+        children: [
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            elevation: 4,
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Consumer<CategoryProvider>(
+              builder: (context, provider, child) {
+                final categories = provider.categories ?? <Category>[];
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) =>
+                      CategoryTile(category: categories[index]),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 220)
+        ],
+      ),
     );
   }
 }
