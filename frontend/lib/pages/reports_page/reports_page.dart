@@ -78,7 +78,6 @@ class _ReportsPageState extends State<ReportsPage> {
 
   void _onDateRangeChanged(DateTimeRange newRange) async {
     setState(() => _dateTimeRange = newRange);
-    print(_dateTimeRange);
     try {
       await Provider.of<StatisticsProvider>(context, listen: false)
           .getStatistics(_dateTimeRange);
