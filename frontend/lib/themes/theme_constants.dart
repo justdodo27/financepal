@@ -44,3 +44,30 @@ const darkColorScheme = ColorScheme.dark(
   onBackground: Color.fromARGB(255, 55, 55, 55),
   tertiary: Color(0xffbb86fc),
 );
+
+final List<Color> colors = [
+  Colors.purple,
+  Colors.red,
+  Colors.orange,
+  Colors.pink,
+  Colors.indigo,
+  Colors.pinkAccent,
+  Colors.purpleAccent,
+  Colors.green[800]!,
+  Colors.deepOrange,
+  Colors.deepPurple,
+  Colors.redAccent,
+  Colors.blueAccent,
+  Colors.orangeAccent,
+  Colors.green,
+  Colors.teal,
+  Colors.amber,
+  Colors.deepPurple,
+  Colors.deepPurpleAccent,
+  Colors.brown,
+  Colors.grey,
+];
+
+Color getPieChartColor(int index) {
+  return colors[index % colors.length];
+}

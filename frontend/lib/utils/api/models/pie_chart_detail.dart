@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class PieChartDetail {
@@ -7,23 +5,23 @@ class PieChartDetail {
   final String categoryName;
   final double percentage;
   final double value;
-  final Color color = Colors
-      .primaries[Random().nextInt(Colors.primaries.length)]
-      .withOpacity(0.6);
+  final Color color;
 
   PieChartDetail({
     required this.categoryId,
     required this.categoryName,
     required this.percentage,
     required this.value,
+    required this.color,
   });
 
-  factory PieChartDetail.fromJson(Map<String, dynamic> json) {
+  factory PieChartDetail.fromJson(Map<String, dynamic> json, Color color) {
     return PieChartDetail(
       categoryId: json['category_id'],
       categoryName: json['category'],
       percentage: json['percentage'],
       value: json['value'],
+      color: color,
     );
   }
 }
