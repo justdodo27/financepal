@@ -3,9 +3,6 @@ import 'pie_chart_data.dart';
 class Statistics {
   final List<PieChartDetail> pieChartDetails;
 
-  double get totalCost =>
-      pieChartDetails.fold(0, (sum, item) => sum + item.value);
-
   Statistics({
     required this.pieChartDetails,
   });

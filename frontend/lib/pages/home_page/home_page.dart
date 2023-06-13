@@ -287,50 +287,57 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Consumer<StatisticsProvider>(
-            builder: (_, provider, __) {
-              if (provider.isLoading) {
+    return RefreshIndicator(
+      color: Theme.of(context).colorScheme.tertiary,
+      onRefresh: () async =>
+          await statisticsProvider.reloadStats(option: optionSelected),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Consumer<StatisticsProvider>(
+              builder: (_, provider, __) {
+                if (provider.isLoading) {
+                  return Column(
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height / 2),
+                      Center(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                final stats = provider.lastFetchedStatistics!;
+                final pieData = stats.pieChartDetails;
+
                 return Column(
                   children: [
-                    SizedBox(height: MediaQuery.of(context).size.height / 2),
-                    Center(
-                      child: CircularProgressIndicator(
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
-                    ),
+                    SizedBox(height: appBarBottomHeight + 5),
+                    PieChartSection(data: pieData),
+                    BarChartSection(data: barData),
+                    LastPaymentsSection(data: paymentData),
+                    const SizedBox(height: 80),
                   ],
                 );
-              }
-
-              final stats = provider.lastFetchedStatistics!;
-              final pieData = stats.pieChartDetails;
-
-              return Column(
-                children: [
-                  SizedBox(height: appBarBottomHeight + 5),
-                  PieChartSection(data: pieData),
-                  BarChartSection(data: barData),
-                  LastPaymentsSection(data: paymentData),
-                  const SizedBox(height: 80),
-                ],
+              },
+            ),
+          ),
+          Consumer<StatisticsProvider>(
+            builder: (_, provider, __) {
+              return HomeAppBarBottom(
+                height: appBarBottomHeight,
+                todaySpendings: provider.getTotalCost('TODAY'),
+                thisMonthSpendings: provider.getTotalCost('MONTH'),
+                thisYearSpendings: provider.getTotalCost('YEAR'),
+                onSelectionChanged: _changeDateTimeRange,
               );
             },
           ),
-        ),
-        Consumer<StatisticsProvider>(builder: (_, provider, __) {
-          return HomeAppBarBottom(
-            height: appBarBottomHeight,
-            todaySpendings: provider.todayStatistics?.totalCost,
-            thisMonthSpendings: provider.monthStatistics?.totalCost,
-            thisYearSpendings: provider.yearStatistics?.totalCost,
-            onSelectionChanged: _changeDateTimeRange,
-          );
-        }),
-      ],
+        ],
+      ),
     );
   }
 }

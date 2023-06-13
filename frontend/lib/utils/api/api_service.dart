@@ -1,7 +1,6 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/models/statistics.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
@@ -9,6 +8,7 @@ import 'models/group.dart';
 import 'models/payment.dart';
 import 'models/payment_proof.dart';
 import 'models/recurring_payment.dart';
+import 'models/statistics.dart';
 
 class ApiService {
   /// Server address.
@@ -147,14 +147,17 @@ class ApiService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, dynamic>{
-        'name': payment.name,
-        'type': payment.type,
-        'category_id': payment.category.id,
-        'cost': payment.cost,
-        'payment_date': payment.date.toIso8601String(),
-        'renewable_id': payment.recurringPaymentId,
-      }),
+      body: jsonEncode(
+        <String, dynamic>{
+          'name': payment.name,
+          'type': payment.type,
+          'category_id': payment.category.id,
+          'cost': payment.cost,
+          'payment_date': payment.date.toIso8601String(),
+          'renewable_id': payment.recurringPaymentId,
+          'payment_proof_id': payment.proof?.id,
+        },
+      ),
     );
 
     if (response.statusCode != 200) {
@@ -166,6 +169,7 @@ class ApiService {
 
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
+    
     final response = await http.put(
       buildUri('payments/${payment.id}/'),
       headers: <String, String>{
@@ -180,6 +184,8 @@ class ApiService {
           'user_id': 1,
           'cost': payment.cost,
           'payment_date': payment.date.toIso8601String(),
+          'renewable_id': payment.recurringPaymentId,
+          'payment_proof_id': payment.proof?.id,
         },
       ),
     );

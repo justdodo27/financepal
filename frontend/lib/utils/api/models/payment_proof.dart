@@ -1,7 +1,7 @@
 import 'package:frontend/utils/api/models/payment.dart';
 
 class PaymentProof {
-  final int id;
+  final int? id;
   final String name;
   final String fileName;
   final String url;
