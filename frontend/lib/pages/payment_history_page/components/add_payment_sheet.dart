@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../../../components/category_drop_down_button.dart';
 import '../../../components/custom_text_field.dart';
+import '../../../components/payment_proof_drop_down_button.dart';
 import '../../../components/rounded_outlined_button.dart';
 import '../../../components/text_field_placeholder.dart';
 import '../../../providers/category_provider.dart';
+import '../../../providers/payment_proof_provider.dart';
 import '../../../providers/payment_provider.dart';
 import '../../../utils/api/models/category.dart';
 import '../../../utils/api/models/payment.dart';
+import '../../../utils/api/models/payment_proof.dart';
 import '../../../utils/snackbars.dart';
 
 class AddPaymentSheet extends StatefulWidget {
@@ -29,6 +32,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
   final _amount = TextEditingController();
 
   bool _isInvoice = false;
+  PaymentProof? proof;
 
   late Category category;
 
@@ -44,6 +48,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
         date: DateTime.now(),
         cost: double.parse(_amount.text),
         category: category,
+        proof: proof,
       );
       await Provider.of<PaymentProvider>(context, listen: false)
           .addPayment(payment);
@@ -90,6 +95,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
       _amount.text = widget.payment!.cost.toString();
       _isInvoice = widget.payment!.type == 'INVOICE';
       category = widget.payment!.category;
+      proof = widget.payment!.proof;
     }
   }
 
@@ -153,6 +159,25 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                           selected: widget.payment?.category,
                           categories: provider.categories!,
                           onSelected: (selected) => category = selected,
+                        );
+                      },
+                    ),
+                    Consumer<PaymentProofProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.paymentProofs == null) {
+                          return const TextFieldPlaceholder(
+                            label: 'Payment proof',
+                          );
+                        }
+
+                        if (provider.paymentProofs!.isEmpty) {
+                          return Container();
+                        }
+
+                        return PaymentProofDropDownButton(
+                          selected: proof,
+                          proofs: provider.paymentProofs!,
+                          onSelected: (selected) => proof = selected,
                         );
                       },
                     ),

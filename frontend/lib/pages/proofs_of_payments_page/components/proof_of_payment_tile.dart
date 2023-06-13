@@ -97,7 +97,9 @@ class _PaymentProofTileState extends State<PaymentProofTile> {
                           actions: [
                             TextButton(
                               onPressed: () async => await deletePaymentProof(
-                                  context, widget.proof.id),
+                                context,
+                                widget.proof.id!,
+                              ),
                               child: Text(
                                 'Yes',
                                 style: Theme.of(context).textTheme.bodySmall,
