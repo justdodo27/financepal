@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/api/models/pie_chart_data.dart';
+
+import '../../../components/no_data_chart.dart';
+import '../../../utils/api/models/pie_chart_detail.dart';
 
 class PieData {
   final String name;
@@ -94,22 +96,30 @@ class PieChartSection extends StatelessWidget {
       ),
       elevation: 4,
       color: Theme.of(context).colorScheme.onPrimary,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 180, maxWidth: 180),
-              child: PieChart(
-                PieChartData(
-                  sections: _getSections(context),
-                ),
+      child: buildPieChart(context),
+    );
+  }
+
+  Widget buildPieChart(BuildContext context) {
+    if (data.isEmpty) {
+      return const NoDataChart();
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 180, maxWidth: 180),
+            child: PieChart(
+              PieChartData(
+                sections: _getSections(context),
               ),
             ),
-            ChartLegend(data: data),
-          ],
-        ),
+          ),
+          ChartLegend(data: data),
+        ],
       ),
     );
   }

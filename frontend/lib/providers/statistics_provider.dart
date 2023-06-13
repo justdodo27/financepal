@@ -33,7 +33,7 @@ class StatisticsProvider extends ChangeNotifier {
     }
 
     if (stats == null) return null;
-    
+
     return stats.pieChartDetails.fold(0, (sum, item) => sum! + item.value);
   }
 
@@ -43,12 +43,7 @@ class StatisticsProvider extends ChangeNotifier {
   Future<void> getStatistics(DateTimeRange dateTimeRange) async {
     handleIfNotLoggedIn(auth);
     lastFetchedStatistics = null;
-    final range = _processDateTimeRange(
-      DateTimeRange(
-        start: DateTime.now(),
-        end: DateTime.now(),
-      ),
-    );
+    final range = _processDateTimeRange(dateTimeRange);
     try {
       lastFetchedStatistics = await auth!.apiService.getStatistics(
         auth!.token!,
@@ -74,7 +69,10 @@ class StatisticsProvider extends ChangeNotifier {
         end: DateTime.now(),
       ),
     );
-
+    todayStatistics = await auth!.apiService.getStatistics(
+      auth!.token!,
+      dateTimeRange: range,
+    );
     try {
       todayStatistics = await auth!.apiService.getStatistics(
         auth!.token!,

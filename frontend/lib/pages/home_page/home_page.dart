@@ -24,77 +24,6 @@ class _HomePageState extends State<HomePage> {
 
   late StatisticsProvider statisticsProvider;
 
-  final todayBarData = [
-    BarData(id: 0, name: '1:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 1, name: '2:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 2, name: '3:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 3, name: '4:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 4, name: '5:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 5, name: '6:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 6, name: '7:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 7, name: '8:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 8, name: '9:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 9, name: '10:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 10, name: '11:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 11, name: '12:30 PM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 12, name: '13:00 PM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 13, name: '14:34 PM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 14, name: '15:30 PM', value: 25.22, color: Colors.redAccent),
-  ];
-
-  final monthBarData = [
-    BarData(id: 0, name: '01/03', value: 56.33, color: Colors.greenAccent),
-    BarData(id: 1, name: '02/03', value: 22.23, color: Colors.greenAccent),
-    BarData(id: 2, name: '03/03', value: 15.22, color: Colors.greenAccent),
-    BarData(id: 3, name: '04/03', value: 25.62, color: Colors.greenAccent),
-    BarData(id: 4, name: '05/03', value: 35.27, color: Colors.greenAccent),
-    BarData(id: 5, name: '06/03', value: 55.52, color: Colors.greenAccent),
-    BarData(id: 6, name: '07/03', value: 45.29, color: Colors.greenAccent),
-    BarData(id: 7, name: '07/03', value: 56.33, color: Colors.greenAccent),
-    BarData(id: 8, name: '08/03', value: 22.23, color: Colors.greenAccent),
-    BarData(id: 9, name: '09/03', value: 15.22, color: Colors.greenAccent),
-    BarData(id: 10, name: '10/03', value: 25.62, color: Colors.greenAccent),
-    BarData(id: 11, name: '11/03', value: 35.27, color: Colors.greenAccent),
-    BarData(id: 12, name: '12/03', value: 55.52, color: Colors.greenAccent),
-    BarData(id: 13, name: '13/03', value: 45.29, color: Colors.greenAccent),
-    BarData(id: 14, name: '14/03', value: 35.27, color: Colors.greenAccent),
-    BarData(id: 15, name: '15/03', value: 55.52, color: Colors.greenAccent),
-    BarData(id: 16, name: '16/03', value: 45.29, color: Colors.greenAccent),
-    BarData(id: 17, name: '17/03', value: 56.33, color: Colors.greenAccent),
-    BarData(id: 18, name: '18/03', value: 22.23, color: Colors.greenAccent),
-    BarData(id: 19, name: '19/03', value: 15.22, color: Colors.greenAccent),
-    BarData(id: 20, name: '20/03', value: 25.62, color: Colors.greenAccent),
-    BarData(id: 21, name: '21/03', value: 35.27, color: Colors.greenAccent),
-    BarData(id: 22, name: '22/03', value: 55.52, color: Colors.greenAccent),
-    BarData(id: 23, name: '23/03', value: 45.29, color: Colors.greenAccent),
-    BarData(id: 24, name: '24/03', value: 35.27, color: Colors.greenAccent),
-    BarData(id: 25, name: '25/03', value: 55.52, color: Colors.greenAccent),
-    BarData(id: 26, name: '26/03', value: 45.29, color: Colors.greenAccent),
-    BarData(id: 27, name: '27/03', value: 56.33, color: Colors.greenAccent),
-    BarData(id: 28, name: '28/03', value: 22.23, color: Colors.greenAccent),
-    BarData(id: 29, name: '29/03', value: 15.22, color: Colors.greenAccent),
-    BarData(id: 30, name: '30/03', value: 25.62, color: Colors.greenAccent),
-    BarData(id: 31, name: '31/03', value: 25.62, color: Colors.greenAccent),
-  ];
-
-  final yearBarData = [
-    BarData(id: 0, name: 'January', value: 560.33, color: Colors.purpleAccent),
-    BarData(id: 1, name: 'February', value: 120.23, color: Colors.purpleAccent),
-    BarData(id: 2, name: 'March', value: 450.22, color: Colors.purpleAccent),
-    BarData(id: 3, name: 'April', value: 560.33, color: Colors.purpleAccent),
-    BarData(id: 4, name: 'May', value: 120.23, color: Colors.purpleAccent),
-    BarData(id: 5, name: 'June', value: 450.22, color: Colors.purpleAccent),
-    BarData(id: 6, name: 'July', value: 560.33, color: Colors.purpleAccent),
-    BarData(id: 7, name: 'August', value: 120.23, color: Colors.purpleAccent),
-    BarData(
-        id: 8, name: 'September', value: 450.22, color: Colors.purpleAccent),
-    BarData(id: 9, name: 'October', value: 560.33, color: Colors.purpleAccent),
-    BarData(
-        id: 10, name: 'November', value: 120.23, color: Colors.purpleAccent),
-    BarData(
-        id: 11, name: 'December', value: 450.22, color: Colors.purpleAccent),
-  ];
-
   final todayPayments = [
     Payment(
       id: 0,
@@ -216,16 +145,6 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  List<BarData> get barData {
-    switch (optionSelected) {
-      case 'MONTH':
-        return monthBarData;
-      case 'YEAR':
-        return yearBarData;
-      default:
-        return todayBarData;
-    }
-  }
 
   List<Payment> get paymentData {
     switch (optionSelected) {
@@ -312,6 +231,7 @@ class _HomePageState extends State<HomePage> {
 
                 final stats = provider.lastFetchedStatistics!;
                 final pieData = stats.pieChartDetails;
+                final barData = stats.barChartDetails;
 
                 return Column(
                   children: [

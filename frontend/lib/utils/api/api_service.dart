@@ -169,8 +169,7 @@ class ApiService {
 
   /// Updates the specified payment.
   Future<void> updatePayment(String token, Payment payment) async {
-    
-    final response = await http.put(
+      final response = await http.put(
       buildUri('payments/${payment.id}/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
