@@ -81,8 +81,6 @@ async def get_payments(request: Request,
                 ) if payment.payment_proof else None
             ) for payment in await crud.get_group_payments(db=db, group_id=group_id, start_date=start_date, end_date=end_date)
         ]
-    
-    await test_notification(db, current_user.id)
 
     return [
         schemas.PaymentWithProof(

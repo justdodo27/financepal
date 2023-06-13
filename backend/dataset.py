@@ -65,6 +65,15 @@ async def generate_dataset(db: AsyncSession):
                         payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i)
                     ))
                     await db.refresh(user)
+                await crud.create_payment(db, schemas.PaymentBase(
+                        name=f"{generate_payment_name(category.category)} - TODAY",
+                        type=schemas.PaymentType.BILL,
+                        category_id=category.id,
+                        user_id=user.id,
+                        cost=randint(10, 2137) / randint(1, 10),
+                        payment_date=datetime.utcnow()
+                    ))
+                await db.refresh(user)
                 
             if user.username == "endrju":
                 await db.refresh(c1u1)
