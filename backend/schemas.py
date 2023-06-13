@@ -5,7 +5,7 @@ from fastapi.param_functions import Form
 from typing import Union, Optional
 from datetime import datetime
 
-from backend.models import PaymentType, PeriodType
+from backend.models import PaymentType, PeriodType, LimitPeriod
 
 class AuthorizationModel(OAuth2PasswordRequestForm):
     def __init__(
@@ -31,12 +31,15 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class UserBase(BaseModel): # base model
     email: str
     username: str
 
+
 class UserCreate(UserBase): # used only to create the data
     password: str
+
 
 class User(UserBase): # user only for reading the data
     id: int
@@ -44,12 +47,15 @@ class User(UserBase): # user only for reading the data
     class Config:
         orm_mode = True # this allow the option to read the attribute by user.id instead of user["id"]
 
+
 class CategoryBase(BaseModel):
     category: str
+
 
 class CategoryCreate(CategoryBase):
     user_id: Union[int, None]
     group_id: Union[int, None]
+
 
 class Category(CategoryBase):
     id: int
@@ -58,6 +64,7 @@ class Category(CategoryBase):
 
     class Config:
         orm_mode = True
+
 
 class PaymentBase(BaseModel):
     name: str
@@ -70,6 +77,7 @@ class PaymentBase(BaseModel):
     payment_proof_id: Union[int, None]
     renewable_id: Union[int, None]
 
+
 class Payment(PaymentBase):
     id: int
     category: Union[Category, None]
@@ -77,11 +85,13 @@ class Payment(PaymentBase):
     class Config:
         orm_mode = True
 
+
 class PaymentProofCreate(BaseModel):
     name: str
 
     class Config:
         orm_moe = True
+
 
 class PaymentProofBase(BaseModel):
     filename: str
@@ -96,11 +106,14 @@ class PaymentProof(PaymentProofBase):
     class Config:
         orm_moe = True
 
+
 class PaymentWithProof(Payment):
     payment_proof: Union[PaymentProof, None]
 
+
 class PaymentProofPayments(PaymentProof):
     payments: Union[list[Payment], None]
+
 
 class RenewableBase(BaseModel):
     name: str
@@ -112,9 +125,11 @@ class RenewableBase(BaseModel):
     period: PeriodType
     payment_date: datetime
 
+
 class RenewablePayment(BaseModel):
     cost: Union[float, None]
     payment_date: datetime
+
 
 class Renewable(RenewableBase):
     id: int
@@ -124,13 +139,16 @@ class Renewable(RenewableBase):
     class Config:
         orm_mode = True
 
+
 class GroupBase(BaseModel):
     name: str
     user_id: int
 
+
 class GroupUpdate(GroupBase):
     kick_users: Union[list[int], None]
     refresh_code: bool
+
 
 class Group(GroupBase):
     id: int
@@ -149,12 +167,11 @@ class LimitBase(BaseModel):
     user_id: int
     is_active: bool
     group_id: Union[int, None]
-    category_id: Union[int, None]
+    period: LimitPeriod
 
 
 class Limit(LimitBase):
     id: int
-    category: Union[Category, None]
 
 
 class PieChartRecord(BaseModel):

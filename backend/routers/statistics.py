@@ -12,13 +12,14 @@ from backend.database import get_db
 router = APIRouter(dependencies=[])
 
 def return_date_range_type(start_date: datetime, end_date: datetime):
-    if start_date.year != end_date.year:
+    delta = end_date - start_date
+    if delta.days > 31:
         return 'MONTHS'
-    if start_date.month != end_date.month:
-        return 'MONTHS'
-    if start_date.day != end_date.day:
+    elif delta.days <= 31:
         return 'DAYS'
-    return 'HOURS'
+    elif delta.days <= 1:
+        return 'HOURS'
+    return 'DAYS'
 
 @router.get("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
 async def get_statistics(start_date: datetime,
