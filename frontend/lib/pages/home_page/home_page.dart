@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/statistics_provider.dart';
-import 'package:frontend/utils/api/models/category.dart';
-import 'package:frontend/utils/api/models/payment.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
@@ -23,139 +21,6 @@ class _HomePageState extends State<HomePage> {
   String optionSelected = 'TODAY';
 
   late StatisticsProvider statisticsProvider;
-
-  final todayPayments = [
-    Payment(
-      id: 0,
-      name: 'Shopping at Lidl',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 89.99,
-      category: Category(name: 'Groceries'),
-    ),
-    Payment(
-      id: 1,
-      name: 'Gym payment',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 15.99,
-      category: Category(name: 'Sport'),
-    ),
-    Payment(
-        id: 2,
-        name: 'Internet bill',
-        type: 'BILL',
-        date: DateTime.now(),
-        cost: 59.99,
-        category: Category(name: 'Internet'),
-        recurringPaymentId: 1),
-    Payment(
-      id: 3,
-      name: 'Batteries for the remote control',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 19.99,
-      category: Category(name: 'Electornics'),
-    ),
-  ];
-
-  final monthPayments = [
-    Payment(
-      id: 0,
-      name: 'Groceries',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 199.99,
-      category: Category(name: 'Groceries'),
-    ),
-    Payment(
-      id: 1,
-      name: 'Sport',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 150.99,
-      category: Category(name: 'Sport'),
-    ),
-    Payment(
-      id: 2,
-      name: 'Chemical areticles',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 59.99,
-      category: Category(name: 'Chemical articles'),
-    ),
-    Payment(
-      id: 3,
-      name: 'Electornics',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 120.84,
-      category: Category(name: 'Electornics'),
-    ),
-    Payment(
-      id: 3,
-      name: 'Sport',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 3.00,
-      category: Category(name: 'Sport'),
-    ),
-  ];
-
-  final yearPayments = [
-    Payment(
-      id: 0,
-      name: 'Groceries',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 199.99,
-      category: Category(name: 'Groceries'),
-    ),
-    Payment(
-      id: 1,
-      name: 'Sport',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 150.99,
-      category: Category(name: 'Sport'),
-    ),
-    Payment(
-      id: 2,
-      name: 'Chemical areticles',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 59.99,
-      category: Category(name: 'Chemical articles'),
-    ),
-    Payment(
-      id: 3,
-      name: 'Electornics',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 120.84,
-      category: Category(name: 'Electornics'),
-    ),
-    Payment(
-      id: 3,
-      name: 'Sport',
-      type: 'BILL',
-      date: DateTime.now(),
-      cost: 3.00,
-      category: Category(name: 'Sport'),
-    ),
-  ];
-
-
-  List<Payment> get paymentData {
-    switch (optionSelected) {
-      case 'MONTH':
-        return monthPayments;
-      case 'YEAR':
-        return yearPayments;
-      default:
-        return todayPayments;
-    }
-  }
 
   Future<void> getTodayStats() async {
     try {
@@ -232,6 +97,7 @@ class _HomePageState extends State<HomePage> {
                 final stats = provider.lastFetchedStatistics!;
                 final pieData = stats.pieChartDetails;
                 final barData = stats.barChartDetails;
+                final paymentData = stats.paymentStatistics;
 
                 return Column(
                   children: [

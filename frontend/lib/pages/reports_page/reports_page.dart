@@ -110,13 +110,14 @@ class _ReportsPageState extends State<ReportsPage> {
               final stats = provider.lastFetchedStatistics!;
               final pieData = stats.pieChartDetails;
               final barData = stats.barChartDetails;
+              final paymentData = stats.paymentStatistics;
 
               return Column(
                 children: [
                   SizedBox(height: appBarBottomHeight + 5),
                   PieChartSection(data: pieData),
                   BarChartSection(data: barData),
-                  LastPaymentsSection(data: todayPayments),
+                  LastPaymentsSection(data: paymentData),
                   const SizedBox(height: 80),
                 ],
               );
