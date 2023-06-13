@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,9 +25,20 @@ async def read_users_me(
     return current_user
 
 
-@router.put("/users/", tags=["users"])
+@router.get("/users/notifications/", tags=["users"], response_model=bool)
+async def check_notifications(
+    current_user: schemas.User = Depends(dependencies.get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    user = await crud.get_user(db, user_id=current_user.id)
+    if user.notifications_token:
+        return True
+    return False
+
+
+@router.put("/users/notifications/", tags=["users"])
 async def update_token(
-    token: str,
+    token: Union[str, None] = None,
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: AsyncSession = Depends(get_db)
 ):

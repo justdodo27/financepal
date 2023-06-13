@@ -56,7 +56,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     return db_user
 
 
-async def update_notification_token(db: AsyncSession, user: models.User, token: str):
+async def update_notification_token(db: AsyncSession, user: models.User, token: Union[str, None]):
     try:
         user.notifications_token = token
         await db.commit()
