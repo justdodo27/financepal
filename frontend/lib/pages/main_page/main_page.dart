@@ -8,6 +8,7 @@ import 'package:frontend/pages/proofs_of_payments_page/proofs_of_payments_page.d
 import 'package:frontend/pages/recurring_payments_page/recurring_payments_page.dart';
 import 'package:frontend/pages/reports_page/reports_page.dart';
 import 'package:frontend/pages/settings_page/settings_page.dart';
+import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/utils/snackbars.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +47,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _getInitialData();
+    handleFirebaseForegroundMessages(context);
   }
 
   @override
