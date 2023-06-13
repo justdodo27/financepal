@@ -3,33 +3,29 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class BarData {
-  final int id;
-  final String name;
-  final double value;
-  final Color color;
-
-  BarData({
-    required this.id,
-    required this.name,
-    required this.value,
-    required this.color,
-  });
-}
+import '../../../components/no_data_chart.dart';
+import '../../../utils/api/models/bar_chart_detail.dart';
 
 class BarChartSection extends StatelessWidget {
-  final List<BarData> data;
+  final List<BarChartDetail> data;
 
   const BarChartSection({
     super.key,
     required this.data,
   });
 
-  List<BarChartGroupData> _getGroups() {
+  List<BarChartGroupData> _getGroups(BuildContext context) {
     return data
-        .map((entry) => BarChartGroupData(x: entry.id, barRods: [
-              BarChartRodData(toY: entry.value, width: 6, color: entry.color)
-            ]))
+        .map((entry) => BarChartGroupData(
+              x: data.indexOf(entry),
+              barRods: [
+                BarChartRodData(
+                  toY: entry.value,
+                  width: 6,
+                  color: Theme.of(context).colorScheme.tertiary,
+                )
+              ],
+            ))
         .toList();
   }
 
@@ -43,50 +39,56 @@ class BarChartSection extends StatelessWidget {
       ),
       elevation: 4,
       color: Theme.of(context).colorScheme.onPrimary,
-      child: Container(
-        padding: const EdgeInsets.only(top: 20, right: 20, left: 10),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 180),
-          child: BarChart(
-            BarChartData(
-              barGroups: _getGroups(),
-              maxY: maxY,
-              titlesData: FlTitlesData(
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (value, meta) {
-                        if (value != 0 &&
-                            value != data.length - 1 &&
-                            value != data.length ~/ 2) return Container();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 3.0, right: 3),
-                          child: Text(
-                            data
-                                .firstWhere((element) => element.id == value)
-                                .name,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        );
-                      }),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
+      child: buildBarChart(context),
+    );
+  }
+
+  Widget buildBarChart(BuildContext context) {
+    if (data.isEmpty) {
+      return const NoDataChart();
+    }
+
+    return Container(
+      padding: const EdgeInsets.only(top: 20, right: 20, left: 10),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 180),
+        child: BarChart(
+          BarChartData(
+            barGroups: _getGroups(context),
+            maxY: maxY,
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: _getReservedSize(),
-                    interval: maxY / 2,
-                    getTitlesWidget: (value, meta) => Padding(
-                      padding: const EdgeInsets.only(right: 3.0),
-                      child: Text(
-                        '${value.toInt()}',
-                      ),
+                    reservedSize: 30,
+                    getTitlesWidget: (value, meta) {
+                      if (value != 0 &&
+                          value != data.length - 1 &&
+                          value != data.length ~/ 2) return Container();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 3.0, right: 3),
+                        child: Text(
+                          data[value.toInt()].date,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      );
+                    }),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: _getReservedSize(),
+                  interval: maxY / 2,
+                  getTitlesWidget: (value, meta) => Padding(
+                    padding: const EdgeInsets.only(right: 3.0),
+                    child: Text(
+                      '${value.toInt()}',
                     ),
                   ),
                 ),
