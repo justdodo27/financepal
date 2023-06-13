@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/date_range_picker.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/appbar_bottom.dart';
+import '../../components/date_range_picker.dart';
+import '../../providers/statistics_provider.dart';
 import '../../utils/api/models/category.dart';
 import '../../utils/api/models/group.dart';
 import '../../utils/api/models/payment.dart';
@@ -22,33 +25,6 @@ class _ReportsPageState extends State<ReportsPage> {
   final spendings = 230;
   DateTimeRange _dateTimeRange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
-
-  final todayPieData = [
-    PieData(name: 'Grocery shopping', percent: 25, color: Colors.redAccent),
-    PieData(name: 'Chemical articles', percent: 20, color: Colors.purpleAccent),
-    PieData(name: 'Electronics', percent: 15, color: Colors.blue),
-    PieData(name: 'Sport', percent: 10, color: Colors.greenAccent),
-    PieData(name: 'Internet', percent: 10, color: Colors.blueGrey),
-    PieData(name: 'Other', percent: 5, color: Colors.grey),
-  ];
-
-  final todayBarData = [
-    BarData(id: 0, name: '1:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 1, name: '2:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 2, name: '3:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 3, name: '4:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 4, name: '5:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 5, name: '6:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 6, name: '7:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 7, name: '8:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 8, name: '9:30 AM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 9, name: '10:00 AM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 10, name: '11:34 AM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 11, name: '12:30 PM', value: 25.22, color: Colors.redAccent),
-    BarData(id: 12, name: '13:00 PM', value: 16.33, color: Colors.redAccent),
-    BarData(id: 13, name: '14:34 PM', value: 12.23, color: Colors.redAccent),
-    BarData(id: 14, name: '15:30 PM', value: 25.22, color: Colors.redAccent),
-  ];
 
   final todayPayments = [
     Payment(
@@ -86,19 +62,66 @@ class _ReportsPageState extends State<ReportsPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _getInitialData();
+  }
+
+  void _getInitialData() async {
+    try {
+      await Provider.of<StatisticsProvider>(context, listen: false)
+          .getTodayStatistics();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  void _onDateRangeChanged(DateTimeRange newRange) async {
+    setState(() => _dateTimeRange = newRange);
+    print(_dateTimeRange);
+    try {
+      await Provider.of<StatisticsProvider>(context, listen: false)
+          .getStatistics(_dateTimeRange);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              SizedBox(height: appBarBottomHeight + 5), // AppBarBottom height
-              const PieChartSection(data: []),
-              BarChartSection(data: todayBarData),
-              LastPaymentsSection(data: todayPayments),
-              const SizedBox(height: 80),
-            ],
+          child: Consumer<StatisticsProvider>(
+            builder: (_, provider, __) {
+              if (provider.isLoading) {
+                return Column(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height / 2),
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              final stats = provider.lastFetchedStatistics!;
+              final pieData = stats.pieChartDetails;
+              final barData = stats.barChartDetails;
+
+              return Column(
+                children: [
+                  SizedBox(height: appBarBottomHeight + 5),
+                  PieChartSection(data: pieData),
+                  BarChartSection(data: barData),
+                  LastPaymentsSection(data: todayPayments),
+                  const SizedBox(height: 80),
+                ],
+              );
+            },
           ),
         ),
         AppBarBottom(
@@ -118,19 +141,38 @@ class _ReportsPageState extends State<ReportsPage> {
                         .apply(bodyColor: Colors.white)
                         .bodyLarge,
                   ),
-                  Text(
-                    '$spendings',
-                    style: Theme.of(context)
-                        .textTheme
-                        .apply(displayColor: Colors.white)
-                        .displayLarge,
+                  Consumer<StatisticsProvider>(
+                    builder: (context, provider, child) {
+                      final spendings =
+                          provider.getTotalCost('LAST')?.toStringAsFixed(2);
+
+                      if (spendings == null) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return Text(
+                        spendings,
+                        style: Theme.of(context)
+                            .textTheme
+                            .apply(displayColor: Colors.white)
+                            .displayLarge,
+                      );
+                    },
                   ),
                   const SizedBox(height: 12),
                   DateRangePicker(
                     width: MediaQuery.of(context).size.width - 70,
                     dateTimeRange: _dateTimeRange,
-                    onDateTimePicked: (selected) =>
-                        setState(() => _dateTimeRange = selected),
+                    onDateTimePicked: _onDateRangeChanged,
                   ),
                 ],
               ),
