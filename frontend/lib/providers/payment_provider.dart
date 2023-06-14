@@ -14,6 +14,8 @@ class PaymentProvider extends ChangeNotifier {
   /// Date time rage of obtained payments.
   DateTimeRange? range;
 
+  bool requestInProgress = false;
+
   /// Obtains the user's payments from backend API.
   Future<void> getPayments(DateTimeRange dateTimeRange) async {
     handleIfNotLoggedIn(auth);
@@ -29,11 +31,13 @@ class PaymentProvider extends ChangeNotifier {
   /// Adds new payment.
   Future<void> addPayment(Payment payment) async {
     handleIfNotLoggedIn(auth);
+    requestInProgress = true;
+    notifyListeners();
     try {
       final created =
           await auth!.apiService.createPayment(auth!.token!, payment);
-      if (payments == null) return;
-      payments!.add(created);
+      requestInProgress = false;
+      payments?.add(created);
     } catch (_) {
       throw Exception('Failed to add the payment.');
     }
@@ -43,11 +47,16 @@ class PaymentProvider extends ChangeNotifier {
   /// Updates the specified payment.
   Future<void> updatePayment(Payment payment) async {
     handleIfNotLoggedIn(auth);
+    requestInProgress = true;
+    notifyListeners();
     try {
       await auth!.apiService.updatePayment(auth!.token!, payment);
-      if (payments == null) return;
-      final index = payments!.indexWhere((element) => element.id == payment.id);
-      payments![index] = payment;
+      requestInProgress = false;
+
+      final index = payments?.indexWhere((element) => element.id == payment.id);
+      if (index != null) {
+        payments![index] = payment;
+      }
     } catch (_) {
       throw Exception('Failed to update the payment.');
     }
@@ -59,8 +68,7 @@ class PaymentProvider extends ChangeNotifier {
     handleIfNotLoggedIn(auth);
     try {
       await auth!.apiService.deletePayment(auth!.token!, id);
-      if (payments == null) return;
-      payments!.removeWhere((element) => element.id == id);
+      payments?.removeWhere((element) => element.id == id);
     } catch (_) {
       throw Exception('Failed to delete the payment.');
     }
