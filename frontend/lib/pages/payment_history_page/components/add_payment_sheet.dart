@@ -211,7 +211,6 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                         padding: const EdgeInsets.all(16),
                         child: Consumer<PaymentProvider>(
                           builder: (context, provider, child) {
-                            print(provider.requestInProgress);
                             if (provider.requestInProgress) {
                               return const SizedBox(
                                 height: 24,

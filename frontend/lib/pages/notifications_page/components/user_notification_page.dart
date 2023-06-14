@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../components/loading_card.dart';
 import '../../../providers/limit_provider.dart';
+import '../../../utils/api/models/limit.dart';
 import '../../../utils/snackbars.dart';
 import '../../home_page/components/no_data_widget.dart';
 import 'notification_tile.dart';
@@ -31,6 +32,16 @@ class _UserNotificationsPageState extends State<UserNotificationsPage> {
     if (provider.limits != null) return;
     try {
       await provider.getLimits();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  void switchNotification(Limit limit, bool isActive) async {
+    setState(() => limit.isActive = isActive);
+    final provider = Provider.of<LimitProvider>(context, listen: false);
+    try {
+      await provider.updateLimit(limit);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
     }
@@ -85,7 +96,7 @@ class _UserNotificationsPageState extends State<UserNotificationsPage> {
                   itemBuilder: (context, index) => NotificationTile(
                     limit: limits[index],
                     onSwitch: (value) =>
-                        setState(() => limits[index].isActive = value),
+                        switchNotification(limits[index], value),
                   ),
                 ),
               );

@@ -5,7 +5,7 @@ class Limit {
   bool isActive;
 
   Limit({
-    required this.id,
+    this.id,
     required this.amount,
     required this.period,
     required this.isActive,

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/frequency_dropdown_button.dart';
+import 'package:frontend/providers/limit_provider.dart';
+import 'package:frontend/utils/api/models/limit.dart';
+import 'package:frontend/utils/snackbars.dart';
+import 'package:provider/provider.dart';
 
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
-
 
 class AddNotificationSheet extends StatefulWidget {
   const AddNotificationSheet({
@@ -15,15 +19,31 @@ class AddNotificationSheet extends StatefulWidget {
 
 class _AddNotificationSheetState extends State<AddNotificationSheet> {
   final _value = TextEditingController();
-  final _option = TextEditingController();
-  final _group = TextEditingController();
+
+  String? _period;
 
   @override
   void dispose() {
     _value.dispose();
-    _option.dispose();
-    _group.dispose();
     super.dispose();
+  }
+
+  Future<void> addNotification() async {
+    final provider = Provider.of<LimitProvider>(context, listen: false);
+    final toCreate = Limit(
+      amount: double.parse(_value.text),
+      period: _period!.toUpperCase(),
+      isActive: true,
+    );
+
+    try {
+      await provider.addLimit(toCreate);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
@@ -55,17 +75,15 @@ class _AddNotificationSheetState extends State<AddNotificationSheet> {
                     CustomTextField(
                       controller: _value,
                       hintText: 'e.g. 1000',
-                      labelText: 'Value',
+                      labelText: 'Amount',
                     ),
-                    CustomTextField(
-                      controller: _option,
-                      hintText: 'e.g. Yearly',
-                      labelText: 'Option',
-                    ),
-                    CustomTextField(
-                      controller: _group,
-                      hintText: 'e.g. Friends',
-                      labelText: 'Group (optional)',
+                    FrequencyDropDownButton(
+                      frequencies: const [
+                        'Daily',
+                        'Weekly',
+                        'Monthly',
+                      ],
+                      onSelected: (selected) => _period = selected,
                     ),
                     const SizedBox(height: 16),
                     RoundedOutlinedButton(
@@ -75,16 +93,27 @@ class _AddNotificationSheetState extends State<AddNotificationSheet> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      onPressed: addNotification,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Text(
-                          'Submit',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        child: Consumer<LimitProvider>(
+                          builder: (context, provider, child) {
+                            if (provider.requestInProgress) {
+                              return const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              );
+                            }
+                            return Text(
+                              'Submit',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            );
+                          },
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
                     )
                   ],
                 ),
