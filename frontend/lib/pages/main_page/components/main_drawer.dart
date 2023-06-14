@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'coming_soon_label.dart';
+
 class MainDrawer extends StatelessWidget {
   final int activePage;
   final Function(int value) onTabSelected;
@@ -76,15 +78,24 @@ class MainDrawer extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
               ),
-              DrawerOption(
-                isActive: activePage == 5,
-                baseIcon: Icons.group_outlined,
-                activeIcon: Icons.group,
-                label: 'Groups',
-                onPressed: () {
-                  onTabSelected(5);
-                  Navigator.of(context).pop();
-                },
+              Stack(
+                children: [
+                  DrawerOption(
+                    isActive: activePage == 5,
+                    baseIcon: Icons.group_outlined,
+                    activeIcon: Icons.group,
+                    label: 'Groups',
+                    onPressed: () {
+                      // onTabSelected(5);
+                      // Navigator.of(context).pop();
+                    },
+                  ),
+                   const Positioned(
+                    top: 15,
+                    right: 0,
+                    child: ComingSoonLabel(),
+                  ),
+                ],
               ),
               DrawerOption(
                 isActive: activePage == 6,
