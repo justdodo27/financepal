@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/date_picker_button.dart';
-import 'package:frontend/pages/recurring_payments_page/components/frequency_dropdown_button.dart';
+import 'package:frontend/components/frequency_dropdown_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 

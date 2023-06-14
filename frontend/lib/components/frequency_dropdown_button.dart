@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 class FrequencyDropDownButton extends StatefulWidget {
   final String? selected;
   final Function(String frequency) onSelected;
+  final List<String> frequencies;
 
   const FrequencyDropDownButton({
     super.key,
     required this.onSelected,
     this.selected,
+    this.frequencies = const [
+      'Weekly',
+      'Monthly',
+      'Yearly',
+    ],
   });
 
   @override
@@ -16,24 +22,17 @@ class FrequencyDropDownButton extends StatefulWidget {
 }
 
 class _FrequencyDropDownButtonState extends State<FrequencyDropDownButton> {
-  final frequencies = [
-    // 'Daily',
-    // 'Weekly',
-    'Monthly',
-    'Yearly',
-  ];
-
   late String selectedFrequency;
 
   @override
   void initState() {
     super.initState();
     if (widget.selected != null) {
-      selectedFrequency = frequencies.firstWhere(
+      selectedFrequency = widget.frequencies.firstWhere(
         (freq) => freq.toUpperCase() == widget.selected,
       );
     } else {
-      selectedFrequency = frequencies.first;
+      selectedFrequency = widget.frequencies.first;
     }
     widget.onSelected(selectedFrequency);
   }
@@ -54,7 +53,7 @@ class _FrequencyDropDownButtonState extends State<FrequencyDropDownButton> {
           child: DropdownButton<String>(
             itemHeight: 60,
             value: selectedFrequency,
-            items: frequencies
+            items: widget.frequencies
                 .map((freq) => DropdownMenuItem(
                       value: freq,
                       child: Text(freq),

@@ -1,60 +1,97 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/notifications_page/components/add_notification_sheet.dart';
+import 'package:provider/provider.dart';
 
+import '../../../components/loading_card.dart';
+import '../../../providers/limit_provider.dart';
+import '../../../utils/snackbars.dart';
+import '../../home_page/components/no_data_widget.dart';
 import 'notification_tile.dart';
 
 class UserNotificationsPage extends StatefulWidget {
-  const UserNotificationsPage({super.key});
-
-  static List<Limit> limits = [
-    Limit(
-      value: 100,
-      option: 'DAILY',
-      isActive: true,
-    ),
-    Limit(
-      value: 1000,
-      option: 'MONTHLY',
-      isActive: true,
-    ),
-    Limit(
-      value: 12000,
-      option: 'YEARLY',
-      isActive: false,
-    ),
-  ];
+  const UserNotificationsPage({
+    super.key,
+  });
 
   @override
   State<UserNotificationsPage> createState() => _UserNotificationsPageState();
 }
 
 class _UserNotificationsPageState extends State<UserNotificationsPage> {
-  List<Widget> _getRows() {
-    return UserNotificationsPage.limits
-        .map((limit) => NotificationTile(
-              limit: limit,
-              onSwitch: (value) => setState(() => limit.isActive = value),
-            ))
-        .toList();
+  Future<void> reloadLimits() async {
+    final provider = Provider.of<LimitProvider>(context, listen: false);
+    try {
+      await provider.reloadLimits();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  void fetchLimits() async {
+    final provider = Provider.of<LimitProvider>(context, listen: false);
+    if (provider.limits != null) return;
+    try {
+      await provider.getLimits();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLimits();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
+    return RefreshIndicator(
+      color: Theme.of(context).colorScheme.tertiary,
+      onRefresh: reloadLimits,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Column(
-              children: _getRows(),
-            ),
+          Consumer<LimitProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const LoadingCard();
+              }
+
+              final limits = provider.limits!;
+              if (limits.isEmpty) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  elevation: 4,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  child: const NoDataWidget(
+                    text: 'No limits set up yet',
+                  ),
+                );
+              }
+
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                elevation: 4,
+                color: Theme.of(context).colorScheme.onPrimary,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: limits.length,
+                  itemBuilder: (context, index) => NotificationTile(
+                    limit: limits[index],
+                    onSwitch: (value) =>
+                        setState(() => limits[index].isActive = value),
+                  ),
+                ),
+              );
+            },
           ),
-          const SizedBox(height: 220),
+          const SizedBox(height: 220)
         ],
       ),
     );

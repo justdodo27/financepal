@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'models/category.dart';
 import 'models/group.dart';
+import 'models/limit.dart';
 import 'models/payment.dart';
 import 'models/payment_proof.dart';
 import 'models/recurring_payment.dart';
@@ -431,5 +432,41 @@ class ApiService {
 
     final data = jsonDecode(utf8.decode(response.bodyBytes));
     return Statistics.fromJson(data);
+  }
+
+  Future<List<Limit>> getLimits(String token) async {
+    final response = await http.get(
+      buildUri('limits/'),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load limits.');
+    }
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    return List<Limit>.from(data.map((json) => Limit.fromJson(json)));
+  }
+
+  Future<Limit> createLimit(String token, {required Limit limit}) async {
+    final response = await http.post(
+      buildUri('limits/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'user_id': 0,
+        'value': limit.amount,
+        'is_active': true,
+        'period': limit.period,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create limit.');
+    }
+
+    return Limit.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 }

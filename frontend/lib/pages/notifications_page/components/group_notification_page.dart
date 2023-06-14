@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'add_notification_sheet.dart';
+import '../../../utils/api/models/limit.dart';
 import 'notification_tile.dart';
 
 class GroupNotificationsPage extends StatefulWidget {
@@ -8,40 +8,10 @@ class GroupNotificationsPage extends StatefulWidget {
 
   static List<Limit> limits = [
     Limit(
-      value: 130,
-      option: 'DAILY',
+      id: 1,
+      amount: 130,
+      period: 'DAILY',
       isActive: true,
-      groupName: 'Friends',
-    ),
-    Limit(
-      value: 1400,
-      option: 'MONTHLY',
-      isActive: true,
-      groupName: 'Friends',
-    ),
-    Limit(
-      value: 12200,
-      option: 'YEARLY',
-      isActive: false,
-      groupName: 'Friends',
-    ),
-    Limit(
-      value: 150,
-      option: 'DAILY',
-      isActive: true,
-      groupName: 'Students',
-    ),
-    Limit(
-      value: 1600,
-      option: 'MONTHLY',
-      isActive: true,
-      groupName: 'Students',
-    ),
-    Limit(
-      value: 18000,
-      option: 'YEARLY',
-      isActive: false,
-      groupName: 'Students',
     ),
   ];
 

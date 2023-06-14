@@ -3,21 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../components/rounded_outlined_button.dart';
 
-class Limit {
-  final double value;
-  final String option;
-  final String? groupName;
-  bool isActive;
-
-  Limit({
-    required this.value,
-    required this.option,
-    required this.isActive,
-    this.groupName,
-  });
-
-  bool get isGroupLimit => groupName != null;
-}
 
 class AddNotificationSheet extends StatefulWidget {
   const AddNotificationSheet({

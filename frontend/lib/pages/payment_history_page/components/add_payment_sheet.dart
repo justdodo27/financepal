@@ -209,9 +209,23 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
                       onPressed: _handleSubmit,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Text(
-                          'Submit',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        child: Consumer<PaymentProvider>(
+                          builder: (context, provider, child) {
+                            print(provider.requestInProgress);
+                            if (provider.requestInProgress) {
+                              return const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              );
+                            }
+                            return Text(
+                              'Submit',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            );
+                          },
                         ),
                       ),
                     )
