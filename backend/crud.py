@@ -594,6 +594,11 @@ async def check_limit(db: AsyncSession, user_id: Union[int, None], group_id: Uni
     end_date = datetime.utcnow().replace(day=calendar.monthrange(year=start_date.year, month=start_date.month)[1])
 
     q = select(models.Limit).add_columns(
+        models.Limit.n05_sent_at,
+        models.Limit.n20_sent_at,
+        models.Limit.nX_sent_at,
+        models.Limit.period,
+        models.Limit.id,
         func.sum(models.Payment.cost).label("payments_sum"),
         (func.sum(models.Payment.cost)/models.Limit.value).label("percentage")
     ).join(
@@ -616,3 +621,17 @@ async def check_limit(db: AsyncSession, user_id: Union[int, None], group_id: Uni
     results = await db.execute(q)
 
     return results.all()
+
+
+async def update_limits_sents(db: AsyncSession, limit: models.Limit, sent_type: str):
+    try:
+        if sent_type == 'n20':
+            limit.n20_sent_at = datetime.utcnow()
+        elif sent_type == 'n05':
+            limit.n05_sent_at = datetime.utcnow()
+        elif sent_type == 'nX':
+            limit.nX_sent_at = datetime.utcnow()
+    except Exception as e:
+        return False
+    return limit
+    
