@@ -55,7 +55,7 @@ class Payment(Base):
     renewable_id = sa.Column(sa.Integer, sa.ForeignKey("renewables.id"), nullable=True)
 
     category = relationship("Category", back_populates="payments", lazy='selectin')
-    payment_proof = relationship("PaymentProof", back_populates='payments', cascade='all,delete', lazy='selectin')
+    payment_proof = relationship("PaymentProof", back_populates='payments', lazy='selectin')
     renewable = relationship("Renewable", back_populates='payments', lazy='selectin')
 
 
@@ -69,7 +69,7 @@ class PaymentProof(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
     group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
 
-    payments = relationship("Payment", back_populates='payment_proof', cascade='all,delete', lazy='selectin')
+    payments = relationship("Payment", back_populates='payment_proof', lazy='selectin')
 
 
 class PeriodType(enum.Enum):
