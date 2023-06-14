@@ -69,10 +69,7 @@ class StatisticsProvider extends ChangeNotifier {
         end: DateTime.now(),
       ),
     );
-    todayStatistics = await auth!.apiService.getStatistics(
-      auth!.token!,
-      dateTimeRange: range,
-    );
+      
     try {
       todayStatistics = await auth!.apiService.getStatistics(
         auth!.token!,

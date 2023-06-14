@@ -96,4 +96,8 @@ class RecurringPaymentProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> reloadRecurringPayments() async {
+    await getRecurringPayments();
+  }
 }

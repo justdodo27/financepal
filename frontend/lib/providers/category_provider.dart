@@ -65,4 +65,8 @@ class CategoryProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> reloadCategories() async {
+    await getCategories();
+  }
 }

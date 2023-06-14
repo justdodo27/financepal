@@ -41,3 +41,25 @@ void showSuccessSnackBar(BuildContext context, String msg) {
     ),
   );
 }
+
+void showForegroundMessageSnackBar(BuildContext context, String msg) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      duration: const Duration(seconds: 5),
+      backgroundColor: Colors.deepPurple,
+      content: Row(
+        children: [
+          const Icon(Icons.notifications, color: Colors.amber),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              msg,
+              style: Theme.of(context).textTheme.displaySmall,
+              overflow: TextOverflow.clip,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

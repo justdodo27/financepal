@@ -68,6 +68,7 @@ class _AddPaymentSheetState extends State<AddPaymentSheet> {
       date: widget.payment!.date,
       cost: double.parse(_amount.text),
       category: category,
+      proof: proof,
     );
 
     try {

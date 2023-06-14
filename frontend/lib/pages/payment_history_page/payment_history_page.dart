@@ -27,6 +27,15 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     }
   }
 
+  Future<void> reloadPayments() async {
+    try {
+      await Provider.of<PaymentProvider>(context, listen: false)
+          .getPayments(_dateTimeRange);
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -47,49 +56,55 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      children: [
-        DateRangePicker(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          dateTimeRange: _dateTimeRange,
-          onDateTimePicked: (selected) {
-            setState(() => _dateTimeRange = selected);
-            fetchPayments();
-          },
+    return RefreshIndicator(
+      color: Theme.of(context).colorScheme.tertiary,
+      onRefresh: reloadPayments,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
         ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          elevation: 4,
-          color: Theme.of(context).colorScheme.onPrimary,
-          child: Consumer<PaymentProvider>(
-            builder: (context, provider, child) {
-              final payments = provider.payments;
-
-              if (payments == null) {
-                return const LoadingCard();
-              }
-
-              if (payments.isEmpty) {
-                return const NoDataWidget(
-                  text: 'No payments to display.',
-                );
-              }
-
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: payments.length,
-                itemBuilder: (context, index) =>
-                    PaymentTile(payment: payments[index]),
-              );
+        children: [
+          DateRangePicker(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            dateTimeRange: _dateTimeRange,
+            onDateTimePicked: (selected) {
+              setState(() => _dateTimeRange = selected);
+              fetchPayments();
             },
           ),
-        ),
-        const SizedBox(height: 80),
-      ],
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            elevation: 4,
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Consumer<PaymentProvider>(
+              builder: (context, provider, child) {
+                final payments = provider.payments;
+
+                if (payments == null) {
+                  return const LoadingCard();
+                }
+
+                if (payments.isEmpty) {
+                  return const NoDataWidget(
+                    text: 'No payments to display.',
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: payments.length,
+                  itemBuilder: (context, index) =>
+                      PaymentTile(payment: payments[index]),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 80),
+        ],
+      ),
     );
   }
 }

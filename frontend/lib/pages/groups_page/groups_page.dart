@@ -27,6 +27,15 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
+  Future<void> reloadGroups() async {
+    final provider = Provider.of<GroupProvider>(context, listen: false);
+    try {
+      await provider.fetchGroups();
+    } on Exception catch (e) {
+      showExceptionSnackBar(context, e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,40 +45,46 @@ class _GroupsPageState extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Consumer<GroupProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const LoadingCard();
-                }
-
-                final groups = provider.groups ?? [];
-
-                if (groups.isEmpty) {
-                  return const NoDataWidget(text: 'No groups to display.');
-                }
-
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: groups.length,
-                  itemBuilder: (context, index) => GroupTile(
-                    group: groups[index],
-                  ),
-                );
-              },
-            ),
+      body: RefreshIndicator(
+        color: Theme.of(context).colorScheme.tertiary,
+        onRefresh: reloadGroups,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          const SizedBox(height: 80),
-        ],
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 4,
+              color: Theme.of(context).colorScheme.onPrimary,
+              child: Consumer<GroupProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const LoadingCard();
+                  }
+
+                  final groups = provider.groups ?? [];
+
+                  if (groups.isEmpty) {
+                    return const NoDataWidget(text: 'No groups to display.');
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: groups.length,
+                    itemBuilder: (context, index) => GroupTile(
+                      group: groups[index],
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
       floatingActionButton: Opacity(
         opacity: 0.85,

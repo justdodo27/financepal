@@ -55,4 +55,8 @@ class PaymentProofProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> reloadProofsOfPayments() async {
+    await fetchProofsOfPayments();
+  }
 }

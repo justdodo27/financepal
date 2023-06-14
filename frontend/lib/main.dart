@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/group_provider.dart';
-import 'package:frontend/providers/payment_proof_provider.dart';
-import 'package:frontend/providers/recurring_payment_provider.dart';
-import 'package:frontend/providers/statistics_provider.dart';
-import 'package:frontend/themes/theme_manager.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/accounts/login_consumer.dart';
 import 'providers/auth_provider.dart';
 import 'providers/category_provider.dart';
+import 'providers/group_provider.dart';
+import 'providers/payment_proof_provider.dart';
 import 'providers/payment_provider.dart';
+import 'providers/recurring_payment_provider.dart';
+import 'providers/statistics_provider.dart';
 import 'themes/theme_constants.dart';
+import 'themes/theme_manager.dart';
 import 'utils/api/api_service.dart';
+import 'utils/helpers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  initFirebaseCloudMessaging();
   final apiService = ApiService();
   runApp(
     MultiProvider(

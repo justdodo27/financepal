@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../utils/api/models/payment.dart';
+import 'package:frontend/pages/home_page/components/payment_stats_tile.dart';
+import 'package:frontend/utils/api/models/payment_statistics.dart';
 import 'no_data_widget.dart';
-import 'payment_tile.dart';
 
 class LastPaymentsSection extends StatelessWidget {
-  final List<Payment> data;
+  final List<PaymentStatistics> data;
 
   const LastPaymentsSection({
     super.key,
@@ -20,7 +20,7 @@ class LastPaymentsSection extends StatelessWidget {
       ];
     }
 
-    return data.map((payment) => PaymentTile(payment: payment)).toList();
+    return data.map((stats) => PaymentStatsTile(paymentStats: stats)).toList();
   }
 
   @override
