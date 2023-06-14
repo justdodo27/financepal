@@ -40,7 +40,7 @@ async def create_payment(payment: schemas.PaymentBase,
 
     new_payment = await crud.create_payment(db=db, payment=payment)
     if payment.category_id:
-        await check_notifications(db=db, category_id=payment.category_id, user_id=payment.user_id, group_id=payment.group_id)
+        await check_notifications(db=db, user_id=payment.user_id, group_id=payment.group_id)
     
     return new_payment
 
@@ -142,7 +142,7 @@ async def update_payments(payment_update: schemas.PaymentBase,
         raise HTTPException(status_code=500, detail="Error while updating payment")
 
     if updated.category_id:
-        await check_notifications(db, category_id=updated.category_id, user_id=payment_update.user_id, group_id=updated.group_id)
+        await check_notifications(db, user_id=payment_update.user_id, group_id=updated.group_id)
     
     return updated
 

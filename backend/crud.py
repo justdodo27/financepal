@@ -469,7 +469,7 @@ async def create_limit(db: AsyncSession, limit: schemas.LimitBase):
         value=limit.value,
         user_id=limit.user_id,
         group_id=limit.group_id,
-        category_id=limit.category_id,
+        period=limit.period,
         is_active=limit.is_active
     )
 
@@ -510,9 +510,12 @@ async def get_group_limits(db: AsyncSession, group_id: int):
 async def update_limit(db: AsyncSession, limit: models.Limit, updated_data: schemas.LimitBase):
     try:
         limit.value = updated_data.value
-        limit.category_id = updated_data.category_id
+        limit.period = updated_data.period
         limit.is_active = updated_data.is_active
-        
+        limit.n05_sent_at = None
+        limit.n20_sent_at = None
+        limit.nX_sent_at = None
+
         await db.commit()
         await db.refresh(limit)
     except Exception as e:
@@ -579,7 +582,7 @@ async def categories_grouped(db: AsyncSession, start_date: datetime, end_date: d
 
 # "TRIGGERS"
 
-async def check_limit(db: AsyncSession, category_id: int, user_id: Union[int, None], group_id: Union[int, None]):
+async def check_limit(db: AsyncSession, user_id: Union[int, None], group_id: Union[int, None]):
     if group_id:
         query_filter = (models.Limit.group_id == group_id)
     elif user_id:
@@ -603,15 +606,11 @@ async def check_limit(db: AsyncSession, category_id: int, user_id: Union[int, No
             models.Payment.payment_date >= start_date,
             models.Payment.payment_date <= end_date
         )
-    ).join(
-        models.Category, models.Category.id == models.Limit.category_id
     ).filter(
-        models.Limit.category_id == category_id,
         query_filter,
         models.Limit.is_active == True
     ).group_by(
-        models.Limit,
-        models.Category.category
+        models.Limit.id,
     ).having(
         (func.sum(models.Payment.cost)/models.Limit.value) > 0.8
     )

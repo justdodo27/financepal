@@ -121,16 +121,20 @@ class Group(Base):
         return False
 
 
+class LimitPeriod(enum.Enum):
+    MONTHLY = "MONTHLY"
+    WEEKLY = "WEEKLY"
+    DAILY = "DAILY"
+
+
 class Limit(Base):
     __tablename__ = "limits"
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     value = sa.Column(sa.Double, nullable=False)
+    period = sa.Column(sa.Enum(LimitPeriod), nullable=False, default="MONTHLY", server_default="MONTHLY")
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
     group_id = sa.Column(sa.Integer, sa.ForeignKey('groups.id'), nullable=True)
-    category_id = sa.Column(sa.Integer, sa.ForeignKey("categories.id"), nullable=True)
     is_active = sa.Column(sa.Boolean, nullable=False, default=True, server_default='true')
     n20_sent_at = sa.Column(sa.DateTime, nullable=True)
     n05_sent_at = sa.Column(sa.DateTime, nullable=True)
     nX_sent_at = sa.Column(sa.DateTime, nullable=True)
-
-    category = relationship("Category", back_populates=None, lazy='selectin')

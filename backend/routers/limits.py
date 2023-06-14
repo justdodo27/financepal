@@ -27,11 +27,10 @@ async def create_limit(limit: schemas.LimitBase,
     return schemas.Limit(
         value=limit_db.value,
         user_id=limit_db.user_id,
+        is_active=limit_db.is_active,
         group_id=limit_db.group_id,
-        category_id=limit_db.category_id,
+        period=limit_db.period,
         id=limit_db.id,
-        is_active=limit.is_active,
-        category=limit_db.category
     )
 
 
@@ -52,9 +51,9 @@ async def get_limits(group_id: Optional[int] = None,
         value=limit.value,
         user_id=limit.user_id,
         group_id=limit.group_id,
-        category_id=limit.category_id,
+        period=limit.period,
         id=limit.id,
-        category=limit.category
+        is_active=limit.is_active,
     ) for limit in limits]
 
 
