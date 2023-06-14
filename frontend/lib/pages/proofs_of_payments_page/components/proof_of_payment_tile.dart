@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/proofs_of_payments_page/components/add_payment_proof_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -116,35 +115,6 @@ class _PaymentProofTileState extends State<PaymentProofTile> {
                         ),
                       ),
                       icon: const Icon(Icons.delete),
-                      iconSize: 19,
-                      color: Colors.white,
-                      splashColor: Theme.of(context).colorScheme.tertiary,
-                      splashRadius: 25,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  CircleAvatar(
-                    maxRadius: 18,
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withOpacity(0.5),
-                    child: IconButton(
-                      onPressed: () => showModalBottomSheet(
-                        context: context,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(30),
-                            topLeft: Radius.circular(30),
-                          ),
-                        ),
-                        useSafeArea: true,
-                        isScrollControlled: true,
-                        builder: (context) => const AddPaymentProofSheet(),
-                      ),
-                      icon: const Icon(Icons.edit),
                       iconSize: 19,
                       color: Colors.white,
                       splashColor: Theme.of(context).colorScheme.tertiary,
