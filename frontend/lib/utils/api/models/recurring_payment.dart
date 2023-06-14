@@ -10,6 +10,25 @@ class RecurringPayment {
   final DateTime paymentDate;
   DateTime? lastPaymentDate;
 
+  String get _weekday {
+    switch (paymentDate.weekday) {
+      case 1:
+        return 'Monday';
+      case 2:
+        return 'Tuesday';
+      case 3:
+        return 'Wednesday';
+      case 4:
+        return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
+      default:
+        return 'Sunday';
+    }
+  }
+
   String get date {
     switch (frequency) {
       case 'YEARLY':
@@ -17,7 +36,7 @@ class RecurringPayment {
       case 'MONTHLY':
         return 'Every month on ${paymentDate.day}';
       case 'WEEKLY':
-        return 'Every week on ${paymentDate.weekday}';
+        return 'Every week on $_weekday';
       default:
         return 'Every day';
     }
