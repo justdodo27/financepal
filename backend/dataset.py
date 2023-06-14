@@ -61,7 +61,7 @@ async def generate_dataset(db: AsyncSession):
                         type=schemas.PaymentType.BILL,
                         category_id=category.id,
                         user_id=user.id,
-                        cost=randint(10, 2137) / randint(1, 10),
+                        cost=randint(10, 1237) / randint(1, 10),
                         payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i)
                     ))
                     await db.refresh(user)
@@ -70,7 +70,7 @@ async def generate_dataset(db: AsyncSession):
                         type=schemas.PaymentType.BILL,
                         category_id=category.id,
                         user_id=user.id,
-                        cost=randint(10, 2137) / randint(1, 10),
+                        cost=randint(10, 500) / randint(1, 10),
                         payment_date=datetime.utcnow()
                     ))
                 await db.refresh(user)
@@ -93,7 +93,7 @@ async def generate_dataset(db: AsyncSession):
                             type=schemas.PaymentType.BILL,
                             category_id=category.id,
                             user_id=user.id,
-                            cost=randint(10, 2137) / randint(1, 10),
+                            cost=randint(10, 1237) / randint(1, 10),
                             payment_date=datetime.utcnow().replace(tzinfo=None, day=randint(1, 20), month=datetime.utcnow().month-i),
                             payment_proof_id=pp.id
                         ))

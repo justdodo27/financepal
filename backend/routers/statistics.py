@@ -15,11 +15,9 @@ def return_date_range_type(start_date: datetime, end_date: datetime):
     delta = end_date - start_date
     if delta.days > 31:
         return 'MONTHS'
-    elif delta.days <= 31:
+    elif delta.days <= 31 and delta.days >= 1:
         return 'DAYS'
-    elif delta.days <= 1:
-        return 'HOURS'
-    return 'DAYS'
+    return 'HOURS'
 
 @router.get("/statistics/", tags=["statistics"], response_model=schemas.Statistic)
 async def get_statistics(start_date: datetime,
