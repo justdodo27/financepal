@@ -60,8 +60,15 @@ class _UserNotificationsPageState extends State<UserNotificationsPage> {
 
               final limits = provider.limits!;
               if (limits.isEmpty) {
-                return const NoDataWidget(
-                  text: 'No limits set up yet',
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  elevation: 4,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  child: const NoDataWidget(
+                    text: 'No limits set up yet',
+                  ),
                 );
               }
 
