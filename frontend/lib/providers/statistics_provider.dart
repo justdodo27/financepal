@@ -69,7 +69,7 @@ class StatisticsProvider extends ChangeNotifier {
         end: DateTime.now(),
       ),
     );
-      
+
     try {
       todayStatistics = await auth!.apiService.getStatistics(
         auth!.token!,
@@ -162,6 +162,19 @@ class StatisticsProvider extends ChangeNotifier {
         break;
     }
     notifyListeners();
+  }
+
+  Future<String> getReportUrl(DateTimeRange dateTimeRange) async {
+    handleIfNotLoggedIn(auth);
+    final range = _processDateTimeRange(dateTimeRange);
+    try {
+      return await auth!.apiService.getReportUrl(
+        auth!.token!,
+        dateTimeRange: range,
+      );
+    } catch (_) {
+      throw Exception('Failed to load the report.');
+    }
   }
 
   DateTimeRange _processDateTimeRange(DateTimeRange range) {

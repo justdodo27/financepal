@@ -434,6 +434,27 @@ class ApiService {
     return Statistics.fromJson(data);
   }
 
+  Future<String> getReportUrl(
+    String token, {
+    required DateTimeRange dateTimeRange,
+  }) async {
+    final response = await http.get(
+      buildUri(
+        'report/?'
+        'start_date=${dateTimeRange.start.toIso8601String()}&'
+        'end_date=${dateTimeRange.end.toIso8601String()}',
+      ),
+      headers: <String, String>{'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to download report.');
+    }
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    return data.toString();
+  }
+
   Future<List<Limit>> getLimits(String token) async {
     final response = await http.get(
       buildUri('limits/'),
@@ -470,8 +491,7 @@ class ApiService {
     return Limit.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
-  Future<void> updateLimit(String token,
-      {required Limit limit}) async {
+  Future<void> updateLimit(String token, {required Limit limit}) async {
     final response = await http.put(
       buildUri('limits/${limit.id}/'),
       headers: <String, String>{
