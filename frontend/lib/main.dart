@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/limit_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/accounts/login_consumer.dart';
@@ -46,6 +47,10 @@ void main() {
           update: (context, auth, _) => GroupProvider(auth),
           create: (context) => GroupProvider(null),
         ),
+        ChangeNotifierProxyProvider<Auth, LimitProvider>(
+          update: (context, auth, _) => LimitProvider(auth),
+          create: (context) => LimitProvider(null),
+        )
       ],
       child: const MyApp(),
     ),

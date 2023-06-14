@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'add_notification_sheet.dart';
+import '../../../utils/api/models/limit.dart';
 
 class NotificationTile extends StatelessWidget {
   final Limit limit;
@@ -13,13 +13,13 @@ class NotificationTile extends StatelessWidget {
   });
 
   String get label {
-    switch (limit.option) {
+    switch (limit.period) {
       case 'MONTHLY':
-        return 'Monthly spendings > ${limit.value}';
+        return 'Monthly spendings > ${limit.amount}';
       case 'YEARLY':
-        return 'Yearly spendings > ${limit.value}';
+        return 'Yearly spendings > ${limit.amount}';
       default:
-        return 'Daily spendings > ${limit.value}';
+        return 'Daily spendings > ${limit.amount}';
     }
   }
 
@@ -39,15 +39,10 @@ class NotificationTile extends StatelessWidget {
             Flexible(
               child: Row(
                 children: [
-                  limit.isGroupLimit
-                      ? GroupLimitIcon(
-                          isActive: limit.isActive,
-                        )
-                      : Icon(
-                          Icons.notifications,
-                          color:
-                              limit.isActive ? Colors.amberAccent : Colors.grey,
-                        ),
+                  Icon(
+                    Icons.notifications,
+                    color: limit.isActive ? Colors.amberAccent : Colors.grey,
+                  ),
                   const SizedBox(width: 16),
                   Flexible(
                     child: Column(
@@ -66,15 +61,6 @@ class NotificationTile extends StatelessWidget {
                                         .color,
                               ),
                         ),
-                        if (limit.isGroupLimit)
-                          Text(
-                            limit.groupName!,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .apply(color: Colors.grey),
-                          ),
                       ],
                     ),
                   ),
