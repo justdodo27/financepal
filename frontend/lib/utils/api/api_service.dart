@@ -469,4 +469,39 @@ class ApiService {
 
     return Limit.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
+
+  Future<void> updateLimit(String token,
+      {required Limit limit}) async {
+    final response = await http.put(
+      buildUri('limits/${limit.id}/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'user_id': 0,
+        'value': limit.amount,
+        'is_active': limit.isActive,
+        'period': limit.period,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create limit.');
+    }
+  }
+
+  Future<void> deleteLimit(String token, {required int id}) async {
+    final response = await http.delete(
+      buildUri('limits/$id/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete the limit.');
+    }
+  }
 }
