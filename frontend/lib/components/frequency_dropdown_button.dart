@@ -17,7 +17,7 @@ class FrequencyDropDownButton extends StatefulWidget {
 
 class _FrequencyDropDownButtonState extends State<FrequencyDropDownButton> {
   final frequencies = [
-    // 'Daily',
+    'Daily',
     // 'Weekly',
     'Monthly',
     'Yearly',
