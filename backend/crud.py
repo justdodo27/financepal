@@ -595,12 +595,10 @@ async def check_limit(db: AsyncSession, user_id: Union[int, None], group_id: Uni
 
     q = select(models.Limit).add_columns(
         func.sum(models.Payment.cost).label("payments_sum"),
-        (func.sum(models.Payment.cost)/models.Limit.value).label("percentage"),
-        models.Category.category
+        (func.sum(models.Payment.cost)/models.Limit.value).label("percentage")
     ).join(
         models.Payment, 
         and_(
-            models.Payment.category_id == models.Limit.category_id,
             (models.Payment.user_id == models.Limit.user_id) if user_id else True,
             (models.Payment.group_id == models.Limit.group_id) if group_id else True,
             models.Payment.payment_date >= start_date,
