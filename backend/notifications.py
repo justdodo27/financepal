@@ -34,18 +34,24 @@ async def check_notifications(db: AsyncSession, user_id: models.User, group_id: 
     
     if not user.notifications_token: return
     for limit in limits:
-        if limit.percentage > 0.8 and limit.percentage < 0.95 and (limit.n20_sent_at and limit.n20_sent_at.month != datetime.date.month):
+        if limit.percentage > 0.8 and limit.percentage < 0.95 and (not limit.n20_sent_at or limit.n20_sent_at.month != datetime.datetime.utcnow().month):
             send_notification(registration_token=user.notifications_token, 
                               title=f"{limit.period} limit status", 
                               body=f"{user.username} your limit for {limit.period} is at {round(limit.percentage*100, 2)}% ({limit.payments_sum}).")
-        elif limit.percentage > 0.95 and limit.percentage < 1.0 and (limit.n05_sent_at and limit.n05_sent_at.month != datetime.date.month):
+            limit_update = await crud.get_limit(db, limit_id=limit.id)
+            await crud.update_limits_sents(db, limit=limit_update, sent_type='n20')
+        elif limit.percentage > 0.95 and limit.percentage < 1.0 and (not limit.n05_sent_at or limit.n05_sent_at.month != datetime.datetime.utcnow().month):
             send_notification(registration_token=user.notifications_token, 
                               title=f"{limit.period} almost reached the limit", 
                               body=f"{user.username} you've almost exceeded your limit for {limit.period}. Limit is at {round(limit.percentage*100, 2)}% ({limit.payments_sum}).")
-        elif limit.percentage > 1.0 and (limit.nX_sent_at and limit.nX_sent_at.month != datetime.date.month):
+            limit_update = await crud.get_limit(db, limit_id=limit.id)
+            await crud.update_limits_sents(db, limit=limit_update, sent_type='n05')
+        elif limit.percentage > 1.0 and (not limit.nX_sent_at or limit.nX_sent_at.month != datetime.datetime.utcnow().month):
             send_notification(registration_token=user.notifications_token, 
                               title=f"{limit.period} limit exceeded", 
                               body=f"{user.username} you've exceeded your limit for {limit.period}. Limit is at {round(limit.percentage*100, 2)}% ({limit.payments_sum}).")
+            limit_update = await crud.get_limit(db, limit_id=limit.id)
+            await crud.update_limits_sents(db, limit=limit_update, sent_type='nX')
             
 
 async def test_notification(db: AsyncSession, user_id: models.User):
