@@ -139,7 +139,7 @@ async def get_user_payments(db: AsyncSession, user_id: int, start_date: Optional
         models.Payment.user_id == user_id,
         (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
         (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
-    )
+    ).order_by(models.Payment.payment_date)
     result = await db.execute(q)
     return result.scalars().all()
 
@@ -149,7 +149,7 @@ async def get_group_payments(db: AsyncSession, group_id: int, start_date: Option
         models.Payment.group_id == group_id,
         (models.Payment.payment_date >= start_date.replace(tzinfo=None)) if start_date else True,
         (models.Payment.payment_date <= end_date.replace(tzinfo=None)) if end_date else True
-    )
+    ).order_by(models.Payment.payment_date)
     result = await db.execute(q)
     return result.scalars().all()
 
