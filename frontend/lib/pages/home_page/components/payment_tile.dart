@@ -25,8 +25,6 @@ class PaymentTile extends StatelessWidget {
           .deletePayment(payment.id!);
     } on Exception catch (e) {
       showExceptionSnackBar(context, e);
-    } finally {
-      Navigator.of(context).pop();
     }
   }
 
@@ -132,7 +130,10 @@ class PaymentTile extends StatelessWidget {
                             ),
                             actions: [
                               TextButton(
-                                onPressed: () => deletePayment(context),
+                                onPressed: () {
+                                  deletePayment(context);
+                                  Navigator.of(context).pop();
+                                },
                                 child: Text(
                                   'Yes',
                                   style: Theme.of(context).textTheme.bodySmall,
